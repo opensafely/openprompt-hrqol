@@ -1,12 +1,26 @@
 version: '3.0'
 
 expectations:
-  population_size: 1000
+ population_size: 10000
 
 actions:
 
-  generate_study_population:
-    run: cohortextractor:latest generate_cohort --output-format csv.gz --study-definition study_definition
+  generate_dataset_cases:
+    run: >
+      databuilder:v0
+        generate-dataset analysis/dataset_definition_lc.py --output output/longcovid_cases.csv
     outputs:
       highly_sensitive:
-        cohort: output/input.csv.gz
+        longcovid_cases: output/longcovid_cases.csv
+
+  clean_the_data:
+    run: >
+      r:latest
+        analysis/clean_raw_data.R
+    needs: [generate_dataset_cases]
+    outputs:
+      highly_sensitive:
+        cleandata: output/clean_dataset.gz.parquet
+      moderately_sensitive:
+        txt1: output/data_properties/clean_dataset_skim.txt
+        txt2: output/data_properties/clean_dataset_tabulate.txt
