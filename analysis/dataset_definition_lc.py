@@ -8,11 +8,15 @@ from databuilder.tables.beta.tpp import (
 )
 
 from variable_lib import (
-  age_as_of,
-  has_died,
-  address_as_of,
-  create_sequential_variables,
-  hospitalisation_diagnosis_matches
+  long_covid_events_during,
+  long_covid_dx_during
+)
+
+from datasets import (
+    add_common_variables,
+    study_start_date,
+    study_end_date,
+    covid_to_longcovid_lag
 )
 
 import datetime
@@ -20,85 +24,51 @@ import codelists
 
 dataset = Dataset()
 
-# Registered at a GP 3 months prior to start date
-study_start_date = datetime.date(2020, 3, 1)
-study_end_date = datetime.date(2023, 5, 1)
-minimum_registration = 90
+lc_code_any = long_covid_events_during(study_start_date, study_end_date)
+lc_dx_code = long_covid_dx_during(study_start_date, study_end_date)
 
-# Restrict to people with one practice & for 3month before start date
-registrations = practice_registrations \
-    .where(practice_registrations.start_date <= study_start_date - days(minimum_registration)) \
-    .except_where(practice_registrations.end_date <= study_start_date)
+# Long COVID codes
+first_lc_code_any = lc_code_any.sort_by(lc_code_any.date).first_for_patient()
+first_lc_dx_code = lc_dx_code.sort_by(lc_dx_code.date).first_for_patient()
 
-# Get the number of registrations in this period to exclude anyone with >1 in 'set-population later'
-registrations_number = registrations.count_for_patient()
+# use the record of a patient's long covid on Dx (even if they had a Rx earlier)
+first_lc_code = Dataset()
+first_lc_code.has_dx = first_lc_dx_code.exists_for_patient()
 
-# Need to get the start and end date of last registration only
-registration = registrations \
-    .sort_by(practice_registrations.start_date).last_for_patient()
-
-dataset.pt_start_date = case(
-    when(registration.start_date + days(minimum_registration) > study_start_date).then(registration.start_date + days(minimum_registration)),
-    default=study_start_date,
+first_lc_code.best_date = case(
+    when(first_lc_code.has_dx & first_lc_dx_code.date.is_after(first_lc_code_any.date)).then(first_lc_dx_code.date),
+    when(first_lc_code.has_dx & first_lc_dx_code.date.is_on_or_before(first_lc_code_any.date)).then(first_lc_code_any.date),
+    when(~first_lc_code.has_dx).then(first_lc_code_any.date)
+)
+first_lc_code.best_code = case(
+    when(first_lc_code.has_dx & first_lc_dx_code.date.is_after(first_lc_code_any.date)).then(first_lc_dx_code.snomedct_code),
+    when(first_lc_code.has_dx & first_lc_dx_code.date.is_on_or_before(first_lc_code_any.date)).then(first_lc_code_any.snomedct_code),
+    when(~first_lc_code.has_dx).then(first_lc_code_any.snomedct_code)
 )
 
-dataset.pt_end_date = case(
-    when(registration.end_date.is_null()).then(study_end_date),
-    when(registration.end_date > study_end_date).then(study_end_date),
-    default=registration.end_date,
+# create flag about whether this is a diagnosis or a referral code
+# default = NULL
+lc_dx_flag = case(
+  when(first_lc_code.best_code.is_in(codelists.long_covid_dx_codes)).then("Dx"),
+  when(first_lc_code.best_code.is_in(codelists.long_covid_assessment_codes)).then("Rx"),
+  when(first_lc_code.best_code.is_in(codelists.long_covid_referral_codes)).then("Rx")
 )
 
-dataset.start_date = registration.start_date
-dataset.end_date = registration.end_date
+add_common_variables(dataset, study_start_date, first_lc_code.best_date, population=lc_code_any.exists_for_patient())
 
-# get NHS region one by one
-dataset.practice_nuts = registration.practice_nuts1_region_name
+# add specific variables
+dataset.first_lc = first_lc_code.best_date
+dataset.first_lc_code = first_lc_code.best_code
+dataset.test_to_lc_gap = (first_lc_code.best_date - dataset.latest_test_before_diagnosis).days
 
-# Common codes
-# Demographic variables
-dataset.sex = patients.sex
-dataset.age = age_as_of(study_start_date)
-dataset.has_died = has_died(study_start_date)
-dataset.msoa = address_as_of(study_start_date).msoa_code
-dataset.imd = address_as_of(study_start_date).imd_rounded
-dataset.death_date = patients.date_of_death
+dataset.first_lc_dx = first_lc_dx_code.date
+dataset.lc_dx_flag = lc_dx_flag
 
-# Ethnicity in 6 categories
-dataset.ethnicity = clinical_events.where(clinical_events.ctv3_code.is_in(codelists.ethnicity)) \
-    .sort_by(clinical_events.date) \
-    .last_for_patient() \
-    .ctv3_code.to_category(codelists.ethnicity)
-
-# Covid tests
-all_test_positive = sgss_covid_all_tests \
-    .where(sgss_covid_all_tests.is_positive) \
-    .except_where(sgss_covid_all_tests.specimen_taken_date <= dataset.pt_start_date) \
-    .except_where(sgss_covid_all_tests.specimen_taken_date >= dataset.pt_end_date)
-
-dataset.all_test_positive = all_test_positive.count_for_patient()
-
-dataset.all_tests = sgss_covid_all_tests \
-    .except_where(sgss_covid_all_tests.specimen_taken_date <= dataset.pt_start_date) \
-    .except_where(sgss_covid_all_tests.specimen_taken_date >= dataset.pt_end_date) \
-    .count_for_patient()
-
-# Find any records of long COVID
-long_covid = clinical_events \
-    .where(clinical_events.snomedct_code.is_in(codelists.long_covid_combined))
-
-# Split them by Dx and Rx
-dataset.long_covid_first_dx = long_covid \
-    .where(long_covid.snomedct_code.is_in(codelists.long_covid_dx_codes)) \
-    .sort_by(long_covid.date) \
-    .first_for_patient().date
-
-dataset.long_covid_n_rx = long_covid \
-    .where(long_covid.snomedct_code.is_in(codelists.long_covid_referral_codes)) \
-    .where(long_covid.date > datetime.date(2020, 12, 31)) \
-    .where(long_covid.date >= dataset.long_covid_first_dx) \
-    .count_for_patient()
-
-# Apply some restrictions
-# and output a dataset
-population_restriction = (dataset.age > 0) & (dataset.age < 110) & (registrations_number == 1)
-dataset.define_population(population_restriction)
+# create new outcome variable for lc_dx depending on previous covid test/hospitatlisation
+dataset.longcovid_categorical = case(
+    when(dataset.first_lc_dx.is_after(dataset.first_covid_hosp + days(covid_to_longcovid_lag)) & dataset.first_covid_critical).then("LC post-critical COVID hospitalisation"),
+    when(dataset.first_lc_dx.is_after(dataset.first_covid_hosp + days(covid_to_longcovid_lag))).then("LC post-COVID hospitalisation"),
+    when(dataset.first_lc_dx.is_after(dataset.latest_primarycare_covid + days(covid_to_longcovid_lag))).then("LC post-primary care COVID"),
+    when(dataset.first_lc_dx.is_after(dataset.latest_test_before_diagnosis + days(covid_to_longcovid_lag))).then("LC post-positive test"),
+    when(dataset.first_lc_dx.is_after(dataset.pt_start_date)).then("LC only")
+)
