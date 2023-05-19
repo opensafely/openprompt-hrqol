@@ -6,7 +6,7 @@ from databuilder.tables.beta.tpp import (
     practice_registrations,
     clinical_events,
     sgss_covid_all_tests,
-    hospital_admissions
+    hospital_admissions,
 )
 import datetime
 
@@ -20,7 +20,7 @@ from variable_lib import (
 import codelists
 
 study_start_date = datetime.date(2020, 3, 1)
-study_end_date = datetime(2023, 5, 1)
+study_end_date = datetime.date(2023, 5, 1)
 
 minimum_registration = 90  # 3months of previous registration
 covid_to_longcovid_lag = 84  # 12 weeks
@@ -52,7 +52,7 @@ def add_common_variables(dataset, study_start_date, end_date, population):
     # Demographic variables
     dataset.sex = patients.sex
     dataset.age = age_as_of(study_start_date)
-    dataset.msoa = address_as_of(study_start_date)
+    dataset.msoa = address_as_of(study_start_date).msoa_code
     dataset.practice_nuts = registration.practice_nuts1_region_name
     dataset.imd = address_as_of(study_start_date).imd_rounded
 
@@ -74,6 +74,9 @@ def add_common_variables(dataset, study_start_date, end_date, population):
         .except_where(sgss_covid_all_tests.specimen_taken_date <= dataset.pt_start_date) \
         .except_where(sgss_covid_all_tests.specimen_taken_date >= dataset.pt_end_date) \
         .count_for_patient()
+
+    dataset.latest_test_before_diagnosis = all_test_positive \
+        .sort_by(sgss_covid_all_tests.specimen_taken_date).last_for_patient().specimen_taken_date
 
     # covid hospitalisations
     covid_hospitalisations = hospitalisation_diagnosis_matches(hospital_admissions, codelists.hosp_covid)
@@ -130,35 +133,35 @@ def add_common_variables(dataset, study_start_date, end_date, population):
             )
         )
 
-    dataset.haem_cancer = has_prior_event(codelists.haem_cancer_codes)
-    dataset.lung_cancer = has_prior_event(codelists.lung_cancer_codes)
-    dataset.other_cancer = has_prior_event(codelists.other_cancer_codes)
+    dataset.haem_cancer = has_prior_event(codelists.haem_cancer)
+    dataset.lung_cancer = has_prior_event(codelists.lung_cancer)
+    dataset.other_cancer = has_prior_event(codelists.other_cancer)
     dataset.asthma = has_prior_event(codelists.asthma_codes)
-    dataset.chronic_cardiac_disease = has_prior_event(codelists.chronic_cardiac_disease_codes)
-    dataset.chronic_liver_disease = has_prior_event(codelists.chronic_liver_disease_codes)
-    dataset.chronic_respiratory_disease = has_prior_event(codelists.chronic_respiratory_disease_codes)
-    dataset.other_neuro = has_prior_event(codelists.other_neuro_codes)
-    dataset.stroke_gp = has_prior_event(codelists.stroke_gp_codes)
-    dataset.dementia = has_prior_event(codelists.dementia_codes)
-    dataset.ra_sle_psoriasis = has_prior_event(codelists.ra_sle_psoriasis_codes)
+    dataset.chronic_cardiac_disease = has_prior_event(codelists.chronic_cardiac_disease_code)
+    dataset.chronic_liver_disease = has_prior_event(codelists.chronic_liver_disease_code)
+    dataset.chronic_respiratory_disease = has_prior_event(codelists.copd)
+    dataset.other_neuro = has_prior_event(codelists.other_neuro_code)
+    dataset.stroke_gp = has_prior_event(codelists.stroke_code)
+    dataset.dementia = has_prior_event(codelists.dementia_code)
+    dataset.ra_sle_psoriasis = has_prior_event(codelists.ra_sle_psoriasis_code)
     dataset.psychosis_schizophrenia_bipolar = has_prior_event(codelists.psychosis_schizophrenia_bipolar_codes)
-    dataset.permanent_immune = has_prior_event(codelists.permanent_immune_codes)
-    dataset.temp_immune = has_prior_event(codelists.temp_immune_codes)
+    dataset.permanent_immune = has_prior_event(codelists.permanent_immune_code)
+    dataset.temp_immune = has_prior_event(codelists.temporary_immune_code)
 
-    binary_haem_cancer = has_prior_event_numeric(codelists.haem_cancer_codes)
-    binary_lung_cancer = has_prior_event_numeric(codelists.lung_cancer_codes)
-    binary_other_cancer = has_prior_event_numeric(codelists.other_cancer_codes)
+    binary_haem_cancer = has_prior_event_numeric(codelists.haem_cancer)
+    binary_lung_cancer = has_prior_event_numeric(codelists.lung_cancer)
+    binary_other_cancer = has_prior_event_numeric(codelists.other_cancer)
     binary_asthma = has_prior_event_numeric(codelists.asthma_codes)
-    binary_chronic_cardiac_disease = has_prior_event_numeric(codelists.chronic_cardiac_disease_codes)
-    binary_chronic_liver_disease = has_prior_event_numeric(codelists.chronic_liver_disease_codes)
-    binary_chronic_respiratory_disease = has_prior_event_numeric(codelists.chronic_respiratory_disease_codes)
-    binary_other_neuro = has_prior_event_numeric(codelists.other_neuro_codes)
-    binary_stroke_gp = has_prior_event_numeric(codelists.stroke_gp_codes)
-    binary_dementia = has_prior_event_numeric(codelists.dementia_codes)
-    binary_ra_sle_psoriasis = has_prior_event_numeric(codelists.ra_sle_psoriasis_codes)
+    binary_chronic_cardiac_disease = has_prior_event_numeric(codelists.chronic_cardiac_disease_code)
+    binary_chronic_liver_disease = has_prior_event_numeric(codelists.chronic_liver_disease_code)
+    binary_chronic_respiratory_disease = has_prior_event_numeric(codelists.copd)
+    binary_other_neuro = has_prior_event_numeric(codelists.other_neuro_code)
+    binary_stroke_gp = has_prior_event_numeric(codelists.stroke_code)
+    binary_dementia = has_prior_event_numeric(codelists.dementia_code)
+    binary_ra_sle_psoriasis = has_prior_event_numeric(codelists.ra_sle_psoriasis_code)
     binary_psychosis_schizophrenia_bipolar = has_prior_event_numeric(codelists.psychosis_schizophrenia_bipolar_codes)
-    binary_permanent_immune = has_prior_event_numeric(codelists.permanent_immune_codes)
-    binary_temp_immune = has_prior_event_numeric(codelists.temp_immune_codes)
+    binary_permanent_immune = has_prior_event_numeric(codelists.permanent_immune_code)
+    binary_temp_immune = has_prior_event_numeric(codelists.temporary_immune_code)
 
     dataset.comorbid_count = binary_haem_cancer + \
         binary_lung_cancer + \
