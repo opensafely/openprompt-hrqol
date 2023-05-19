@@ -5,22 +5,31 @@ expectations:
 
 actions:
 
-  generate_dataset_cases:
-    run: >
-      databuilder:v0
-        generate-dataset analysis/dataset_definition_lc.py --output output/longcovid_cases.csv
-    outputs:
-      highly_sensitive:
-        longcovid_cases: output/longcovid_cases.csv
-
-  clean_the_data:
+  create_dummy_openprompt_data: 
     run: >
       r:latest
-        analysis/clean_raw_data.R
-    needs: [generate_dataset_cases]
+        analysis/create_dummy_openprompt_data.R
+    outputs: 
+      moderately_sensitive: 
+        dummy_openprompt: output/dummy_openprompt.csv
+
+  generate_openprompt_plus_tpp: 
+    run: >
+      databuilder:v0
+        generate-dataset analysis/dataset_definition_openprompt.py --output output/openprompt_raw_plus_tpp.gz.csv
+    needs: [create_dummy_openprompt_data]
     outputs:
       highly_sensitive:
-        cleandata: output/clean_dataset.gz.parquet
+        openprompt_tpp_combined: output/openprompt_raw_plus_tpp.gz.csv
+
+  quick_summ_data:
+    run: >
+      r:latest
+        analysis/010_table1.R
+    needs: [generate_openprompt_plus_tpp]
+    outputs:
+      highly_sensitive:
+        cleandata: output/cleaned_data.gz.parquet
       moderately_sensitive:
-        txt1: output/data_properties/clean_dataset_skim.txt
-        txt2: output/data_properties/clean_dataset_tabulate.txt
+        table1: output/tab1_baseline_description.html
+        #longcovid_dates: output/longcovid_dates.pdf
