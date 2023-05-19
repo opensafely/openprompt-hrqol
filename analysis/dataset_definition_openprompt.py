@@ -14,7 +14,7 @@ class OpenPROMPT(PatientFrame):
     sex = Series(str)
     age = Series(int)
     number_surveys = Series(int)
-    long_covid_date = Series(str)
+    long_covid_date = Series(date)
     breathlessness = Series(int)
     fatigue = Series(int)
     productivity = Series(int)
