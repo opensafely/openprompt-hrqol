@@ -15,7 +15,8 @@ dataset.pt_sex = patients.sex
 dataset.pt_age = patients.age_on(date(2023, 6, 30))
 
 
-# filter to the actual baselin questionnaire
+# filter to the actual baseline questionnaire by including responses to "do you have a disability?" 
+# which was a compulsory question on the baseline demographics survey, but does not exist on the research questionnaires
 op_baseline_id = open_prompt \
     .where(open_prompt.ctv3_code == "13VC.") \
     .sort_by(open_prompt.consultation_id) \
@@ -35,11 +36,10 @@ dataset.ethnicity = op_baseline.where(op_baseline.ctv3_code.is_in(codelists.ethn
     .ctv3_code.to_category(codelists.ethnicity)
 
 # year of birth on survey, then age
-yob = open_prompt \
+dataset.yob = open_prompt \
     .where(open_prompt.ctv3_code == "9155.") \
     .sort_by(open_prompt.consultation_id) \
     .first_for_patient().numeric_value
-dataset.age_at_baseline = 2023 - yob
 
 # gender on survey response
 gender_codes = ["X768D","X768C","X785Q","Y1bd8","Y1f4b"]
@@ -57,5 +57,5 @@ dataset.gender = op_baseline \
     .ctv3_code.map_values(gender_mapping)
 
 # restrict to people with positive age
-population_restriction = (dataset.age_at_baseline > 0) 
+population_restriction = (dataset.pt_age > 0) 
 dataset.define_population(population_restriction)
