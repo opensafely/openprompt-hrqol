@@ -13,14 +13,38 @@ actions:
   #     moderately_sensitive: 
   #       dummy_openprompt: output/dummy_openprompt.csv
 
-  generate_openprompt: 
+  generate_openprompt_baseline: 
     run: >
       databuilder:v0
-        generate-dataset analysis/dataset_definition_openprompt_real.py --output output/openprompt_raw.csv
+        generate-dataset analysis/define_openprompt_baseline.py --output output/openprompt_baseline.csv
     outputs:
       highly_sensitive:
-        openprompt_tpp_combined: output/openprompt_raw.csv
+        openprompt_baseline: output/openprompt_baseline.csv
 
+  generate_openprompt_survey1: 
+    run: >
+      databuilder:v0
+        generate-dataset analysis/define_openprompt_survey1.py --output output/openprompt_survey1.csv
+    outputs:
+      highly_sensitive:
+        openprompt_tpp_combined: output/openprompt_survey1.csv
+
+  generate_openprompt_survey2: 
+    run: >
+      databuilder:v0
+        generate-dataset analysis/define_openprompt_survey2.py --output output/openprompt_survey2.csv
+    outputs:
+      highly_sensitive:
+        openprompt_tpp_combined: output/openprompt_survey2.csv
+
+  combine_openprompt:
+    run: >
+      r:latest analysis/001_datacombine.R
+    needs: [generate_openprompt_baseline, generate_openprompt_survey1, generate_openprompt_survey2]
+    outputs: 
+      highly_sensitive: 
+        openprompt_combined: output/openprompt_raw.csv
+        
   # generate_openprompt_plus_tpp: 
   #   run: >
   #     databuilder:v0
