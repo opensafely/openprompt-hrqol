@@ -5,31 +5,39 @@ expectations:
 
 actions:
 
-  create_dummy_openprompt_data: 
-    run: >
-      r:latest
-        analysis/create_dummy_openprompt_data.R
-    outputs: 
-      moderately_sensitive: 
-        dummy_openprompt: output/dummy_openprompt.csv
+  # create_dummy_openprompt_data: 
+  #   run: >
+  #     r:latest
+  #       analysis/create_dummy_openprompt_data.R
+  #   outputs: 
+  #     moderately_sensitive: 
+  #       dummy_openprompt: output/dummy_openprompt.csv
 
-  generate_openprompt_plus_tpp: 
+  generate_openprompt: 
     run: >
       databuilder:v0
-        generate-dataset analysis/dataset_definition_openprompt.py --output output/openprompt_raw_plus_tpp.gz.csv
-    needs: [create_dummy_openprompt_data]
+        generate-dataset analysis/dataset_definition_openprompt_real.py --output output/openprompt_raw.csv
     outputs:
       highly_sensitive:
-        openprompt_tpp_combined: output/openprompt_raw_plus_tpp.gz.csv
+        openprompt_tpp_combined: output/openprompt_raw.csv
 
-  quick_summ_data:
-    run: >
-      r:latest
-        analysis/010_table1.R
-    needs: [generate_openprompt_plus_tpp]
-    outputs:
-      highly_sensitive:
-        cleandata: output/cleaned_data.gz.parquet
-      moderately_sensitive:
-        table1: output/tab1_baseline_description.html
-        #longcovid_dates: output/longcovid_dates.pdf
+  # generate_openprompt_plus_tpp: 
+  #   run: >
+  #     databuilder:v0
+  #       generate-dataset analysis/dataset_definition_openprompt.py --output output/openprompt_raw_plus_tpp.gz.csv
+  #   needs: [create_dummy_openprompt_data]
+  #   outputs:
+  #     highly_sensitive:
+  #       openprompt_tpp_combined: output/openprompt_raw_plus_tpp.gz.csv
+
+  # quick_summ_data:
+  #   run: >
+  #     r:latest
+  #       analysis/010_table1.R
+  #   needs: [generate_openprompt_plus_tpp]
+  #   outputs:
+  #     highly_sensitive:
+  #       cleandata: output/cleaned_data.gz.parquet
+  #     moderately_sensitive:
+  #       table1: output/tab1_baseline_description.html
+  #       longcovid_dates: output/longcovid_dates.pdf
