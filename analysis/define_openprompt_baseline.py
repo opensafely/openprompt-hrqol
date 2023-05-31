@@ -1,5 +1,5 @@
 from ehrql import case, when, Dataset
-from ehrql.tables.beta.tpp import open_prompt, practice_registrations, patients
+from ehrql.tables.beta.tpp import open_prompt, practice_registrations, patients, sgss_covid_all_tests
 
 import codelists
 from datetime import date
@@ -55,6 +55,11 @@ dataset.gender = op_baseline \
     .sort_by(op_baseline.consultation_id) \
     .first_for_patient() \
     .ctv3_code.map_values(gender_mapping)
+
+dataset.has_positive_test = sgss_covid_all_tests \
+    .where(sgss_covid_all_tests.is_positive) \
+    .where(sgss_covid_all_tests.specimen_taken_date <= dataset.baseline_date) \
+    .exists_for_patient()
 
 # restrict to people with positive age
 population_restriction = (dataset.pt_age > 0) 
