@@ -4,17 +4,18 @@ from ehrql.tables.beta.tpp import open_prompt
 from variable_lib import create_sequential_variables
 
 dataset = Dataset()
-consultation_ids = create_sequential_variables(
+
+create_sequential_variables(
     dataset, 
     "cons_id_{n}", 
     num_variables=5, 
-    events=open_prompt,
+    events=open_prompt.where(open_prompt.ctv3_code == "XaYwo"),
     column="consultation_id"
 )
 
-survey2 = open_prompt.where(open_prompt.consultation_id == dataset.cons_id_3)
+survey2 = open_prompt.where(open_prompt.consultation_id == dataset.cons_id_2)
 
 dataset = Dataset()
 add_survey_responses(dataset, survey2)
 
-dataset.define_population(open_prompt.exists_for_patient())
+dataset.define_population(survey2.exists_for_patient())

@@ -13,9 +13,9 @@ create_sequential_variables(
     column="consultation_id"
 )
 
-survey1 = open_prompt.where(open_prompt.consultation_id == dataset.cons_id_1)
+survey3 = open_prompt.where(open_prompt.consultation_id == dataset.cons_id_3)
 
 dataset = Dataset()
-add_survey_responses(dataset, survey1)
+add_survey_responses(dataset, survey3)
 
-dataset.define_population(survey1.exists_for_patient())
+dataset.define_population(survey3.exists_for_patient())
