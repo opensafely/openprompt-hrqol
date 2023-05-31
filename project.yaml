@@ -5,22 +5,83 @@ expectations:
 
 actions:
 
-  generate_dataset_cases:
+  # create_dummy_openprompt_data: 
+  #   run: >
+  #     r:latest
+  #       analysis/create_dummy_openprompt_data.R
+  #   outputs: 
+  #     moderately_sensitive: 
+  #       dummy_openprompt: output/dummy_openprompt.csv.gz
+
+  generate_openprompt_baseline: 
     run: >
       databuilder:v0
-        generate-dataset analysis/dataset_definition_lc.py --output output/longcovid_cases.csv
+        generate-dataset analysis/define_openprompt_baseline.py --output output/openprompt_baseline.csv.gz
     outputs:
       highly_sensitive:
-        longcovid_cases: output/longcovid_cases.csv
+        openprompt_baseline: output/openprompt_baseline.csv.gz
 
-  clean_the_data:
+  generate_openprompt_survey1: 
     run: >
-      r:latest
-        analysis/clean_raw_data.R
-    needs: [generate_dataset_cases]
+      databuilder:v0
+        generate-dataset analysis/define_openprompt_survey1.py --output output/openprompt_survey1.csv.gz
     outputs:
       highly_sensitive:
-        cleandata: output/clean_dataset.gz.parquet
+        openprompt_tpp_combined: output/openprompt_survey1.csv.gz
+
+  generate_openprompt_survey2: 
+    run: >
+      databuilder:v0
+        generate-dataset analysis/define_openprompt_survey2.py --output output/openprompt_survey2.csv.gz
+    outputs:
+      highly_sensitive:
+        openprompt_tpp_combined: output/openprompt_survey2.csv.gz
+
+  generate_openprompt_survey3: 
+    run: >
+      databuilder:v0
+        generate-dataset analysis/define_openprompt_survey3.py --output output/openprompt_survey3.csv.gz
+    outputs:
+      highly_sensitive:
+        openprompt_tpp_combined: output/openprompt_survey3.csv.gz
+
+  generate_openprompt_survey4: 
+    run: >
+      databuilder:v0
+        generate-dataset analysis/define_openprompt_survey4.py --output output/openprompt_survey4.csv.gz
+    outputs:
+      highly_sensitive:
+        openprompt_tpp_combined: output/openprompt_survey4.csv.gz
+
+  combine_openprompt:
+    run: >
+      r:latest analysis/001_datacombine.R
+    needs: [generate_openprompt_baseline, generate_openprompt_survey1, generate_openprompt_survey2, generate_openprompt_survey3, generate_openprompt_survey4]
+    outputs: 
+      highly_sensitive: 
+        openprompt_combined: output/openprompt_raw.gz.parquet
       moderately_sensitive:
-        txt1: output/data_properties/clean_dataset_skim.txt
-        txt2: output/data_properties/clean_dataset_tabulate.txt
+        openprompt_summ_skim: output/data_properties/op_raw_skim.txt
+        openprompt_summ_tab: output/data_properties/op_raw_tabulate.txt
+        table1: output/tab1_baseline_description.html
+
+  # generate_openprompt_plus_tpp: 
+  #   run: >
+  #     databuilder:v0
+  #       generate-dataset analysis/dataset_definition_openprompt.py --output output/openprompt_raw_plus_tpp.csv.gz
+  #   needs: [create_dummy_openprompt_data]
+  #   outputs:
+  #     highly_sensitive:
+  #       openprompt_tpp_combined: output/openprompt_raw_plus_tpp.csv.gz
+
+  # quick_summ_data:
+  #   run: >
+  #     r:latest
+  #       analysis/010_table1.R
+  #   needs: [generate_openprompt_plus_tpp]
+  #   outputs:
+  #     highly_sensitive:
+  #       cleandata: output/cleaned_data.gz.parquet
+  #     moderately_sensitive:
+  #       table1: output/tab1_baseline_description.html
+  #       longcovid_dates: output/longcovid_dates.pdf
