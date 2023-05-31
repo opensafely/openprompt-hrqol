@@ -50,31 +50,31 @@ def add_survey_responses(dataset, survey):
         .where(survey.snomedct_code=="821551000000108") \
         .sort_by(survey.consultation_id) \
         .first_for_patient() \
-        .numeric_value.map_values(eq5d_scores)
+        .numeric_value
     
     dataset.eq5d_selfcare = survey \
         .where(survey.snomedct_code=="821561000000106") \
         .sort_by(survey.consultation_id) \
         .first_for_patient() \
-        .numeric_value.map_values(eq5d_scores)
+        .numeric_value
     
     dataset.eq5d_usualactivities = survey \
         .where(survey.snomedct_code=="821581000000102") \
         .sort_by(survey.consultation_id) \
         .first_for_patient() \
-        .numeric_value.map_values(eq5d_scores)
+        .numeric_value
     
     dataset.eq5d_paindiscomfort = survey \
         .where(survey.snomedct_code=="821591000000100") \
         .sort_by(survey.consultation_id) \
         .first_for_patient() \
-        .numeric_value.map_values(eq5d_scores)
+        .numeric_value
     
     dataset.eq5d_anxiousdepressed = survey \
         .where(survey.snomedct_code=="821611000000108") \
         .sort_by(survey.consultation_id) \
         .first_for_patient() \
-        .numeric_value.map_values(eq5d_scores)
+        .numeric_value
     
     dataset.euroqol_vis_score = survey \
         .where(survey.snomedct_code=="736535009") \
@@ -86,8 +86,7 @@ def add_survey_responses(dataset, survey):
         .where(survey.ctv3_code=="Y3a7f") \
         .sort_by(survey.consultation_id) \
         .first_for_patient() \
-        .numeric_value \
-        .map_values(long_covid)
+        .numeric_value
 
     dataset.recovered = survey \
         .where(survey.ctv3_code.is_in(recovered_codes)) \
