@@ -60,6 +60,7 @@ actions:
     outputs: 
       highly_sensitive: 
         openprompt_combined: output/openprompt_raw.gz.parquet
+      moderately_sensitive:
         openprompt_summ_skim: output/data_properties/op_raw_skim.txt
         openprompt_summ_tab: output/data_properties/op_raw_tabulate.txt
         table1: output/tab1_baseline_description.html
