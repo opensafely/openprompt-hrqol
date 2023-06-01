@@ -117,6 +117,20 @@ def create_sequential_variables(
         setattr(dataset, variable_name, getattr(next_event, column))
 
 
+def get_consultation_ids(
+      dataset
+):
+   events = schema.open_prompt.where(schema.open_prompt.ctv3_code == "XaYwo")
+   for index in range(5):
+      next_event = events.sort_by(events.consultation_id).first_for_patient()
+      events = events.where(
+         events.consultation_id > next_event.consultation_id
+      )
+      var_name = "cons_id_{n}".format(n=index + 1)
+      setattr(dataset, var_name, next_event.consultation_id)
+
+
+
 def long_covid_events_during(start, end):
     return schema.clinical_events.where(schema.clinical_events.date >= start) \
       .where(schema.clinical_events.date <= end) \
