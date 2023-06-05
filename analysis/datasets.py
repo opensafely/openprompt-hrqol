@@ -7,6 +7,7 @@ from databuilder.tables.beta.tpp import (
     clinical_events,
     sgss_covid_all_tests,
     hospital_admissions,
+    vaccinations,
 )
 import datetime
 
@@ -107,6 +108,26 @@ def add_common_variables(dataset, study_start_date, end_date, population):
 
     dataset.total_primarycare_covid = primarycare_covid \
         .count_for_patient()
+
+    # vaccine code
+    create_sequential_variables(
+        dataset,
+        "covid_vacc_{n}_adm",
+        num_variables=5,
+        events=clinical_events.where(clinical_events.snomedct_code.is_in(codelists.vac_adm_combine)),
+        column="date"
+    )
+
+    # Vaccine schema - one record per day
+    all_vacc = vaccinations \
+        .where(vaccinations.date < dataset.pt_end_date) \
+        .where(vaccinations.target_disease == "SARS-2 CORONAVIRUS")
+
+    dataset.no_prev_vacc = all_vacc \
+        .sort_by(vaccinations.date) \
+        .count_for_patient()
+    dataset.date_last_vacc = all_vacc.sort_by(all_vacc.date).last_for_patient().date
+    dataset.last_vacc_gap = (dataset.pt_end_date - dataset.date_last_vacc).days
 
     # comorbidities
     # define baseline variables on day _before_ study date
