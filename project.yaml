@@ -16,42 +16,62 @@ actions:
   generate_openprompt_baseline: 
     run: >
       databuilder:v0
-        generate-dataset analysis/define_openprompt_baseline.py --output output/openprompt_baseline.csv.gz
+        generate-dataset 
+        analysis/model_questions/process_baseline.py 
+        --output output/openprompt_baseline.csv
+        --
+        --day=0
     outputs:
       highly_sensitive:
-        openprompt_baseline: output/openprompt_baseline.csv.gz
+        openprompt_baseline: output/openprompt_baseline.csv
 
   generate_openprompt_survey1: 
     run: >
       databuilder:v0
-        generate-dataset analysis/define_openprompt_survey1.py --output output/openprompt_survey1.csv.gz
+        generate-dataset 
+        analysis/model_questions/process_research.py 
+        --output output/openprompt_survey1.csv
+        --
+        --day=0
     outputs:
       highly_sensitive:
-        openprompt_tpp_combined: output/openprompt_survey1.csv.gz
+        openprompt_survey1: output/openprompt_survey1.csv
 
   generate_openprompt_survey2: 
     run: >
       databuilder:v0
-        generate-dataset analysis/define_openprompt_survey2.py --output output/openprompt_survey2.csv.gz
+        generate-dataset 
+        analysis/model_questions/process_research.py 
+        --output output/openprompt_survey2.csv
+        --
+        --day=30
     outputs:
       highly_sensitive:
-        openprompt_tpp_combined: output/openprompt_survey2.csv.gz
+        openprompt_survey2: output/openprompt_survey2.csv
 
   generate_openprompt_survey3: 
     run: >
       databuilder:v0
-        generate-dataset analysis/define_openprompt_survey3.py --output output/openprompt_survey3.csv.gz
+        generate-dataset 
+        analysis/model_questions/process_research.py 
+        --output output/openprompt_survey3.csv
+        --
+        --day=60
     outputs:
       highly_sensitive:
-        openprompt_tpp_combined: output/openprompt_survey3.csv.gz
+        openprompt_survey3: output/openprompt_survey3.csv
 
   generate_openprompt_survey4: 
     run: >
       databuilder:v0
-        generate-dataset analysis/define_openprompt_survey4.py --output output/openprompt_survey4.csv.gz
+        generate-dataset 
+        analysis/model_questions/process_research.py 
+        --output output/openprompt_survey4.csv
+        --
+        --day=90
     outputs:
       highly_sensitive:
-        openprompt_tpp_combined: output/openprompt_survey4.csv.gz
+        openprompt_survey4: output/openprompt_survey4.csv
 
   combine_openprompt:
     run: >
