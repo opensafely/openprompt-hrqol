@@ -17,7 +17,13 @@ print(f"{args.day=}")
 # There are some artificially weird consultation_dates in the open_prompt table
 # so we need to get the first "actual" consultation day 0 by selecting minimum_for_patient
 # _after_ 2022-11-11 when the app went live
-day0_for_patient = open_prompt.where(open_prompt.consultation_date>=date(2022,11,11)).consultation_date.minimum_for_patient()
+day0_for_patient = (
+    open_prompt.where(open_prompt.consultation_date>=date(2022,11,11))
+    .sort_by(open_prompt.consultation_date)
+    .first_for_patient()
+    .consultation_date
+)
+
 # The number of days from the date of the earliest response to the date of the current
 # response. We expect this to be >= 0.
 consult_offset = (
