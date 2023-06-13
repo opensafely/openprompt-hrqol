@@ -40,10 +40,9 @@ dataset.define_population(open_prompt.exists_for_patient())
 
 dataset.first_consult_date = day0_for_patient
 
-# use abs() so that when day == 0, we are not selecting pre-baseline responses 
 dataset.consult_date = (
-    open_prompt.where(consult_offset >= abs(args.day - window))
-    .where(consult_offset <= abs(args.day + window))
+    open_prompt.where(consult_offset >= (args.day - window))
+    .where(consult_offset <= (args.day + window))
     .sort_by(open_prompt.consultation_id)
     .last_for_patient()
     .consultation_date
