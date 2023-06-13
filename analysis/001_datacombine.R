@@ -43,7 +43,8 @@ ggplot(op_raw, aes(x = days_since_baseline, fill = factor(survey_response))) +
   geom_density(lty = 0, alpha = 0.4)
 
 sample_ids <- op_raw %>% 
-  filter(survey_response == 2) %>% 
+  filter(!is.na(survey_date)) %>% 
+  filter(survey_response >= 2) %>% 
   dplyr::select(patient_id) %>% 
   pull() %>% 
   sample(size = 20, replace = TRUE)
@@ -52,12 +53,12 @@ pdf(here::here("output/data_properties/sample_day_lags.pdf"), width = 6, height 
 op_raw %>% 
   filter(patient_id %in% sample_ids) %>% 
   ggplot(aes(y = days_since_baseline, x = survey_response, group = patient_id)) +
-  geom_line()
+  geom_line() + 
+  geom_point(pch = 1)
 dev.off()
 
 # output data -------------------------------------------------------------
-arrow::write_parquet(op_raw, sink = here("output/openprompt_raw.gz.parquet"))
-
+write.csv(op_raw, here::here("output/openprompt_raw.csv.gz"))
 
 # Filter out missing data:  -----------------------------------------------
 op_filtered <- op_raw %>% 

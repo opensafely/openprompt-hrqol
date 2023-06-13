@@ -79,7 +79,7 @@ actions:
     needs: [generate_openprompt_baseline, generate_openprompt_survey1, generate_openprompt_survey2, generate_openprompt_survey3, generate_openprompt_survey4]
     outputs: 
       highly_sensitive: 
-        openprompt_combined: output/openprompt_raw.gz.parquet
+        openprompt_combined: output/openprompt_raw.csv.gz
       moderately_sensitive:
         openprompt_raw_skim: output/data_properties/op_raw_skim.txt
         openprompt_raw_tab: output/data_properties/op_raw_tabulate.txt
