@@ -53,8 +53,7 @@ for question in questions_baseline:
     # administered on day 0
     response_row = (
         # for the baseline questionnaire they should be doing it on day 0, but we'll allow + 3 days
-        open_prompt.where(consult_offset >= args.day)
-        .where(consult_offset <= args.day+3)
+        open_prompt.where(open_prompt.consultation_date == dataset.consult_date)
         .where(open_prompt.ctv3_code.is_in(question.ctv3_codes))
         # If the response is a CTV3 code, then the numeric value should be zero and
         # sorting by the numeric value should have no effect. However, if the response

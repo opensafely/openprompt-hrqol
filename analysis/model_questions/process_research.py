@@ -40,9 +40,10 @@ dataset.define_population(open_prompt.exists_for_patient())
 
 dataset.first_consult_date = day0_for_patient
 
+# use abs() so that when day == 0, we are not selecting pre-baseline responses 
 dataset.consult_date = (
-    open_prompt.where(consult_offset >= args.day-2)
-    .where(consult_offset <= args.day+2)
+    open_prompt.where(consult_offset >= abs(args.day - window))
+    .where(consult_offset <= abs(args.day + window))
     .sort_by(open_prompt.consultation_id)
     .last_for_patient()
     .consultation_date
@@ -57,8 +58,7 @@ for question in questions_research:
     # fetch the row containing the last response to the current question from the survey
     # administered on day 0
     response_row = (
-        open_prompt.where(consult_offset >= args.day - window)
-        .where(consult_offset <= args.day + window)
+        open_prompt.where(open_prompt.consultation_date == dataset.consult_date)
         .where(open_prompt.ctv3_code.is_in(question.ctv3_codes))
         # If the response is a CTV3 code, then the numeric value should be zero and
         # sorting by the numeric value should have no effect. However, if the response
