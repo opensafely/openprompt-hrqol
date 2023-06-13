@@ -34,16 +34,13 @@ op_raw <- op_baseline %>%
   left_join(op_surveys, by = c("patient_id", "first_consult_date")) %>% 
   arrange(patient_id) %>% 
   rename("baseline_consult_date"="consult_date.x") %>% 
-  rename("survey_date"="consult_date.y") %>% 
-  # Filter out if survey_date does not exist
-  filter(!is.na(survey_date))
+  rename("survey_date"="consult_date.y") 
 
 # Output a summary of the raw data ----------------------------------------
 summarise_data(data_in = op_raw, filename = "op_raw")
 
 ggplot(op_raw, aes(x = days_since_baseline, fill = factor(survey_response))) + 
   geom_density(lty = 0, alpha = 0.4)
-
 
 sample_ids <- op_raw %>% 
   filter(survey_response == 2) %>% 
@@ -61,17 +58,27 @@ dev.off()
 # output data -------------------------------------------------------------
 arrow::write_parquet(op_raw, sink = here("output/openprompt_raw.gz.parquet"))
 
+
+# Filter out missing data:  -----------------------------------------------
+op_filtered <- op_raw %>% 
+  # Filter out if survey_date does not exist
+  filter(!is.na(survey_date)) %>% 
+  # Filter if NA response to disability question (compulsory Q on the baseline Q'airre so an indication that they did not complete any survey) %>% 
+  filter(!is.na(disability)) %>% 
+  # Filter if NA response to EQ-5D question: compulsory on the Research questionnaire 
+  filter(!is.na(eq5d_mobility))
+
 # map ctv3codes to the description ----------------------------------------
-op_mapped <- op_raw %>% 
+op_mapped <- op_filtered %>% 
   dplyr::select(patient_id, survey_response, where(is_character)) %>% 
   pivot_longer(cols = c(-patient_id, -survey_response), names_to = "varname", values_to = "ctv3_code") %>% 
   left_join(openprompt_mapping, by = c("ctv3_code" = "codes")) %>% 
   pivot_wider(id_cols = c(patient_id, survey_response), names_from = varname, values_from = description)
 
-op_numeric <- op_raw %>% 
+op_numeric <- op_filtered %>% 
   dplyr::select(patient_id, survey_response, where(is.numeric)) 
 
-op_dates <- op_raw %>% 
+op_dates <- op_filtered %>% 
   dplyr::select(patient_id, survey_response, where(is.Date)) 
 
 op_neat <- op_mapped %>% 
