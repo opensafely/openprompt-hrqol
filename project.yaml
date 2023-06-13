@@ -81,8 +81,11 @@ actions:
       highly_sensitive: 
         openprompt_combined: output/openprompt_raw.gz.parquet
       moderately_sensitive:
-        openprompt_summ_skim: output/data_properties/op_raw_skim.txt
-        openprompt_summ_tab: output/data_properties/op_raw_tabulate.txt
+        openprompt_raw_skim: output/data_properties/op_raw_skim.txt
+        openprompt_raw_tab: output/data_properties/op_raw_tabulate.txt
+        openprompt_mapped_skim: output/data_properties/op_mapped_skim.txt
+        openprompt_mapped_tab: output/data_properties/op_mapped_tabulate.txt
+        check_days_after_baseline: output/data_properties/sample_day_lags.pdf
         table1: output/tab1_baseline_description.html
 
   # generate_openprompt_plus_tpp: 
