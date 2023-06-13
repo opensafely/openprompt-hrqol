@@ -31,8 +31,32 @@ op_surveys <- bind_rows(
 
 # left join baseline vars -------------------------------------------------
 op_raw <- op_baseline %>% 
-  left_join(op_surveys, by = "patient_id") %>% 
-  arrange(patient_id)
+  left_join(op_surveys, by = c("patient_id", "first_consult_date")) %>% 
+  arrange(patient_id) %>% 
+  rename("baseline_consult_date"="consult_date.x") %>% 
+  rename("survey_date"="consult_date.y") %>% 
+  # Filter out if survey_date does not exist
+  filter(!is.na(survey_date))
+
+# Output a summary of the raw data ----------------------------------------
+summarise_data(data_in = op_raw, filename = "op_raw")
+
+ggplot(op_raw, aes(x = days_since_baseline, fill = factor(survey_response))) + 
+  geom_density(lty = 0, alpha = 0.4)
+
+
+sample_ids <- op_raw %>% 
+  filter(survey_response == 2) %>% 
+  dplyr::select(patient_id) %>% 
+  pull() %>% 
+  sample(size = 20, replace = TRUE)
+
+pdf(here::here("output/data_properties/sample_day_lags.pdf"), width = 6, height = 4)
+op_raw %>% 
+  filter(patient_id %in% sample_ids) %>% 
+  ggplot(aes(y = days_since_baseline, x = survey_response, group = patient_id)) +
+  geom_line()
+dev.off()
 
 # output data -------------------------------------------------------------
 arrow::write_parquet(op_raw, sink = here("output/openprompt_raw.gz.parquet"))
@@ -47,49 +71,129 @@ op_mapped <- op_raw %>%
 op_numeric <- op_raw %>% 
   dplyr::select(patient_id, survey_response, where(is.numeric)) 
 
-op_neat <- op_numeric %>% 
-  left_join(op_mapped, by = c("patient_id", "survey_response"))
+op_dates <- op_raw %>% 
+  dplyr::select(patient_id, survey_response, where(is.Date)) 
 
-summarise_data(data_in = op_neat, filename = "op_raw")
+op_neat <- op_mapped %>% 
+  left_join(op_numeric, by = c("patient_id", "survey_response")) %>% 
+  left_join(op_dates, by = c("patient_id", "survey_response"))
+
+# Mapping values for scored assessments -----------------------------------
+# some questions are stored as numeric but they correspond to a scored assessment
+# between [1, 5] or [0, 10] usually (with some exceptions).
+# Need to map these as they are actually categorical vars, not numeric
+
+# there is probably a better way of doing this but this is a manual version that works
+
+# - number of times you have had COVID - Y3a98
+op_neat$n_covids <- factor(op_neat$n_covids, levels = 0:6, 
+                           labels = c("0",
+                                      "1",
+                                      "2",
+                                      "3",
+                                      "4",
+                                      "5",
+                                      "6+"))
+# - length of symptoms - Y3a7f
+op_neat$covid_duration <- factor(op_neat$covid_duration, levels = 0:3,
+                                 labels = c("Less than 2 weeks",
+                                            "2 – 3 weeks",
+                                            "4 – 12 weeks",
+                                            "More than 12 weeks"))
+# - N covid injections - Y3a9e
+op_neat$n_vaccines <- factor(op_neat$n_vaccines, levels = 0:6,
+                             labels = c("0",
+                                        "1",
+                                        "2",
+                                        "3",
+                                        "4",
+                                        "5",
+                                        "6+"))
+# - EQ-5d questions: scored from 1:5 in increasing levels of disability
+eq5d_questions <- op_neat %>% dplyr::select(starts_with("eq5d_")) %>% names()
+op_neat <- op_neat %>% 
+  mutate_at(all_of(eq5d_questions), ~factor(., levels = 1:5, 
+                                            labels = c("none",
+                                                       "slight", 
+                                                       "moderate",
+                                                       "severe",
+                                                       "unable")))
+
+# - work and productivity questions: Y3a80 & Y3a81
+labels_work_and_productivity <- c(
+  "0 (No effect on my daily activities)",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10 (Completely prevented me from doing my daily activities)"
+)
+op_neat$work_affected <- factor(op_neat$work_affected, levels = 0:10, labels = labels_work_and_productivity)
+op_neat$life_affected <- factor(op_neat$life_affected, levels = 0:10, labels = labels_work_and_productivity)
+
+# - FACIT: 13 questions on fatigue scale
+labels_facit <- c(
+  "Not at all",
+  "A little bit",
+  "Somewhat",
+  "Quite a bit",
+  "Very much"
+)
+facit_questions <- op_neat %>% dplyr::select(starts_with("facit")) %>% names()
+op_neat <- op_neat %>% 
+  mutate_at(all_of(facit_questions), ~factor(., levels = 0:4, 
+                                            labels = labels_facit))
+
+# Output summary of the tidied up dataset ---------------------------------
+summarise_data(data_in = op_neat, filename = "op_mapped")
 
 # baseline summary --------------------------------------------------------
 tab1 <- op_neat %>% 
-  filter(survey_response==1) %>% 
+  #filter(survey_response==1) %>% 
   select(-where(is.Date), -patient_id) %>% 
   tbl_summary(
+    by = survey_response,
     statistic = list(
       all_continuous() ~ "{p50} ({p25}-{p75})",
       all_categorical() ~ "{n} ({p}%)"
     ),
     type = list(
       survey_response ~ "continuous",
+      days_since_baseline ~ "continuous",
+      EuroQol_score ~ "continuous",
       first_covid ~ "continuous",
-      n_covids ~ "continuous",
-      covid_duration ~ "continuous",
-      n_vaccines ~ "continuous",
       first_vaccine_date ~ "continuous",
       most_recent_vaccine_date ~ "continuous",
-      eq5d_mobility ~ "continuous",
-      eq5d_selfcare ~ "continuous",
-      eq5d_usualactivities ~ "continuous",
-      eq5d_pain_discomfort ~ "continuous",
-      eq5d_anxiety_depression ~ "continuous",
-      EuroQol_score ~ "continuous",
-      work_affected ~ "continuous",
-      life_affected ~ "continuous",
-      facit_fatigue ~ "continuous",
-      facit_weak  ~ "continuous",
-      facit_listless ~ "continuous",
-      facit_tired ~ "continuous",
-      facit_trouble_starting ~ "continuous",
-      facit_trouble_finishing ~ "continuous",
-      facit_energy ~ "continuous",
-      facit_usual_activities ~ "continuous",
-      facit_sleep_during_day ~ "continuous",
-      facit_eat ~ "continuous",
-      facit_need_help ~ "continuous",
-      facit_frustrated  ~ "continuous",
-      facit_limit_social_activity ~ "continuous",
+      n_covids ~ "categorical",
+      covid_duration ~ "categorical",
+      n_vaccines ~ "categorical",
+      first_vaccine_date ~ "categorical",
+      most_recent_vaccine_date ~ "categorical",
+      eq5d_mobility ~ "categorical",
+      eq5d_selfcare ~ "categorical",
+      eq5d_usualactivities ~ "categorical",
+      eq5d_pain_discomfort ~ "categorical",
+      eq5d_anxiety_depression ~ "categorical",
+      work_affected ~ "categorical",
+      life_affected ~ "categorical",
+      facit_fatigue ~ "categorical",
+      facit_weak  ~ "categorical",
+      facit_listless ~ "categorical",
+      facit_tired ~ "categorical",
+      facit_trouble_starting ~ "categorical",
+      facit_trouble_finishing ~ "categorical",
+      facit_energy ~ "categorical",
+      facit_usual_activities ~ "categorical",
+      facit_sleep_during_day ~ "categorical",
+      facit_eat ~ "categorical",
+      facit_need_help ~ "categorical",
+      facit_frustrated  ~ "categorical",
+      facit_limit_social_activity ~ "categorical",
       ethnicity ~ "categorical",
       highest_edu ~ "categorical",
       disability ~ "categorical",
