@@ -39,9 +39,6 @@ op_raw <- op_baseline %>%
 # Output a summary of the raw data ----------------------------------------
 summarise_data(data_in = op_raw, filename = "op_raw")
 
-ggplot(op_raw, aes(x = days_since_baseline, fill = factor(survey_response))) + 
-  geom_density(lty = 0, alpha = 0.4)
-
 sample_ids <- op_raw %>% 
   filter(!is.na(survey_date)) %>% 
   filter(survey_response >= 2) %>% 

@@ -14,11 +14,17 @@ parser.add_argument(
 args = parser.parse_args()
 print(f"{args.day=}")
 
-# There are some artificially weird consultation_dates in the open_prompt table
-# so we need to get the first "actual" consultation day 0 by selecting minimum_for_patient
-# _after_ 2022-11-11 when the app went live
+# The number of days +/- the day a survey was completed" (relative to --day argument: usually 0, 30, 60, 90)
+window = 5
+
 day0_for_patient = (
-    open_prompt.where(open_prompt.consultation_date>=date(2022,11,11))
+    open_prompt.where(
+    # Only include responses to a compulsory question on the Eq-5D
+    # questionnaire. Unlike the baseline questionnaire, this questionnaire was
+    # administered in each survey. Surveys that are associated with these
+    # responses are valid OpenPROMPT surveys.
+    open_prompt.ctv3_code
+    == "XaYwo")
     .sort_by(open_prompt.consultation_date)
     .first_for_patient()
     .consultation_date
@@ -26,9 +32,7 @@ day0_for_patient = (
 
 # The number of days from the date of the earliest response to the date of the current
 # response. We expect this to be >= 0.
-consult_offset = (
-    open_prompt.consultation_date - day0_for_patient
-).days
+consult_offset = (open_prompt.consultation_date - day0_for_patient).days
 
 dataset = Dataset()
 
@@ -53,8 +57,8 @@ for question in questions_research:
     # fetch the row containing the last response to the current question from the survey
     # administered on day 0
     response_row = (
-        open_prompt.where(consult_offset >= args.day-2)
-        .where(consult_offset <= args.day+2)
+        open_prompt.where(consult_offset >= args.day - window)
+        .where(consult_offset <= args.day + window)
         .where(open_prompt.ctv3_code.is_in(question.ctv3_codes))
         # If the response is a CTV3 code, then the numeric value should be zero and
         # sorting by the numeric value should have no effect. However, if the response
