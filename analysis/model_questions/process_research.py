@@ -17,14 +17,11 @@ print(f"{args.day=}")
 # The number of days +/- the day a survey was completed" (relative to --day argument: usually 0, 30, 60, 90)
 window = 5
 
+# There are some artificially weird consultation_dates in the open_prompt table
+# so we need to get the first "actual" consultation day 0 by selecting minimum_for_patient
+# _after_ 2022-11-11 when the app went live
 day0_for_patient = (
-    open_prompt.where(
-    # Only include responses to a compulsory question on the Eq-5D
-    # questionnaire. Unlike the baseline questionnaire, this questionnaire was
-    # administered in each survey. Surveys that are associated with these
-    # responses are valid OpenPROMPT surveys.
-    open_prompt.ctv3_code
-    == "XaYwo")
+    open_prompt.where(open_prompt.consultation_date>=date(2022,11,11))
     .sort_by(open_prompt.consultation_date)
     .first_for_patient()
     .consultation_date
