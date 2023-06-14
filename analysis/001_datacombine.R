@@ -7,18 +7,68 @@ library(gtsummary)
 source(here("analysis/R_fn/summarise_data.R"))
 source(here("analysis/model_questions/master_mapping.R"))
 
-op_baseline <- read_csv(here("output/openprompt_baseline.csv"))
+op_baseline <- read_csv(here("output/openprompt_baseline.csv"), 
+                        col_types = list(
+                          patient_id = "d",
+                          first_consult_date = "D", 
+                          consult_date = "D",
+                          ethnicity = "c",
+                          highest_edu = "c",
+                          disability = "c",
+                          relationship = "c",
+                          gender = "c",
+                          hh_income = "c"
+                        ))
 
-op_survey1 <- read_csv(here("output/openprompt_survey1.csv")) %>% 
+# Survey column specification 
+research_col_spec <- list(
+  patient_id = "d",
+  consult_date = "D",
+  days_since_baseline = "d",
+  long_covid = "c",
+  first_covid = "D",
+  n_covids = "c",
+  recovered_from_covid = "c",
+  covid_duration = "c",
+  vaccinated = "c",
+  n_vaccines = "c",
+  first_vaccine_date = "D",
+  most_recent_vaccine_date = "D",
+  eq5d_mobility = "d",
+  eq5d_selfcare = "d",
+  eq5d_usualactivities = "d",
+  eq5d_pain_discomfort = "d",
+  eq5d_anxiety_depression = "d",
+  EuroQol_score = "d",
+  employment_status = "c",
+  work_affected = "d",
+  life_affected = "d",
+  facit_fatigue = "d",
+  facit_weak = "d",
+  facit_listless = "d",
+  facit_tired = "d",
+  facit_trouble_starting = "d",
+  facit_trouble_finishing = "d",
+  facit_energy = "d",
+  facit_usual_activities = "d",
+  facit_sleep_during_day = "d",
+  facit_eat = "d",
+  facit_need_help = "d",
+  facit_frustrated = "d",
+  facit_limit_social_activity = "d",
+  mrc_breathlessness = "c"
+)
+
+op_survey1 <- read_csv(here("output/openprompt_survey1.csv"), col_types = research_col_spec) %>% 
   mutate(survey_response = 1)
 
-op_survey2 <- read_csv(here("output/openprompt_survey2.csv")) %>% 
+op_survey2 <- read_csv(here("output/openprompt_survey2.csv"), col_types = research_col_spec) %>%
   mutate(survey_response = 2)
 
-op_survey3 <- read_csv(here("output/openprompt_survey3.csv")) %>% 
+op_survey3 <- read_csv(here("output/openprompt_survey3.csv"), col_types = research_col_spec) %>% 
   mutate(survey_response = 3)
 
-op_survey4 <- read_csv(here("output/openprompt_survey4.csv")) %>% 
+op_survey4 <- read_csv(here("output/openprompt_survey4.csv"), col_types = research_col_spec) %>% 
   mutate(survey_response = 4)
 
 # stack research questionnaire responses ----------------------------------
@@ -31,7 +81,7 @@ op_surveys <- bind_rows(
 
 # left join baseline vars -------------------------------------------------
 op_raw <- op_baseline %>% 
-  left_join(op_surveys, by = c("patient_id", "first_consult_date")) %>% 
+  left_join(op_surveys, by = "patient_id") %>% 
   arrange(patient_id) %>% 
   rename("baseline_consult_date"="consult_date.x") %>% 
   rename("survey_date"="consult_date.y") 
@@ -64,7 +114,7 @@ op_filtered <- op_raw %>%
   # Filter if NA response to disability question (compulsory Q on the baseline Q'airre so an indication that they did not complete any survey) %>% 
   filter(!is.na(disability)) %>% 
   # Filter if NA response to EQ-5D question: compulsory on the Research questionnaire 
-  filter(!is.na(eq5d_mobility))
+  filter(!is.na(eq5d_usualactivities))
 
 # map ctv3codes to the description ----------------------------------------
 op_mapped <- op_filtered %>% 
@@ -168,17 +218,11 @@ tab1 <- op_neat %>%
       all_categorical() ~ "{n} ({p}%)"
     ),
     type = list(
-      survey_response ~ "continuous",
       days_since_baseline ~ "continuous",
       EuroQol_score ~ "continuous",
-      first_covid ~ "continuous",
-      first_vaccine_date ~ "continuous",
-      most_recent_vaccine_date ~ "continuous",
       n_covids ~ "categorical",
       covid_duration ~ "categorical",
       n_vaccines ~ "categorical",
-      first_vaccine_date ~ "categorical",
-      most_recent_vaccine_date ~ "categorical",
       eq5d_mobility ~ "categorical",
       eq5d_selfcare ~ "categorical",
       eq5d_usualactivities ~ "categorical",
