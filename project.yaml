@@ -5,13 +5,25 @@ expectations:
 
 actions:
 
-  # create_dummy_openprompt_data: 
-  #   run: >
-  #     r:latest
-  #       analysis/create_dummy_openprompt_data.R
-  #   outputs: 
-  #     moderately_sensitive: 
-  #       dummy_openprompt: output/dummy_openprompt.csv.gz
+  create_dummy_data: 
+    run: >
+      ehrql:v0
+        create-dummy-tables 
+        analysis/model_questions/process_baseline.py output/dummydata 
+        -- 
+        --day=0
+    outputs: 
+      highly_sensitive:
+        openprompt_dummy: output/dummydata/open_prompt.csv
+
+  edit_dummy_data:
+    run: > 
+      r:latest
+        analysis/dummy_data_editing/edit_automatic_dummy_data.R
+    needs: [create_dummy_data]
+    outputs: 
+      highly_sensitive: 
+        openprompt_dummy_edited: output/dummydata/dummy_edited/open_prompt.csv
 
   generate_openprompt_baseline: 
     run: >
@@ -19,8 +31,10 @@ actions:
         generate-dataset 
         analysis/model_questions/process_baseline.py 
         --output output/openprompt_baseline.csv
+        --dummy-tables output/dummydata/dummy_edited  
         --
         --day=0
+    needs: [edit_dummy_data]
     outputs:
       highly_sensitive:
         openprompt_baseline: output/openprompt_baseline.csv
@@ -31,8 +45,10 @@ actions:
         generate-dataset 
         analysis/model_questions/process_research.py 
         --output output/openprompt_survey1.csv
+        --dummy-tables output/dummydata/dummy_edited
         --
         --day=0
+    needs: [edit_dummy_data]
     outputs:
       highly_sensitive:
         openprompt_survey1: output/openprompt_survey1.csv
@@ -43,8 +59,10 @@ actions:
         generate-dataset 
         analysis/model_questions/process_research.py 
         --output output/openprompt_survey2.csv
+        --dummy-tables output/dummydata/dummy_edited
         --
         --day=30
+    needs: [edit_dummy_data]
     outputs:
       highly_sensitive:
         openprompt_survey2: output/openprompt_survey2.csv
@@ -55,8 +73,10 @@ actions:
         generate-dataset 
         analysis/model_questions/process_research.py 
         --output output/openprompt_survey3.csv
+        --dummy-tables output/dummydata/dummy_edited
         --
         --day=60
+    needs: [edit_dummy_data]
     outputs:
       highly_sensitive:
         openprompt_survey3: output/openprompt_survey3.csv
@@ -67,8 +87,10 @@ actions:
         generate-dataset 
         analysis/model_questions/process_research.py 
         --output output/openprompt_survey4.csv
+        --dummy-tables output/dummydata/dummy_edited
         --
         --day=90
+    needs: [edit_dummy_data]
     outputs:
       highly_sensitive:
         openprompt_survey4: output/openprompt_survey4.csv
