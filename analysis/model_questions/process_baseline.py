@@ -3,7 +3,6 @@ import argparse
 from ehrql import Dataset
 from ehrql.tables.beta.tpp import open_prompt
 from questions_baseline import questions_baseline
-from datetime import date
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -14,28 +13,23 @@ parser.add_argument(
 args = parser.parse_args()
 print(f"{args.day=}")
 
-# There are some artificially weird consultation_dates in the open_prompt table
-# so we need to get the first "actual" consultation day 0 by selecting minimum_for_patient
-# _after_ 2022-11-11 when the app went live
-day0_for_patient = (
-    open_prompt.where(open_prompt.consultation_date>=date(2022,11,11))
-    .sort_by(open_prompt.consultation_date)
-    .first_for_patient()
-    .consultation_date
-)
-
 # The number of days from the date of the earliest response to the date of the current
 # response. We expect this to be >= 0.
-consult_offset = (open_prompt.consultation_date - day0_for_patient).days
+day_0 = open_prompt.where(
+    # disability question - 3 possible responses:
+    open_prompt.ctv3_code.is_in(["13VC.", "1152.", "XaR8E"])
+).consultation_date.minimum_for_patient()
+consult_offset = (open_prompt.consultation_date - day_0).days
 
 dataset = Dataset()
 
 dataset.define_population(open_prompt.exists_for_patient())
 
-dataset.first_consult_date = day0_for_patient
+dataset.first_consult_date = day_0
+
+# for the baseline questionnaire they should be doing it on day 0, but we'll allow + 3 days
 
 dataset.consult_date = (
-    # for the baseline questionnaire they should be doing it on day 0, but we'll allow + 3 days
     open_prompt.where(consult_offset >= args.day)
     .where(consult_offset <= args.day+3)
     .sort_by(open_prompt.consultation_id)
@@ -50,8 +44,8 @@ for question in questions_baseline:
     # fetch the row containing the last response to the current question from the survey
     # administered on day 0
     response_row = (
-        # for the baseline questionnaire they should be doing it on day 0, but we'll allow + 3 days
-        open_prompt.where(open_prompt.consultation_date == dataset.consult_date)
+        open_prompt.where(consult_offset >= args.day)
+        .where(consult_offset <= args.day+3)
         .where(open_prompt.ctv3_code.is_in(question.ctv3_codes))
         # If the response is a CTV3 code, then the numeric value should be zero and
         # sorting by the numeric value should have no effect. However, if the response
