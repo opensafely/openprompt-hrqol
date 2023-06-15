@@ -108,6 +108,7 @@ actions:
         openprompt_mapped_skim: output/data_properties/op_mapped_skim.txt
         openprompt_mapped_tab: output/data_properties/op_mapped_tabulate.txt
         check_days_after_baseline: output/data_properties/sample_day_lags.pdf
+        indexdates: output/data_properties/index_dates.pdf
         table1: output/tab1_baseline_description.html
         raw_summ_base_s: output/data_properties/op_baseline_skim.txt
         raw_summ_base_t: output/data_properties/op_baseline_tabulate.txt
