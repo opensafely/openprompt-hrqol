@@ -56,7 +56,40 @@ research_col_spec <- list(
   facit_need_help = "d",
   facit_frustrated = "d",
   facit_limit_social_activity = "d",
-  mrc_breathlessness = "c"
+  mrc_breathlessness = "c",
+  # repeat for _consultation_date
+  long_covid_consult_date = "D",
+  first_covid_consult_date = "D",
+  n_covids_consult_date = "D",
+  recovered_from_covid_consult_date = "D",
+  covid_duration_consult_date = "D",
+  vaccinated_consult_date = "D",
+  n_vaccines_consult_date = "D",
+  first_vaccine_date_consult_date = "D",
+  most_recent_vaccine_date_consult_date = "D",
+  eq5d_mobility_consult_date = "D",
+  eq5d_selfcare_consult_date = "D",
+  eq5d_usualactivities_consult_date = "D",
+  eq5d_pain_discomfort_consult_date = "D",
+  eq5d_anxiety_depression_consult_date = "D",
+  EuroQol_score_consult_date = "D",
+  employment_status_consult_date = "D",
+  work_affected_consult_date = "D",
+  life_affected_consult_date = "D",
+  facit_fatigue_consult_date = "D",
+  facit_weak_consult_date = "D",
+  facit_listless_consult_date = "D",
+  facit_tired_consult_date = "D",
+  facit_trouble_starting_consult_date = "D",
+  facit_trouble_finishing_consult_date = "D",
+  facit_energy_consult_date = "D",
+  facit_usual_activities_consult_date = "D",
+  facit_sleep_during_day_consult_date = "D",
+  facit_eat_consult_date = "D",
+  facit_need_help_consult_date = "D",
+  facit_frustrated_consult_date = "D",
+  facit_limit_social_activity_consult_date = "D",
+  mrc_breathlessness_consult_date = "D"
 )
 
 op_survey1 <- read_csv(here("output/openprompt_survey1.csv"), col_types = research_col_spec) %>% 
@@ -113,6 +146,10 @@ op_raw %>%
 dev.off()
 
 # Filter out missing data:  -----------------------------------------------
+# op_raw contains every participant ID included in the `open_prompt` table 
+# we therefore have a lot of rows with nothing more than NA in them
+# a lot of people filled in `op_survey1`. Fewer filled in `op_survey2`,
+# `op_survey3` & `op_survey4`
 op_filtered <- op_raw
 
 # map ctv3codes to the description ----------------------------------------
@@ -164,7 +201,7 @@ op_neat$n_vaccines <- factor(op_neat$n_vaccines, levels = 0:6,
                                         "5",
                                         "6+"))
 # - EQ-5d questions: scored from 1:5 in increasing levels of disability
-eq5d_questions <- op_neat %>% dplyr::select(starts_with("eq5d_")) %>% names()
+eq5d_questions <- op_neat %>% dplyr::select(starts_with("eq5d_")) %>% dplyr::select(!contains("consult_date")) %>% names()
 op_neat <- op_neat %>% 
   mutate_at(all_of(eq5d_questions), ~factor(., levels = 1:5, 
                                             labels = c("none",
@@ -198,7 +235,7 @@ labels_facit <- c(
   "Quite a bit",
   "Very much"
 )
-facit_questions <- op_neat %>% dplyr::select(starts_with("facit")) %>% names()
+facit_questions <- op_neat %>% dplyr::select(starts_with("facit")) %>% dplyr::select(!contains("consult_date")) %>% names()
 op_neat <- op_neat %>% 
   mutate_at(all_of(facit_questions), ~factor(., levels = 0:4, 
                                             labels = labels_facit))
@@ -274,3 +311,33 @@ ggplot(op_neat, aes(x = index_date)) +
   geom_density(fill = "gray") +
   theme_classic()
 dev.off()
+
+
+
+# is consult_date consistent across participant survey responses?  ---------
+date_consistency <- op_neat %>% 
+  ungroup() %>% 
+  # only keep the idenitifier cols and the consult_date variables
+  dplyr::select(patient_id, survey_response, survey_date, contains("consult_date")) %>% 
+  # get rid of those with missing survey_date: this means there was no valid response in the dataset_definition
+  filter(!is.na(survey_date)) %>% 
+  # remove survey_date and baseline_consult_date to avoid confusion
+  dplyr::select(-survey_date, -baseline_consult_date) %>% 
+  # make it a long data.frame to summarise 
+  pivot_longer(cols = contains("consult_date"), names_to = "var", values_to = "date") %>%
+  # group by each participant for each survey response
+  group_by(patient_id, survey_response) %>% 
+  # summarise the date column: number of unique values, number NA, min and max
+  summarise(n_date_vals = n_distinct(date, na.rm = T),
+            min_date = min(date, na.rm = T), 
+            max_date = max(date, na.rm = T),
+            n_missing = sum(is.na(date)),
+            .groups = "keep")
+
+summ_date_consistency <- date_consistency %>% 
+  # get the summary of these summaries because I can't scroll through thousands of responses
+  ungroup() %>% 
+  count(n_date_vals)
+
+write_csv(date_consistency, here::here("output/data_properties/survey_date_consistency.csv"))
+write_csv(summ_date_consistency, here::here("output/data_properties/survey_date_consistency_summary.csv"))

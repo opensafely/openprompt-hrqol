@@ -120,6 +120,8 @@ actions:
         raw_summ_survey3_t: output/data_properties/op_survey3_tabulate.txt
         raw_summ_survey4_s: output/data_properties/op_survey4_skim.txt
         raw_summ_survey4_t: output/data_properties/op_survey4_tabulate.txt
+        survey_date_consistency: output/data_properties/survey_date_consistency.csv
+        survey_date_consistency_summary: output/data_properties/survey_date_consistency_summary.csv
 
   # generate_openprompt_plus_tpp: 
   #   run: >
