@@ -18,10 +18,11 @@ print(f"{args.day=}", file=sys.stderr)
 
 # The date of the earliest response
 index_date = open_prompt.where(
-    # Only include responses to a compulsory question on the Eq-5D
-    # questionnaire. Unlike the baseline questionnaire, this questionnaire was
-    # administered in each survey. Surveys that are associated with these
-    # responses are valid OpenPROMPT surveys.
+    # Only include responses to a compulsory question on the baseline
+    # questionnaire. The question asks if the participant has a disability.
+    # There are 3 valid responses. 
+    # Surveys that are associated with these responses are valid OpenPROMPT surveys.
+    # Take the earliest record of one of these as the index_date of that participant
     open_prompt.ctv3_code.is_in(["13VC.", "1152.", "XaR8E"])
 ).consultation_date.minimum_for_patient()
 # The number of days from the date of the earliest response to the date of each
@@ -69,3 +70,6 @@ for question in questions_research:
     # the response itself may be a CTV3 code or a numeric value
     response_value = getattr(response_row, question.value_property)
     setattr(dataset, f"{question.id}", response_value)
+
+    # the date of this response may be different from the dates of the other responses
+    setattr(dataset, f"{question.id}_consult_date", response_row.consultation_date)
