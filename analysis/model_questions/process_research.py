@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 from ehrql import Dataset
 from ehrql.tables.beta.tpp import open_prompt
@@ -11,43 +12,41 @@ parser.add_argument(
     help="The day a survey was completed, relative to the day the first survey was completed",
 )
 args = parser.parse_args()
-print(f"{args.day=}")
+# Printing to stderr means we can pipe generate-dataset/dump-dataset-sql safely
+# (i.e. we don't end up with unwanted strings in our CSV/SQL).
+print(f"{args.day=}", file=sys.stderr)
 
-# The number of days from the date of the earliest response to the date of the current
-# response. We expect this to be >= 0.
-day_0 = open_prompt.where(
+# The date of the earliest response
+index_date = open_prompt.where(
     # Only include responses to a compulsory question on the Eq-5D
     # questionnaire. Unlike the baseline questionnaire, this questionnaire was
     # administered in each survey. Surveys that are associated with these
     # responses are valid OpenPROMPT surveys.
     open_prompt.ctv3_code.is_in(["13VC.", "1152.", "XaR8E"])
 ).consultation_date.minimum_for_patient()
-consult_offset = (open_prompt.consultation_date - day_0).days
+# The number of days from the date of the earliest response to the date of each
+# response. We expect this to be >= 0.
+offset_from_index_date = (open_prompt.consultation_date - index_date).days
 
 dataset = Dataset()
 
 dataset.define_population(open_prompt.exists_for_patient())
 
-# for the baseline questionnaire they should be doing it on day 0, but we'll allow + 3 days
 dataset.consult_date = (
-    open_prompt.where(consult_offset >= (args.day-5))
-    .where(consult_offset <= (args.day+5))
-    .sort_by(open_prompt.consultation_id)
+    open_prompt.where(offset_from_index_date >= args.day - 5)
+    .where(offset_from_index_date <= args.day + 5)
+    .sort_by(open_prompt.consultation_date)
     .last_for_patient()
     .consultation_date
-)
-
-dataset.days_since_baseline = (dataset.consult_date - day_0).days
+    )
+dataset.days_since_baseline = (dataset.consult_date - index_date).days
 
 # A row represents a response to a question in a questionnaire. There are six
-# questionnaires, which are administered in four surveys on day 0, 30, 60, and 90. For
-# more information, see DATA.md.
+# questionnaires. For more information, see DATA.md.
 for question in questions_research:
-    # fetch the row containing the last response to the current question from the survey
-    # administered on day 0
     response_row = (
-        open_prompt.where(consult_offset >= (args.day-5))
-        .where(consult_offset <= (args.day+5))
+        open_prompt.where(offset_from_index_date >= args.day - 5)
+        .where(offset_from_index_date <= args.day + 5)
         .where(open_prompt.ctv3_code.is_in(question.ctv3_codes))
         # If the response is a CTV3 code, then the numeric value should be zero and
         # sorting by the numeric value should have no effect. However, if the response
@@ -64,12 +63,9 @@ for question in questions_research:
         # 2. the first response failed form-validation; the second response passed
         #
         # We acknowledge that the true response for 3. is undetermined.
-        .sort_by(
-            open_prompt.numeric_value,
-            open_prompt.consultation_id,  # arbitrary but deterministic
-        )
+        .sort_by(open_prompt.numeric_value)
         .last_for_patient()
     )
     # the response itself may be a CTV3 code or a numeric value
     response_value = getattr(response_row, question.value_property)
-    setattr(dataset, question.id, response_value)
+    setattr(dataset, f"{question.id}", response_value)

@@ -108,7 +108,18 @@ actions:
         openprompt_mapped_skim: output/data_properties/op_mapped_skim.txt
         openprompt_mapped_tab: output/data_properties/op_mapped_tabulate.txt
         check_days_after_baseline: output/data_properties/sample_day_lags.pdf
+        indexdates: output/data_properties/index_dates.pdf
         table1: output/tab1_baseline_description.html
+        raw_summ_base_s: output/data_properties/op_baseline_skim.txt
+        raw_summ_base_t: output/data_properties/op_baseline_tabulate.txt
+        raw_summ_survey1_s: output/data_properties/op_survey1_skim.txt
+        raw_summ_survey1_t: output/data_properties/op_survey1_tabulate.txt
+        raw_summ_survey2_s: output/data_properties/op_survey2_skim.txt
+        raw_summ_survey2_t: output/data_properties/op_survey2_tabulate.txt
+        raw_summ_survey3_s: output/data_properties/op_survey3_skim.txt
+        raw_summ_survey3_t: output/data_properties/op_survey3_tabulate.txt
+        raw_summ_survey4_s: output/data_properties/op_survey4_skim.txt
+        raw_summ_survey4_t: output/data_properties/op_survey4_tabulate.txt
 
   # generate_openprompt_plus_tpp: 
   #   run: >

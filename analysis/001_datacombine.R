@@ -71,6 +71,14 @@ op_survey3 <- read_csv(here("output/openprompt_survey3.csv"), col_types = resear
 op_survey4 <- read_csv(here("output/openprompt_survey4.csv"), col_types = research_col_spec) %>% 
   mutate(survey_response = 4)
 
+
+# output raw data summaries -----------------------------------------------
+summarise_data(data_in = op_baseline, filename = "op_baseline")
+summarise_data(data_in = op_survey1, filename = "op_survey1")
+summarise_data(data_in = op_survey2, filename = "op_survey2")
+summarise_data(data_in = op_survey3, filename = "op_survey3")
+summarise_data(data_in = op_survey4, filename = "op_survey4")
+
 # stack research questionnaire responses ----------------------------------
 op_surveys <- bind_rows(
   op_survey1, 
@@ -104,17 +112,8 @@ op_raw %>%
   geom_point(pch = 1)
 dev.off()
 
-# output data -------------------------------------------------------------
-write.csv(op_raw, here::here("output/openprompt_raw.csv.gz"))
-
 # Filter out missing data:  -----------------------------------------------
-op_filtered <- op_raw %>% 
-  # Filter out if survey_date does not exist
-  filter(!is.na(survey_date)) %>% 
-  # Filter if NA response to disability question (compulsory Q on the baseline Q'airre so an indication that they did not complete any survey) %>% 
-  filter(!is.na(disability)) %>% 
-  # Filter if NA response to EQ-5D question: compulsory on the Research questionnaire 
-  filter(!is.na(eq5d_usualactivities))
+op_filtered <- op_raw
 
 # map ctv3codes to the description ----------------------------------------
 op_mapped <- op_filtered %>% 
@@ -207,6 +206,9 @@ op_neat <- op_neat %>%
 # Output summary of the tidied up dataset ---------------------------------
 summarise_data(data_in = op_neat, filename = "op_mapped")
 
+# output data -------------------------------------------------------------
+write.csv(op_neat, here::here("output/openprompt_raw.csv.gz"))
+
 # baseline summary --------------------------------------------------------
 tab1 <- op_neat %>% 
   #filter(survey_response==1) %>% 
@@ -264,3 +266,11 @@ tab1 %>%
     filename = "tab1_baseline_description.html",
     path = fs::path(here("output"))
   )
+
+
+# plot distribution of day0 -----------------------------------------------
+pdf(here::here("output/data_properties/index_dates.pdf"), width = 6, height = 4)
+ggplot(op_neat, aes(x = index_date)) +
+  geom_density(fill = "gray") +
+  theme_classic()
+dev.off()
