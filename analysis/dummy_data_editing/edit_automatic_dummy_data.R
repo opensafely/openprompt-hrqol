@@ -116,6 +116,21 @@ eq5d_row_ids <- dummy_data_combined$ctv3_code %in% c("XaYwl", "XaYwm", "XaYwn", 
 new_eq5d <- sample(x = 1:5, sum(eq5d_row_ids), replace = TRUE)
 dummy_data_combined[eq5d_row_ids, "numeric_value"] <- new_eq5d
 
+# long covid duration (Y3a7f) should be 0-3
+covid_duration_ids <- dummy_data_combined$ctv3_code == "Y3a7f"
+new_covid_duration <- sample(0:3, sum(covid_duration_ids), replace = TRUE)
+dummy_data_combined[covid_duration_ids, "numeric_value"] <- new_covid_duration
+
+# number of covids (Y3a98) should be 0:6
+covid_count_ids <- dummy_data_combined$ctv3_code == "Y3a98"
+new_covid_count <- sample(0:6, sum(covid_count_ids), replace = TRUE)
+dummy_data_combined[covid_count_ids, "numeric_value"] <- new_covid_count
+
+# number of vaccines (Y3a9e) should be 1:6
+vacc_count_ids <- dummy_data_combined$ctv3_code == "Y3a9e"
+new_vacc_count <- sample(0:6, sum(vacc_count_ids), replace = TRUE)
+dummy_data_combined[vacc_count_ids, "numeric_value"] <- new_vacc_count
+
 # create some missingness 
 optional_questions <- c("Y3a80",
                         "Y3a97",
