@@ -248,7 +248,8 @@ write.csv(op_neat, here::here("output/openprompt_raw.csv.gz"))
 
 # baseline summary --------------------------------------------------------
 tab1 <- op_neat %>% 
-  #filter(survey_response==1) %>% 
+  # get rid of those with missing survey_date: this means there was no valid response in the dataset_definition
+  filter(!is.na(survey_date)) %>% 
   select(-where(is.Date), -patient_id) %>% 
   tbl_summary(
     by = survey_response,
