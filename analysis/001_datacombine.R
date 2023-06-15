@@ -79,7 +79,6 @@ summarise_data(data_in = op_survey2, filename = "op_survey2")
 summarise_data(data_in = op_survey3, filename = "op_survey3")
 summarise_data(data_in = op_survey4, filename = "op_survey4")
 
-
 # stack research questionnaire responses ----------------------------------
 op_surveys <- bind_rows(
   op_survey1, 
@@ -112,9 +111,6 @@ op_raw %>%
   geom_line() + 
   geom_point(pch = 1)
 dev.off()
-
-# output data -------------------------------------------------------------
-write.csv(op_raw, here::here("output/openprompt_raw.csv.gz"))
 
 # Filter out missing data:  -----------------------------------------------
 op_filtered <- op_raw
@@ -210,6 +206,9 @@ op_neat <- op_neat %>%
 # Output summary of the tidied up dataset ---------------------------------
 summarise_data(data_in = op_neat, filename = "op_mapped")
 
+# output data -------------------------------------------------------------
+write.csv(op_neat, here::here("output/openprompt_raw.csv.gz"))
+
 # baseline summary --------------------------------------------------------
 tab1 <- op_neat %>% 
   #filter(survey_response==1) %>% 
@@ -267,3 +266,11 @@ tab1 %>%
     filename = "tab1_baseline_description.html",
     path = fs::path(here("output"))
   )
+
+
+# plot distribution of day0 -----------------------------------------------
+pdf(here::here("output/data_properties/index_dates.pdf"), width = 6, height = 4)
+ggplot(op_neat, aes(x = index_date)) +
+  geom_density(fill = "gray") +
+  theme_classic()
+dev.off()
