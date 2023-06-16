@@ -9,7 +9,7 @@ actions:
     run: >
       ehrql:v0
         create-dummy-tables 
-        analysis/model_questions/process_baseline.py output/dummydata 
+        analysis/model_questions/dataset_definition.py output/dummydata 
         -- 
         --day=0
     outputs: 
@@ -25,25 +25,11 @@ actions:
       highly_sensitive: 
         openprompt_dummy_edited: output/dummydata/dummy_edited/open_prompt.csv
 
-  generate_openprompt_baseline: 
-    run: >
-      databuilder:v0
-        generate-dataset 
-        analysis/model_questions/process_baseline.py 
-        --output output/openprompt_baseline.csv
-        --dummy-tables output/dummydata/dummy_edited  
-        --
-        --day=0
-    needs: [edit_dummy_data]
-    outputs:
-      highly_sensitive:
-        openprompt_baseline: output/openprompt_baseline.csv
-
   generate_openprompt_survey1: 
     run: >
       databuilder:v0
         generate-dataset 
-        analysis/model_questions/process_research.py 
+        analysis/model_questions/dataset_definition.py 
         --output output/openprompt_survey1.csv
         --dummy-tables output/dummydata/dummy_edited
         --
@@ -57,7 +43,7 @@ actions:
     run: >
       databuilder:v0
         generate-dataset 
-        analysis/model_questions/process_research.py 
+        analysis/model_questions/dataset_definition.py 
         --output output/openprompt_survey2.csv
         --dummy-tables output/dummydata/dummy_edited
         --
@@ -71,7 +57,7 @@ actions:
     run: >
       databuilder:v0
         generate-dataset 
-        analysis/model_questions/process_research.py 
+        analysis/model_questions/dataset_definition.py 
         --output output/openprompt_survey3.csv
         --dummy-tables output/dummydata/dummy_edited
         --
@@ -85,7 +71,7 @@ actions:
     run: >
       databuilder:v0
         generate-dataset 
-        analysis/model_questions/process_research.py 
+        analysis/model_questions/dataset_definition.py 
         --output output/openprompt_survey4.csv
         --dummy-tables output/dummydata/dummy_edited
         --
@@ -98,7 +84,7 @@ actions:
   combine_openprompt:
     run: >
       r:latest analysis/001_datacombine.R
-    needs: [generate_openprompt_baseline, generate_openprompt_survey1, generate_openprompt_survey2, generate_openprompt_survey3, generate_openprompt_survey4]
+    needs: [generate_openprompt_survey1, generate_openprompt_survey2, generate_openprompt_survey3, generate_openprompt_survey4]
     outputs: 
       highly_sensitive: 
         openprompt_combined: output/openprompt_raw.csv.gz
