@@ -7,18 +7,28 @@ library(gtsummary)
 source(here("analysis/R_fn/summarise_data.R"))
 source(here("analysis/model_questions/master_mapping.R"))
 
-op_baseline <- read_csv(here("output/openprompt_baseline.csv"), 
+op_baseline <- read_csv(here("output/openprompt_survey1.csv"),
                         col_types = list(
                           patient_id = "d",
-                          first_consult_date = "D", 
                           consult_date = "D",
-                          ethnicity = "c",
-                          highest_edu = "c",
-                          disability = "c",
-                          relationship = "c",
-                          gender = "c",
-                          hh_income = "c"
-                        ))
+                          base_ethnicity = "c",
+                          base_highest_edu = "c",
+                          base_disability = "c",
+                          base_relationship = "c",
+                          base_gender = "c",
+                          base_hh_income = "c"
+                        )) %>% 
+  dplyr::select(patient_id, consult_date, starts_with("base_"))
+
+# get index_date as the first recorded of any "base_" variable
+op_baseline$index_date <- pmin(
+  op_baseline$base_ethnicity_consult_date,
+  op_baseline$base_highest_edu_consult_date,
+  op_baseline$base_disability_consult_date,
+  op_baseline$base_relationship_consult_date,
+  op_baseline$base_gender_consult_date,
+  op_baseline$base_hh_income_consult_date
+)
 
 # Survey column specification 
 research_col_spec <- list(
@@ -92,8 +102,10 @@ research_col_spec <- list(
   mrc_breathlessness_consult_date = "D"
 )
 
-op_survey1 <- read_csv(here("output/openprompt_survey1.csv"), col_types = research_col_spec) %>% 
-  mutate(survey_response = 1)
+op_survey1 <- read_csv(here("output/openprompt_survey1.csv"), 
+                       col_types = research_col_spec) %>% 
+  mutate(survey_response = 1) %>% 
+  dplyr::select(!starts_with("base_"))
 
 op_survey2 <- read_csv(here("output/openprompt_survey2.csv"), col_types = research_col_spec) %>%
   mutate(survey_response = 2)
@@ -145,24 +157,17 @@ op_raw %>%
   geom_point(pch = 1)
 dev.off()
 
-# Filter out missing data:  -----------------------------------------------
-# op_raw contains every participant ID included in the `open_prompt` table 
-# we therefore have a lot of rows with nothing more than NA in them
-# a lot of people filled in `op_survey1`. Fewer filled in `op_survey2`,
-# `op_survey3` & `op_survey4`
-op_filtered <- op_raw
-
 # map ctv3codes to the description ----------------------------------------
-op_mapped <- op_filtered %>% 
+op_mapped <- op_raw %>% 
   dplyr::select(patient_id, survey_response, where(is_character)) %>% 
   pivot_longer(cols = c(-patient_id, -survey_response), names_to = "varname", values_to = "ctv3_code") %>% 
   left_join(openprompt_mapping, by = c("ctv3_code" = "codes")) %>% 
   pivot_wider(id_cols = c(patient_id, survey_response), names_from = varname, values_from = description)
 
-op_numeric <- op_filtered %>% 
+op_numeric <- op_raw %>% 
   dplyr::select(patient_id, survey_response, where(is.numeric)) 
 
-op_dates <- op_filtered %>% 
+op_dates <- op_raw %>% 
   dplyr::select(patient_id, survey_response, where(is.Date)) 
 
 op_neat <- op_mapped %>% 
@@ -247,6 +252,12 @@ summarise_data(data_in = op_neat, filename = "op_mapped")
 write.csv(op_neat, here::here("output/openprompt_raw.csv.gz"))
 
 # baseline summary --------------------------------------------------------
+# op_raw contains every participant ID included in the `open_prompt` table 
+# we therefore have a lot of rows with nothing more than NA in them
+# a lot of people filled in `op_survey1`. Fewer filled in `op_survey2`,
+# `op_survey3` & `op_survey4` etc.
+# Remove these before summarising
+
 tab1 <- op_neat %>% 
   # get rid of those with missing survey_date: this means there was no valid response in the dataset_definition
   filter(!is.na(survey_date)) %>% 
@@ -283,12 +294,12 @@ tab1 <- op_neat %>%
       facit_need_help ~ "categorical",
       facit_frustrated  ~ "categorical",
       facit_limit_social_activity ~ "categorical",
-      ethnicity ~ "categorical",
-      highest_edu ~ "categorical",
-      disability ~ "categorical",
-      relationship ~ "categorical",
-      gender ~ "categorical",
-      hh_income ~ "categorical",
+      base_ethnicity ~ "categorical",
+      base_highest_edu ~ "categorical",
+      base_disability ~ "categorical",
+      base_relationship ~ "categorical",
+      base_gender ~ "categorical",
+      base_hh_income ~ "categorical",
       long_covid ~ "categorical",
       recovered_from_covid ~ "categorical",
       vaccinated ~ "categorical",
@@ -312,8 +323,6 @@ ggplot(op_neat, aes(x = index_date)) +
   geom_density(fill = "gray") +
   theme_classic()
 dev.off()
-
-
 
 # is consult_date consistent across participant survey responses?  ---------
 date_consistency <- op_neat %>% 
