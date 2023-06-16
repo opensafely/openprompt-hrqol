@@ -7,7 +7,7 @@ Question <- function(id, ctv3_codes, value_property){
 }
 
 questions_baseline <- bind_rows(
-    Question("ethnicity",
+    Question("base_ethnicity",
              ctv3_codes =
                c(
                  "XactH",
@@ -33,7 +33,7 @@ questions_baseline <- bind_rows(
                  ),
                  value_property = "ctv3_code"
                  ),
-    Question("highest_edu", # "What is the highest level of education that you completed?
+    Question("base_highest_edu", # "What is the highest level of education that you completed?
              c(
                "Y26f2",
                "Y26f1",
@@ -45,7 +45,7 @@ questions_baseline <- bind_rows(
               "ctv3_code"
             ),
   Question(
-    "disability", # "Do you have a disability?  
+    "base_disability", # "Do you have a disability?  
     c(
       "13VC.",
       "1152.",
@@ -54,7 +54,7 @@ questions_baseline <- bind_rows(
     "ctv3_code"
   ),
   Question(
-    "relationship", # What is your current relationship status?
+    "base_relationship", # What is your current relationship status?
     c(
       "XE0oZ",
       "1336.",
@@ -67,7 +67,7 @@ questions_baseline <- bind_rows(
     "ctv3_code"
   ),
   Question(
-    "gender", # What is your gender
+    "base_gender", # What is your gender
     c(
       "X768D",
       "X768C",
@@ -79,7 +79,7 @@ questions_baseline <- bind_rows(
     "ctv3_code"
   ),
   Question(
-    "hh_income", 
+    "base_hh_income", 
     c(
       "Y24b5",
       "Y24b6",
