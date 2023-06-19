@@ -17,6 +17,8 @@ args = parser.parse_args()
 print(f"{args.day=}", file=sys.stderr)
 
 ctv3_codes = set().union(*(q.ctv3_codes for q in questions))
+date_questions = {"Y3a9f", "Y3aa0", "Y3a97"}
+ctv3_codes_nondate = ctv3_codes - date_questions
 
 # The date of the earliest response
 index_date = (
