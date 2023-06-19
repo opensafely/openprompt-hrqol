@@ -22,6 +22,7 @@ op_baseline <- read_csv(here("output/openprompt_survey1.csv"),
 
 # get index_date as the first recorded of any "base_" variable
 op_baseline$index_date <- pmin(
+  op_baseline$consult_date,
   op_baseline$base_ethnicity_consult_date,
   op_baseline$base_highest_edu_consult_date,
   op_baseline$base_disability_consult_date,
@@ -256,9 +257,9 @@ write.csv(op_neat, here::here("output/openprompt_raw.csv.gz"))
 # we therefore have a lot of rows with nothing more than NA in them
 # a lot of people filled in `op_survey1`. Fewer filled in `op_survey2`,
 # `op_survey3` & `op_survey4` etc.
-# Remove these before summarising
+# Remove these before summarising:
 
-tab1 <- op_neat %>% 
+tab1 <- op_neat %>%
   # get rid of those with missing survey_date: this means there was no valid response in the dataset_definition
   filter(!is.na(survey_date)) %>% 
   select(-where(is.Date), -patient_id) %>% 
