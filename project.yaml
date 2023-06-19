@@ -34,6 +34,7 @@ actions:
         --dummy-tables output/dummydata/dummy_edited
         --
         --day=0
+        --window=5
     needs: [edit_dummy_data]
     outputs:
       highly_sensitive:
@@ -48,6 +49,7 @@ actions:
         --dummy-tables output/dummydata/dummy_edited
         --
         --day=30
+        --window=5
     needs: [edit_dummy_data]
     outputs:
       highly_sensitive:
@@ -62,6 +64,7 @@ actions:
         --dummy-tables output/dummydata/dummy_edited
         --
         --day=60
+        --window=5
     needs: [edit_dummy_data]
     outputs:
       highly_sensitive:
@@ -76,6 +79,7 @@ actions:
         --dummy-tables output/dummydata/dummy_edited
         --
         --day=90
+        --window=5
     needs: [edit_dummy_data]
     outputs:
       highly_sensitive:

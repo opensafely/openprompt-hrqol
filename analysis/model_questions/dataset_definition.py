@@ -11,12 +11,27 @@ parser.add_argument(
     type=int,
     help="The day a survey was completed, relative to the day the first survey was completed",
 )
+parser.add_argument(
+    "--window",
+    type=int,
+    default=0,
+    help="The number of days +/- the day a survey was completed",
+)
 args = parser.parse_args()
+# Printing to stderr means we can pipe generate-dataset/dump-dataset-sql safely
+# (i.e. we don't end up with unwanted strings in our CSV/SQL).
+print(f"{args.day=}", file=sys.stderr)
+print(f"{args.window=}", file=sys.stderr)
+
 # Printing to stderr means we can pipe generate-dataset/dump-dataset-sql safely
 # (i.e. we don't end up with unwanted strings in our CSV/SQL).
 print(f"{args.day=}", file=sys.stderr)
 
 ctv3_codes = set().union(*(q.ctv3_codes for q in questions))
+# remove the 3 questions that have a date response in the app 
+# because there are unusually early consultation_date values 
+# recorded in these questions. We want to exclude these in order
+# to accurately define index_date 
 date_questions = {"Y3a9f", "Y3aa0", "Y3a97"}
 ctv3_codes_nondate = ctv3_codes - date_questions
 
@@ -33,7 +48,7 @@ offset_from_index_date = (open_prompt.consultation_date - index_date).days
 # Filter opne_prompt table to only include responses recorded within 5 days 
 # of the --days argument
 filtered_open_prompt = (
-    open_prompt.where(offset_from_index_date >= args.day - 5).where(offset_from_index_date <= args.day + 5)
+    open_prompt.where(offset_from_index_date >= args.day - args.window).where(offset_from_index_date <= args.day + args.window)
 )
 
 dataset = Dataset()
