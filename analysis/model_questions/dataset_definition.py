@@ -30,13 +30,18 @@ index_date = (
 # response. We expect this to be >= 0.
 offset_from_index_date = (open_prompt.consultation_date - index_date).days
 
+# Filter opne_prompt table to only include responses recorded within 5 days 
+# of the --days argument
+filtered_open_prompt = (
+    open_prompt.where(offset_from_index_date >= args.day - 5).where(offset_from_index_date <= args.day + 5)
+)
+
 dataset = Dataset()
 
-dataset.define_population(open_prompt.exists_for_patient())
+dataset.define_population(filtered_open_prompt.exists_for_patient())
 
 dataset.consult_date = (
-    open_prompt.where(offset_from_index_date >= args.day - 5)
-    .where(offset_from_index_date <= args.day + 5)
+    filtered_open_prompt
     .sort_by(open_prompt.consultation_date)
     .last_for_patient()
     .consultation_date
@@ -51,8 +56,7 @@ for question in questions:
         continue
     
     response_row = (
-        open_prompt.where(offset_from_index_date >= args.day - 5)
-        .where(offset_from_index_date <= args.day + 5)
+        filtered_open_prompt
         .where(open_prompt.ctv3_code.is_in(question.ctv3_codes))
         # If the response is a CTV3 code, then the numeric value should be zero and
         # sorting by the numeric value should have no effect. However, if the response
