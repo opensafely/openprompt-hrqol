@@ -23,7 +23,7 @@ ctv3_codes_nondate = ctv3_codes - date_questions
 # The date of the earliest response
 index_date = (
     open_prompt
-    .where(open_prompt.ctv3_code.is_in(ctv3_codes))
+    .where(open_prompt.ctv3_code.is_in(ctv3_codes_nondate))
     .consultation_date.minimum_for_patient()
 )
 # The number of days from the date of the earliest response to the date of each
