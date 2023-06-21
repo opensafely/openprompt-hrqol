@@ -250,7 +250,7 @@ op_neat <- op_neat %>%
 summarise_data(data_in = op_neat, filename = "op_mapped")
 
 # output data -------------------------------------------------------------
-write.csv(op_neat, here::here("output/openprompt_raw.csv.gz"))
+readr::write_csv(op_neat, here::here("output/openprompt_raw.csv.gz"))
 
 # baseline summary --------------------------------------------------------
 # op_raw contains every participant ID included in the `open_prompt` table 
