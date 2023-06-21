@@ -113,6 +113,15 @@ actions:
         survey_date_consistency: output/data_properties/survey_date_consistency.csv
         survey_date_consistency_summary: output/data_properties/survey_date_consistency_summary.csv
 
+  generate_openprompt_dataset:
+    run: >
+      stata-mp:latest analysis/op_combined.do
+    needs: [combine_openprompt]
+    outputs:
+      highly_sensitive:
+        openprompt_data: output/openprompt_dataset.dta
+        log_op_data: logs/openprompt_cleaning.log
+
   # generate_openprompt_plus_tpp: 
   #   run: >
   #     databuilder:v0
