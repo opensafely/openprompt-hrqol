@@ -1,6 +1,6 @@
 //*** Open log file ***
 cap log close
-log using "logs\open-prompt-combine.log", replace
+log using "logs/open-prompt-combine.log", replace
 clear
 
 //*** Import ***
@@ -10,14 +10,8 @@ clear
 // now import the uncompressed CSV using delimited
 import delimited "output/openprompt_raw.csv"
 
-// save in compressed dta.gz format
-gzsave output/openprompt_raw.dta.gz
-
-// load a compressed .dta.gz file
-gzload output/openprompt_raw.dta.gz
-
 //*** Drop non answered ***
-drop if first_consult_datex=="NA"
+drop if base_ethnicity_consult_date=="NA"
 
 //*** Ethnicity ***
 gen ethnicity_cat= 1 if base_ethnicity=="White"
@@ -127,9 +121,6 @@ label values unemployed employment
 
 gen vaccine_n=real(n_vaccines)
 replace vaccine_n=6 if n_vaccines=="6+"
-
-//*** Days since baseline ***
-gen days_since_base=real(days_since_baseline)
 
 //*** EQ-5D-5L ***
 gen mobility_eq5d=1 if eq5d_mobility=="none"
@@ -289,4 +280,5 @@ label define breathless_grade 1 "MRC Breathlessness Scale: grade 1" 2 "MRC Breat
 3 "MRC Breathlessness Scale: grade 3" 4 "MRC Breathlessness Scale: grade 4" 5 "MRC Breathlessness Scale: grade 5"
 label values breathlessness_mrc breathless_grade
 
-
+save "./output/openprompt_dataset.dta", replace
+log close

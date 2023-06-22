@@ -119,8 +119,8 @@ actions:
     needs: [combine_openprompt]
     outputs:
       highly_sensitive:
-        openprompt_data: output/openprompt_dataset.dta
-        log_op_data: logs/openprompt_cleaning.log
+        data: output/openprompt_dataset.dta
+        log: logs/open-prompt-combine.log
 
   # generate_openprompt_plus_tpp: 
   #   run: >
