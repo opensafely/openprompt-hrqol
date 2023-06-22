@@ -153,6 +153,9 @@ replace anx_depression_eq5d=3 if eq5d_anxiety_depression=="moderate"
 replace anx_depression_eq5d=4 if eq5d_anxiety_depression=="severe"
 replace anx_depression_eq5d=5 if eq5d_anxiety_depression=="unable"
 
+label define eq5d 1 "No problems" 2 "Slight problems" 3 "Moderate problems" 4 "Severe problems" 5 "Extreme problems/unable"
+label values (mobility_eq5d self_care_eq5d usual_activity_eq5d pain_discomfort_eq5d anx_depression_eq5d) eq5d
+
 //*** WPAI Score ***
 gen work_effect=real(work_affected)
 replace work_effect=0 if work_affected=="0 (No effect on my daily activities)"
