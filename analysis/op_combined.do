@@ -64,14 +64,14 @@ label define gender 1 "Male" 2 "Female" 3 "Intersex/non-binary/other/refused" 4 
 label values sex gender
 
 //*** Income ***
-gen hh_inc=1 if base_hh_income=="£6,000-12,999"
-replace hh_inc=2 if base_hh_income=="£13,000-18,999"
-replace hh_inc=3 if base_hh_income=="£19,000-25,999"
-replace hh_inc=4 if base_hh_income=="£26,000-31,999"
-replace hh_inc=5 if base_hh_income=="£32,000-47,999"
-replace hh_inc=6 if base_hh_income=="£48,000-63,999"
-replace hh_inc=7 if base_hh_income=="£64,000-95,999"
-replace hh_inc=8 if base_hh_income=="£96,000"
+gen hh_inc=1 if base_hh_income=="Â£6,000-12,999"
+replace hh_inc=2 if base_hh_income=="Â£13,000-18,999"
+replace hh_inc=3 if base_hh_income=="Â£19,000-25,999"
+replace hh_inc=4 if base_hh_income=="Â£26,000-31,999"
+replace hh_inc=5 if base_hh_income=="Â£32,000-47,999"
+replace hh_inc=6 if base_hh_income=="Â£48,000-63,999"
+replace hh_inc=7 if base_hh_income=="Â£64,000-95,999"
+replace hh_inc=8 if base_hh_income=="Â£96,000"
 replace hh_inc=9 if base_hh_income=="Unknown income" | base_hh_income=="NA"
 label define income 1 "<£13,000" 2 "£13,000-£19,000" 3 "£19,001-£26,000" ///
 4 "£26,001-£31,999" 5 "£32,000-£47,999" 6 "£48,000-£63,999" 7 "£64,000-£95,999" ///
@@ -98,11 +98,16 @@ label define recovery 0 "Yes, back to normal" 1 "No, still have symptoms" ///
 label values covid_recovered recovery
 
 gen covid_symptoms=0 if covid_duration=="Less than 2 weeks"
-replace covid_symptoms=1 if covid_duration=="2 – 3 weeks"
-replace covid_symptoms=2 if covid_duration=="4 – 12 weeks"
+replace covid_symptoms=1 if covid_duration=="2 â 3 weeks"
+replace covid_symptoms=2 if covid_duration=="4 â 12 weeks"
 replace covid_symptoms=3 if covid_duration=="More than 12 weeks"
 label define symptoms 0 "Less than 2 weeks" 1 "2-3 weeks" 2 "4-12 weeks" 3 "More than 12 weeks"
 label values covid_symptoms symptoms
+
+gen long_covid_symptoms=0 if covid_symptoms==0 | covid_symptoms==1
+replace long_covid_symptoms=1 if covid_symptoms==2 | covid_symptoms==3
+label define long_covid 0 "No Long COVID" 1 "Long COVID"
+label values long_covid_symptoms long_covid
 
 //*** Vaccine History ***
 gen vaccine_hist=0 if vaccinated=="I have had at least one COVID-19 vaccination"
