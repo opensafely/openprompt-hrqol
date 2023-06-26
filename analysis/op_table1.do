@@ -1,6 +1,6 @@
 //*** Open log file ***
 cap log close
-log using "logs/op-baseline_table1.log", replace
+log using "logs/op-baseline-table1.log", replace
 clear
 
 //*** Set ado file path ***
@@ -28,8 +28,25 @@ unemployed bin %5.1f\ covid_n conts %5.1f \ vaccine_n conts %5.1f \ vaccine_hist
 covid_history cat %5.1f \ covid_recovered cat %5.1f \ covid_symptoms cat %5.1f) ///
 nospacelowpercent percent_n onecol missing iqrmiddle(",")  ///
 saving("output/tables/table1_demo.xls", replace)
+preserve
 
 import excel "output/tables/table1_demo.xls", clear
 outsheet * using "output/tables/table1_demo.csv", comma nonames replace
+
+//*** Questionnaire responses ***
+restore
+label variable mobility_eq5d "Mobility"
+label variable self_care_eq5d "Self-care"
+label variable usual_activity_eq5d "Usual Activities"
+label variable pain_discomfort_eq5d "Pain/Discomfort"
+label variable anx_depression_eq5d "Anxiety/Depression"
+table1_mc if survey_response==1, vars(mobility_eq5d cat %5.1f \ self_care_eq5d cat %5.1f \ ///
+usual_activity_eq5d cat %5.1f \ pain_discomfort_eq5d cat %5.1f \ anx_depression_eq5d cat %5.1f \ ///
+work_effect cat %5.1f \ life_effect cat %5.1f \ breathlessness_mrc cat %5.1f) ///
+nospacelowpercent percent_n onecol missing iqrmiddle(",") ///
+saving("output/tables/table1_questions.xls", replace)
+
+import excel "output/tables/table1_questions.xls", clear
+outsheet * using "output/tables/table1_questions.csv", comma nonames replace
 
 log close

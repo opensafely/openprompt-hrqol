@@ -122,6 +122,16 @@ actions:
         data: output/openprompt_dataset.dta
         log: logs/open-prompt-combine.log
 
+  gen_baseline_tables:
+    run: >
+      stata-mp:latest analysis/op_table1.do
+    needs: [generate_openprompt_dataset]
+    outputs:
+      highly_sensitive:
+        demographic_data: output/tables/table1_demo.csv
+        questionnaire_data: output/tables/table1_questions.csv
+        log_tables: logs/op-baseline-table1.log
+
   # generate_openprompt_plus_tpp: 
   #   run: >
   #     databuilder:v0
