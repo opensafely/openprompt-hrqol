@@ -27,11 +27,11 @@ highest_educ cat %5.1f\ relation_status cat %5.1f\ hh_inc cat %5.1f \ disabled c
 unemployed bin %5.1f\ covid_n conts %5.1f \ vaccine_n conts %5.1f \ vaccine_hist cat %5.1f \ ///
 covid_history cat %5.1f \ covid_recovered cat %5.1f \ covid_symptoms cat %5.1f) ///
 nospacelowpercent percent_n onecol missing iqrmiddle(",")  ///
-saving("/output/tables/table1_demograph.xls", replace)
+saving("output/tables/table1_demo.xls", replace)
 preserve
 
-import excel "/output/tables/table1_demo.xls", clear
-outsheet * using "/output/tables/table1_demo.csv", comma nonames replace
+import excel "output/tables/table1_demo.xls", clear
+outsheet * using "output/tables/table1_demograph.csv", comma nonames replace
 
 //*** Questionnaire responses ***
 restore
@@ -44,9 +44,9 @@ table1_mc if survey_response==1, vars(mobility_eq5d cat %5.1f \ self_care_eq5d c
 usual_activity_eq5d cat %5.1f \ pain_discomfort_eq5d cat %5.1f \ anx_depression_eq5d cat %5.1f \ ///
 work_effect cat %5.1f \ life_effect cat %5.1f \ breathlessness_mrc cat %5.1f) ///
 nospacelowpercent percent_n onecol missing iqrmiddle(",") ///
-saving("/output/tables/table1_questions.xls", replace)
+saving("output/tables/table1_questions.xls", replace)
 
-import excel "/output/tables/table1_questions.xls", clear
-outsheet * using "/output/tables/table1_questions.csv", comma nonames replace
+import excel "output/tables/table1_questions.xls", clear
+outsheet * using "output/tables/table1_questions.csv", comma nonames replace
 
 log close
