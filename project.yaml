@@ -127,7 +127,7 @@ actions:
       stata-mp:latest analysis/op_table1.do
     needs: [generate_openprompt_dataset]
     outputs:
-      highly_sensitive:
+      moderately_sensitive:
         demographic_data: output/table1_demograph.csv
         questionnaire_data: output/table1_questions.csv
         log_tables: logs/op-baseline-table1.log
