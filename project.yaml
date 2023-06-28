@@ -128,7 +128,7 @@ actions:
     needs: [generate_openprompt_dataset]
     outputs:
       moderately_sensitive:
-        demographic_data: output/table1_demograph.csv
+        demographic_data: output/table1_demographic.csv
         questionnaire_data: output/table1_questions.csv
         utility_score: output/baseline_EQ5D.svg
         log_tables: logs/op-baseline-table1.log
