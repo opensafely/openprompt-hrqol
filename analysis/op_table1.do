@@ -22,11 +22,7 @@ label variable covid_history "Have you had COVID-19"
 label variable covid_recovered "Recovered from COVID-19"
 label variable covid_symptoms "Length of COVID-19 symptoms"
 label variable hh_inc "Household Income"
-label variable mobility_eq5d "Mobility"
-label variable self_care_eq5d "Self-care"
-label variable usual_activity_eq5d "Usual Activities"
-label variable pain_discomfort_eq5d "Pain/Discomfort"
-label variable anx_depression_eq5d "Anxiety/Depression"
+
 table1_mc if survey_response==1, vars(ethnicity_cat cat %5.1f \ sex cat %5.1f \ ///
 highest_educ cat %5.1f\ relation_status cat %5.1f\ hh_inc cat %5.1f \ disabled cat %5.1f\ ///
 unemployed cat %5.1f\ covid_n cat %5.1f \ vaccine_n cat %5.1f \ vaccine_hist cat %5.1f \ ///
@@ -40,8 +36,8 @@ outsheet * using "output/table1_demographic.csv", comma nonames replace
 
 //*** Questionnaire responses ***
 restore
-table1_mc if survey_response==1, vars(mobility_eq5d cat %5.1f \ self_care_eq5d cat %5.1f \ ///
-usual_activity_eq5d cat %5.1f \ pain_discomfort_eq5d cat %5.1f \ anx_depression_eq5d cat %5.1f \ ///
+table1_mc if survey_response==1, vars(mobility cat %5.1f \ selfcare cat %5.1f \ ///
+activity cat %5.1f \ pain cat %5.1f \ anxiety cat %5.1f \ ///
 euroqol_score conts %5.1f \ work_effect cat %5.1f \ life_effect cat %5.1f \ breathlessness_mrc cat %5.1f) ///
 nospacelowpercent percent_n onecol missing iqrmiddle(",") ///
 saving("output/table1_questions.xls", replace)
@@ -50,6 +46,6 @@ import excel "output/table1_questions.xls", clear
 outsheet * using "output/table1_questions.csv", comma nonames replace
 
 restore
-hist UK_crosswalk, freq xtitle(EQ-5D Index Score) fcolor(khaki)
+hist UK_crosswalk if survey_response==1, freq xtitle(EQ-5D Index Score) fcolor(khaki)
 graph export "output/baseline_EQ5D.svg", width(12in) replace
 log close
