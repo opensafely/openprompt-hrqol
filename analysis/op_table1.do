@@ -38,7 +38,7 @@ outsheet * using "output/table1_demographic.csv", comma nonames replace
 restore
 table1_mc if survey_response==1, vars(mobility cat %5.1f \ selfcare cat %5.1f \ ///
 activity cat %5.1f \ pain cat %5.1f \ anxiety cat %5.1f \ ///
-euroqol_score conts %5.1f \ work_effect cat %5.1f \ life_effect cat %5.1f \ breathlessness_mrc cat %5.1f) ///
+work_effect cat %5.1f \ life_effect cat %5.1f \ breathlessness_mrc cat %5.1f) ///
 nospacelowpercent percent_n onecol missing iqrmiddle(",")  ///
 saving("output/table1_questions.xls", replace)
 preserve
