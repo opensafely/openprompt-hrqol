@@ -92,6 +92,7 @@ actions:
     outputs: 
       highly_sensitive: 
         openprompt_combined: output/openprompt_raw.csv.gz
+        openprompt_combined_stata: output/op_stata.dta
       moderately_sensitive:
         openprompt_raw_skim: output/data_properties/op_raw_skim.txt
         openprompt_raw_tab: output/data_properties/op_raw_tabulate.txt
@@ -113,43 +114,22 @@ actions:
         survey_date_consistency: output/data_properties/survey_date_consistency.csv
         survey_date_consistency_summary: output/data_properties/survey_date_consistency_summary.csv
 
-  generate_openprompt_dataset:
-    run: >
-      stata-mp:latest analysis/op_combined.do
-    needs: [combine_openprompt]
-    outputs:
-      highly_sensitive:
-        data: output/openprompt_dataset.dta
-        log: logs/open-prompt-combine.log
-
-  gen_baseline_tables:
-    run: >
-      stata-mp:latest analysis/op_table1.do
-    needs: [generate_openprompt_dataset]
-    outputs:
-      moderately_sensitive:
-        demographic_data: output/table1_demographic.csv
-        questionnaire_data: output/table1_questions.csv
-        utility_score: output/baseline_EQ5D.svg
-        log_tables: logs/op-baseline-table1.log
-
-  # generate_openprompt_plus_tpp: 
+  # generate_openprompt_dataset:
   #   run: >
-  #     databuilder:v0
-  #       generate-dataset analysis/dataset_definition_openprompt.py --output output/openprompt_raw_plus_tpp.csv.gz
-  #   needs: [create_dummy_openprompt_data]
+  #     stata-mp:latest analysis/op_combined.do
+  #   needs: [combine_openprompt]
   #   outputs:
   #     highly_sensitive:
-  #       openprompt_tpp_combined: output/openprompt_raw_plus_tpp.csv.gz
-
-  # quick_summ_data:
+  #       data: output/openprompt_dataset.dta
+  #       log: logs/open-prompt-combine.log
+  # 
+  # gen_baseline_tables:
   #   run: >
-  #     r:latest
-  #       analysis/010_table1.R
-  #   needs: [generate_openprompt_plus_tpp]
+  #     stata-mp:latest analysis/op_table1.do
+  #   needs: [generate_openprompt_dataset]
   #   outputs:
-  #     highly_sensitive:
-  #       cleandata: output/cleaned_data.gz.parquet
   #     moderately_sensitive:
-  #       table1: output/tab1_baseline_description.html
-  #       longcovid_dates: output/longcovid_dates.pdf
+  #       demographic_data: output/table1_demographic.csv
+  #       questionnaire_data: output/table1_questions.csv
+  #       utility_score: output/baseline_EQ5D.svg
+  #       log_tables: logs/op-baseline-table1.log
