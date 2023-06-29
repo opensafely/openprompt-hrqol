@@ -10,23 +10,23 @@ adopath + "analysis/Extra_ados"
 use "output/openprompt_dataset.dta", clear
 
 //*** Table1_mc baseline demographic ***
-label variable ethnicity_cat "Ethnicity"
-label variable highest_educ "Highest education"
-label variable sex "Gender"
-label variable relation_status "Relationship status"
-label variable disabled "Disability"
-label variable covid_n "Number of COVID-19 episodes"
-label variable vaccine_n "Number of COVID-19 vaccines"
-label variable vaccine_hist "Have you had a COVID-19 vaccine"
+label variable base_ethnicity "Ethnicity"
+label variable base_highest_edu "Highest education"
+label variable base_gender "Gender"
+label variable base_relationship "Relationship status"
+label variable base_disability "Disability"
+label variable n_covids "Number of COVID-19 episodes"
+label variable n_vaccines "Number of COVID-19 vaccines"
+label variable vaccinated "Have you had a COVID-19 vaccine"
 label variable covid_history "Have you had COVID-19"
-label variable covid_recovered "Recovered from COVID-19"
-label variable covid_symptoms "Length of COVID-19 symptoms"
-label variable hh_inc "Household Income"
+label variable recovered_from_covid "Recovered from COVID-19"
+label variable covid_duration "Length of COVID-19 symptoms"
+label variable base_hh_income "Household Income"
 
-table1_mc if survey_response==1, vars(ethnicity_cat cat %5.1f \ sex cat %5.1f \ ///
-highest_educ cat %5.1f\ relation_status cat %5.1f\ hh_inc cat %5.1f \ disabled cat %5.1f\ ///
-unemployed cat %5.1f\ covid_n cat %5.1f \ vaccine_n cat %5.1f \ vaccine_hist cat %5.1f \ ///
-covid_history cat %5.1f \ covid_recovered cat %5.1f \ covid_symptoms cat %5.1f) ///
+table1_mc if survey_response==1, vars(base_ethnicity cat %5.1f \ base_gender cat %5.1f \ ///
+base_highest_edu cat %5.1f\ base_relationship cat %5.1f\ base_hh_income cat %5.1f \ base_disability cat %5.1f\ ///
+employment_status cat %5.1f\ n_covids cat %5.1f \ n_vaccines cat %5.1f \ vaccinated cat %5.1f \ ///
+covid_history cat %5.1f \ recovered_from_covid cat %5.1f \ covid_duration cat %5.1f) ///
 nospacelowpercent percent_n onecol missing iqrmiddle(",")  ///
 saving("output/table1_demographic.xls", replace)
 preserve
@@ -38,7 +38,7 @@ outsheet * using "output/table1_demographic.csv", comma nonames replace
 restore
 table1_mc if survey_response==1, vars(mobility cat %5.1f \ selfcare cat %5.1f \ ///
 activity cat %5.1f \ pain cat %5.1f \ anxiety cat %5.1f \ ///
-work_effect cat %5.1f \ life_effect cat %5.1f \ breathlessness_mrc cat %5.1f) ///
+work_effect cat %5.1f \ life_effect cat %5.1f \ mrc_breathlessness cat %5.1f) ///
 nospacelowpercent percent_n onecol missing iqrmiddle(",")  ///
 saving("output/table1_questions.xls", replace)
 preserve
