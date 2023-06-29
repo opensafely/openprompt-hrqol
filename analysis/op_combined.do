@@ -1,6 +1,6 @@
 //*** Open log file ***
 cap log close
-log using "logs/open-prompt-combine.log", replace
+log using "output/open-prompt-combine.log", replace
 clear
 
 //*** Import ***
@@ -11,7 +11,7 @@ clear
 import delimited "output/openprompt_raw.csv"
 
 //*** Drop non answered ***
-drop if base_ethnicity_consult_date=="NA"
+drop if base_ethnicity_consult_date==.
 
 //*** Ethnicity ***
 gen ethnicity_cat= 1 if base_ethnicity=="White"
@@ -294,6 +294,8 @@ rename self_care_eq5d selfcare
 rename usual_activity_eq5d activity
 rename pain_discomfort_eq5d pain
 rename anx_depression_eq5d anxiety
+
+
 
 gen UK_crosswalk = .												
 replace UK_crosswalk= 1.000 if mobility== 1 & selfcare== 1 & activity== 1 & pain== 1 & anxiety== 1

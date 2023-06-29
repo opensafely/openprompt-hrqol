@@ -1,6 +1,6 @@
 //*** Open log file ***
 cap log close
-log using "logs/op-baseline-table1.log", replace
+log using "output/op-baseline-table1.log", replace
 clear
 
 //*** Set ado file path ***

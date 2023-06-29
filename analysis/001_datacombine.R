@@ -3,7 +3,7 @@ library(lubridate)
 library(here)
 library(arrow)
 library(gtsummary)
-
+library(haven)
 source(here("analysis/R_fn/summarise_data.R"))
 source(here("analysis/model_questions/master_mapping.R"))
 
@@ -234,23 +234,220 @@ op_neat$work_affected <- factor(op_neat$work_affected, levels = 0:10, labels = l
 op_neat$life_affected <- factor(op_neat$life_affected, levels = 0:10, labels = labels_work_and_productivity)
 
 # - FACIT: 13 questions on fatigue scale
-labels_facit <- c(
+
+# Note: scores are reversed so that a high score is equivalent to not having a problem
+# e.g., "Not at all" for "Do you feel fatigued"
+labels_facit_proper <- c(
+  "Very much",
+  "Quite a bit",
+  "Somewhat",
+  "A little bit",
+  "Not at all"
+)
+# HOWEVER, there are two questions that need to be scored the other way around
+# fun
+labels_facit_reverse <- c(
   "Not at all",
   "A little bit",
   "Somewhat",
   "Quite a bit",
   "Very much"
 )
+
 facit_questions <- op_neat %>% dplyr::select(starts_with("facit")) %>% dplyr::select(!contains("consult_date")) %>% names()
+facit_questions_reverse <- c("facit_energy", "facit_usual_activities")
+facit_questions_proper <- facit_questions[!facit_questions %in% facit_questions_reverse]
+
 op_neat <- op_neat %>% 
-  mutate_at(all_of(facit_questions), ~factor(., levels = 0:4, 
-                                            labels = labels_facit))
+  mutate_at(all_of(facit_questions_proper), ~factor(., levels = 0:4, 
+                                            labels = labels_facit_proper)) %>% 
+  mutate_at(all_of(facit_questions_reverse), ~factor(., levels = 0:4, 
+                                                    labels = labels_facit_reverse))
+
+
+# TODO: convert all strings to factor
+# Ethnicity:
+op_neat$base_ethnicity <- factor(op_neat$base_ethnicity, 
+                                 levels = c("White",
+                                            "Mixed",
+                                            "Asian/Asian Brit",
+                                            "Black/African/Caribbn/Black Brit",
+                                            "Other/not stated",
+                                            "NA"),
+                                 labels = c("White",
+                                            "Mixed",
+                                            "Asian/Asian Brit",
+                                            "Black/African/Caribbn/Black Brit",
+                                            "Other/not stated",
+                                            "Other/not stated"))
+
+
+# Eductaion
+op_neat$base_highest_edu <- factor(op_neat$base_highest_edu, 
+                                 levels = c("less than primary school",
+                                            "primary school completed",
+                                            "secondary / high school completed",
+                                            "college / university completed",
+                                            "post graduate degree",
+                                            "NA",
+                                            "Refused"),
+                                 labels = c("None/less than primary school",
+                                            "Primary School",
+                                            "Secondary/high school",
+                                            "College/university",
+                                            "Postgraduate qualification",
+                                            "Not stated",
+                                            "Not stated"))
+
+# Disability
+op_neat$base_disability <- factor(op_neat$base_disability, 
+                                 levels = c("None",
+                                            "Disability",
+                                            "Refused",
+                                            "NA"),
+                                 labels = c("No",
+                                            "Yes",
+                                            "Not stated",
+                                            "Not stated"))
+
+# Relationship status
+op_neat$base_relationship <- factor(op_neat$base_relationship, 
+                                 levels = c("Single person",
+                                            "Cohabiting",
+                                            "Married/civil partner",
+                                            "Separated",
+                                            "Divorced/person whose civil partnership has been dissolved",
+                                            "Widowed/surviving civil partner",
+                                            "Marital/civil state not disclosed",
+                                            "NA"
+                                            ),
+                                 labels = c("Single person",
+                                            "Cohabiting",
+                                            "Married/civil partner",
+                                            "Separated",
+                                            "Divorced/dissolved civil partnership",
+                                            "Widowed/surviving civil partner",
+                                            "Not stated",
+                                            "Not stated"
+                                            ))
+
+# Gender - Male/Female only 
+op_neat$base_gender <- factor(op_neat$base_gender, 
+                                  levels = c("Male",
+                                             "Female",
+                                             "Intersex/non-binary/other/refused",
+                                             "NA"),
+                                  labels = c("Male",
+                                             "Female",
+                                             "Intersex/non-binary/other/refused",
+                                             "Not stated"))
+
+# Income 
+op_neat$base_hh_income <- factor(op_neat$base_hh_income, 
+                                 levels = c("£6,000-12,999",
+                                            "£13,000-18,999",
+                                            "£19,000-25,999",
+                                            "£26,000-31,999",
+                                            "£32,000-47,999",
+                                            "£48,000-63,999",
+                                            "£64,000-95,999",
+                                            "£96,000",
+                                            "Unknown income",
+                                            "NA"
+                                            ),
+                                 labels = c("£6,000-12,999",
+                                            "£13,000-18,999",
+                                            "£19,000-25,999",
+                                            "£26,000-31,999",
+                                            "£32,000-47,999",
+                                            "£48,000-63,999",
+                                            "£64,000-95,999",
+                                            "£96,000",
+                                            "Not stated",
+                                            "Not stated"
+                                            ))
+
+# Employment Status
+op_neat$employment_status <- as_factor(op_neat$employment_status)
+
+# Covid history 
+op_neat$long_covid <- factor(op_neat$long_covid,
+                             levels = c(
+                               "My test for COVID-19 was positive",
+                               "I think I have already had COVID-19 (coronavirus) disease",
+                               "Suspected COVID-19",
+                               "I am unsure if I currently have or have ever had COVID-19",
+                               "I do not think I currently have or have ever had COVID-19",
+                               "I prefer not to say if I currently have or have ever had COVID-19",
+                               "NA"
+                             ),
+                             labels = c(
+                               "Yes (+ve test)",
+                               "Yes (medical advice",
+                               "Yes (suspected)",
+                               "Unsure",
+                               "No",
+                               "Not stated",
+                               "Not stated"
+                             ))
+
+# Covid recovery 
+op_neat$recovered_from_covid <- factor(op_neat$recovered_from_covid,
+                                       levels = c(
+                                         "I feel I have fully recovered from my (latest) episode of COVID-19",
+                                         "I feel I have not fully recovered from my (latest) episode of COVID-19",
+                                         "NA"
+                                       ),
+                                       labels = c(
+                                         "Yes, back to normal",
+                                         "No, still have symptoms",
+                                         "Not stated"
+                                       ))
+
+# Vaccinated
+op_neat$vaccinated <- factor(op_neat$vaccinated, 
+                             levels = c(
+                               "I have had at least one COVID-19 vaccination",
+                               "I have not had any COVID-19 vaccinations",
+                               "I prefer not to say if I have had any COVID-19 vaccinations",
+                               "NA"
+                             ),
+                             labels = c(
+                               "Yes",
+                               "No",
+                               "Not stated",
+                               "Not stated"
+                             ))
+
+# MRC breathlessness
+op_neat$mrc_breathlessness <- factor(op_neat$mrc_breathlessness,
+                                     levels = c(
+                                       "MRC Breathlessness Scale: grade 1",
+                                       "MRC Breathlessness Scale: grade 2",
+                                       "MRC Breathlessness Scale: grade 3",
+                                       "MRC Breathlessness Scale: grade 4",
+                                       "MRC Breathlessness Scale: grade 5"
+                                     ))
 
 # Output summary of the tidied up dataset ---------------------------------
 summarise_data(data_in = op_neat, filename = "op_mapped")
 
 # output data -------------------------------------------------------------
 readr::write_csv(op_neat, here::here("output/openprompt_raw.csv.gz"))
+
+# STATA variable names have max length of 32. So truncate anynames longer than that
+
+# make a new dataset to output as the stata .dta
+op_stata <- op_neat 
+
+# get the names of the original data
+df_names <- names(op_neat)
+
+# replace names on new dataset to 1-32 characters of original names
+names(op_stata) <- substr(df_names, 1, 32)
+
+# output as .dta
+haven::write_dta(op_stata, path = here::here("output/op_stata.dta"))
 
 # baseline summary --------------------------------------------------------
 # op_raw contains every participant ID included in the `open_prompt` table 
@@ -350,3 +547,4 @@ summ_date_consistency <- date_consistency %>%
 
 write_csv(date_consistency, here::here("output/data_properties/survey_date_consistency.csv"))
 write_csv(summ_date_consistency, here::here("output/data_properties/survey_date_consistency_summary.csv"))
+
