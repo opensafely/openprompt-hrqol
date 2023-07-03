@@ -37,7 +37,7 @@ saving("$projectdir/output/tables/table1_demographic.xls", replace)
 preserve
 
 import excel "$projectdir/output/tables/table1_demographic.xls", clear
-outsheet * using "$projectdiroutput/tables/table1_demographic.csv", comma nonames replace
+outsheet * using "$projectdir/output/tables/table1_demographic.csv", comma nonames replace
 
 //*** Questionnaire responses ***
 restore
