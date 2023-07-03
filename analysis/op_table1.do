@@ -1,11 +1,12 @@
+//*** Set filepaths ***
+global projectdir `c(pwd)'
+capture mkdir "$projectdir/output/tables"
+capture mkdir "$projectdir/output/figures"
+
 //*** Open log file ***
 cap log close
 log using "output/op-baseline-table1.log", replace
 clear
-
-//*** Create filepaths ***
-capture mkdir "$projectdir/output/tables"
-capture mkdir "$projectdir/output/figures"
 
 //*** Set ado file path ***
 adopath + "analysis/Extra_ados"
