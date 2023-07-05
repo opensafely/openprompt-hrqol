@@ -63,175 +63,111 @@ title("Frequency Distribution of baseline EQ-5D Index Score (disutility)", size(
 graph export "$projectdir/output/figures/baseline_EQ5D_disutility.svg", width(12in) replace
 
 //*** Baseline EQ-5D-5L by long COVID ***
-preserve
-drop if survey_response>1
-gen test_mobility=mobility
-replace test_mobility=test_mobility-0.2 if long_covid==1
-replace test_mobility=test_mobility+0.2 if long_covid==0
-gen countbygroup=1
-collapse (sum) count, by(long_covid test_mobility)
-set scheme s1color
-twoway (bar count test_mobility if long_covid==1, vertical color(red%40) barwidth(0.4)) ///
-(bar count test_mobility if long_covid==0, vertical color(blue%40) barwidth(0.4)), ///
-legend(order(1 2) label(1 "Long COVID") label(2 "No Long COVID")) ///
+graph bar (count) if survey_response==1, over(long_covid) over(mobility, label(labsize(vsmall)) ///
+relabel(1 `""No" "Problems""' 2 "Slight" 3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) ///
+asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Mobility", size(medsmall)) ///
-xtitle("") ///
-xlabel(1 `" "No" "Problems" "' 2 "Slight" 3 "Moderate" 4 "Severe" 5 `" "Extreme/" "Unable to" "', labsize(2)) ///
 ytitle("") ///
 ylabel(, labsize(2) angle(0)) ///
-name(mobility_by_lc, replace)
-restore
+name(mobility_freq, replace)
 
-preserve
-drop if survey_response>1
-gen test_selfcare=selfcare
-replace test_selfcare=test_selfcare-0.2 if long_covid==1
-replace test_selfcare=test_selfcare+0.2 if long_covid==0
-gen countbygroup=1
-collapse (sum) count, by(long_covid test_selfcare)
-set scheme s1color
-twoway (bar count test_selfcare if long_covid==1, vertical color(red%40) barwidth(0.4)) ///
-(bar count test_selfcare if long_covid==0, vertical color(blue%40) barwidth(0.4)), ///
-legend(order(1 2) label(1 "Long COVID") label(2 "No Long COVID")) ///
+graph bar (count) if survey_response==1, over(long_covid) over(selfcare, label(labsize(vsmall)) /// 
+relabel(1 `""No" "Problems""' 2 "Slight" ///
+3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
-title("Self care", size(medsmall)) ///
-xtitle("") ///
-xlabel(1 `" "No" "Problems" "' 2 "Slight" 3 "Moderate" 4 "Severe" 5 `" "Extreme/" "Unable to" "', labsize(2)) ///
+title("Self Care", size(medsmall)) ///
 ytitle("") ///
 ylabel(, labsize(2) angle(0)) ///
-name(selfcare_by_lc, replace)
-restore
+name(selfcare_freq, replace)
 
-preserve
-drop if survey_response>1
-gen test_activity=activity
-replace test_activity=test_activity-0.2 if long_covid==1
-replace test_activity=test_activity+0.2 if long_covid==0
-gen countbygroup=1
-collapse (sum) count, by(long_covid test_activity)
-set scheme s1color
-twoway (bar count test_activity if long_covid==1, vertical color(red%40) barwidth(0.4)) ///
-(bar count test_activity if long_covid==0, vertical color(blue%40) barwidth(0.4)), ///
-legend(order(1 2) label(1 "Long COVID") label(2 "No Long COVID")) ///
+graph bar (count) if survey_response==1, over(long_covid) over(activity, label(labsize(vsmall)) ///
+relabel(1 `""No" "Problems""' 2 "Slight" ///
+3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Usual Activities", size(medsmall)) ///
-xtitle("") ///
-xlabel(1 `" "No" "Problems" "' 2 "Slight" 3 "Moderate" 4 "Severe" 5 `" "Extreme/" "Unable to" "', labsize(2)) ///
 ytitle("") ///
 ylabel(, labsize(2) angle(0)) ///
-name(activity_by_lc, replace)
-restore
+name(activity_freq, replace)
 
-preserve
-drop if survey_response>1
-gen test_pain=pain
-replace test_pain=test_pain-0.2 if long_covid==1
-replace test_pain=test_pain+0.2 if long_covid==0
-gen countbygroup=1
-collapse (sum) count, by(long_covid test_pain)
-set scheme s1color
-twoway (bar count test_pain if long_covid==1, vertical color(red%40) barwidth(0.4)) ///
-(bar count test_pain if long_covid==0, vertical color(blue%40) barwidth(0.4)), ///
-legend(order(1 2) label(1 "Long COVID") label(2 "No Long COVID")) ///
+graph bar (count) if survey_response==1, over(long_covid) over(pain, label(labsize(vsmall)) ///
+relabel(1 `""No" "Problems""' 2 "Slight" ///
+3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Pain/Discomfort", size(medsmall)) ///
-xtitle("") ///
-xlabel(1 `" "No" "Problems" "' 2 "Slight" 3 "Moderate" 4 "Severe" 5 `" "Extreme/" "Unable to" "', labsize(2)) ///
 ytitle("") ///
 ylabel(, labsize(2) angle(0)) ///
-name(pain_by_lc, replace)
-restore
+name(pain_freq, replace)
 
-preserve
-drop if survey_response>1
-gen test_anxiety=anxiety
-replace test_anxiety=test_anxiety-0.2 if long_covid==1
-replace test_anxiety=test_anxiety+0.2 if long_covid==0
-gen countbygroup=1
-collapse (sum) countbygroup, by(long_covid test_anxiety)
-set scheme s1color
-twoway (bar count test_anxiety if long_covid==1, vertical color(red%40) barwidth(0.4)) ///
-(bar count test_anxiety if long_covid==0, vertical color(blue%40) barwidth(0.4)), ///
-legend(order(1 2) label(1 "Long COVID") label(2 "No Long COVID")) ///
+graph bar (count) if survey_response==1, over(long_covid) over(anxiety, label(labsize(vsmall)) ///
+relabel(1 `""No" "Problems""' 2 "Slight" ///
+3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Anxiety/Depression", size(medsmall)) ///
-xtitle("") ///
-xlabel(1 `" "No" "Problems" "' 2 "Slight" 3 "Moderate" 4 "Severe" 5 `" "Extreme/" "Unable to" "', labsize(2)) ///
 ytitle("") ///
 ylabel(, labsize(2) angle(0)) ///
-name(anxiety_by_lc, replace)
-restore
+name(anxiety_freq, replace)
 
-graph combine mobility_by_lc selfcare_by_lc activity_by_lc pain_by_lc anxiety_by_lc, ///
+graph combine mobility_freq selfcare_freq activity_freq pain_freq anxiety_freq, ///
 title("Responses at baseline (Frequency)", size(medlarge))
 graph export "$projectdir/output/figures/baseline_EQ5D_responses.svg", width(12in) replace
 
+
 //*** Percentages for baseline survey response ***
-preserve
-drop if survey_response>1
-graph bar, percent over(long_covid) over(mobility, label(labsize(vsmall)) relabel(1 `""No" "Problems""' 2 "Slight" ///
-3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
-bar(1, color(red%40)) bar(2, color(blue%40)) ///
-legend(order(1 2) label(1 "Long COVID") label(2 "No Long COVID")) ///
+graph bar if survey_response==1, percent over(long_covid) over(mobility, label(labsize(vsmall)) ///
+relabel(1 `""No" "Problems""' 2 "Slight" 3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) ///
+asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Mobility", size(medsmall)) ///
 ytitle("") ///
 ylabel(, labsize(2) angle(0)) ///
 name(mobility_perc, replace)
-restore
 
-preserve
-drop if survey_response>1
-graph bar, percent over(long_covid) over(selfcare, label(labsize(vsmall)) relabel(1 `""No" "Problems""' 2 "Slight" ///
+graph bar if survey_response==1, percent over(long_covid) over(selfcare, label(labsize(vsmall)) /// 
+relabel(1 `""No" "Problems""' 2 "Slight" ///
 3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
-bar(1, color(red%40)) bar(2, color(blue%40)) ///
-legend(order(1 2) label(1 "Long COVID") label(2 "No Long COVID")) ///
+bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Self Care", size(medsmall)) ///
 ytitle("") ///
 ylabel(, labsize(2) angle(0)) ///
 name(selfcare_perc, replace)
-restore
 
-preserve
-drop if survey_response>1
-graph bar, percent over(long_covid) over(activity, label(labsize(vsmall)) relabel(1 `""No" "Problems""' 2 "Slight" ///
+graph bar if survey_response==1, percent over(long_covid) over(activity, label(labsize(vsmall)) ///
+relabel(1 `""No" "Problems""' 2 "Slight" ///
 3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
-bar(1, color(red%40)) bar(2, color(blue%40)) ///
-legend(order(1 2) label(1 "Long COVID") label(2 "No Long COVID")) ///
+bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Usual Activities", size(medsmall)) ///
 ytitle("") ///
 ylabel(, labsize(2) angle(0)) ///
 name(activity_perc, replace)
-restore
 
-preserve
-drop if survey_response>1
-graph bar, percent over(long_covid) over(pain, label(labsize(vsmall)) relabel(1 `""No" "Problems""' 2 "Slight" ///
+graph bar if survey_response==1, percent over(long_covid) over(pain, label(labsize(vsmall)) ///
+relabel(1 `""No" "Problems""' 2 "Slight" ///
 3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
-bar(1, color(red%40)) bar(2, color(blue%40)) ///
-legend(order(1 2) label(1 "Long COVID") label(2 "No Long COVID")) ///
+bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Pain/Discomfort", size(medsmall)) ///
 ytitle("") ///
 ylabel(, labsize(2) angle(0)) ///
 name(pain_perc, replace)
-restore
 
-preserve
-drop if survey_response>1
-graph bar, percent over(long_covid) over(anxiety, label(labsize(vsmall)) relabel(1 `""No" "Problems""' 2 "Slight" ///
+graph bar if survey_response==1, percent over(long_covid) over(anxiety, label(labsize(vsmall)) ///
+relabel(1 `""No" "Problems""' 2 "Slight" ///
 3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
-bar(1, color(red%40)) bar(2, color(blue%40)) ///
-legend(order(1 2) label(1 "Long COVID") label(2 "No Long COVID")) ///
+bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Anxiety/Depression", size(medsmall)) ///
 ytitle("") ///
 ylabel(, labsize(2) angle(0)) ///
 name(anxiety_perc, replace)
-restore
 
 graph combine mobility_perc selfcare_perc activity_perc pain_perc anxiety_perc, ///
 title("Responses at baseline (Percent)", size(medlarge))
