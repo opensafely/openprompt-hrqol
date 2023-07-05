@@ -137,4 +137,5 @@ actions:
         question_percents: output/figures/baseline_EQ5D_percentage.svg
         vas_ncovids: output/figures/VAS_by_covids.svg
         vas_nvaccines: output/figures/VAS_by_vaccines.svg
+        facit_fscore: output/figures/facit_baseline.svg
         log_tables: output/op-baseline-table1.log

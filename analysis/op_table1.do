@@ -170,7 +170,7 @@ graph export "$projectdir/output/figures/baseline_EQ5D_responses.svg", width(12i
 //*** Percentages for baseline survey response ***
 preserve
 drop if survey_response>1
-graph bar, over(long_covid) over(mobility, label(labsize(vsmall)) relabel(1 `""No" "Problems""' 2 "Slight" ///
+graph bar, percent over(long_covid) over(mobility, label(labsize(vsmall)) relabel(1 `""No" "Problems""' 2 "Slight" ///
 3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
 bar(1, color(red%40)) bar(2, color(blue%40)) ///
 legend(order(1 2) label(1 "Long COVID") label(2 "No Long COVID")) ///
@@ -183,7 +183,7 @@ restore
 
 preserve
 drop if survey_response>1
-graph bar, over(long_covid) over(selfcare, label(labsize(vsmall)) relabel(1 `""No" "Problems""' 2 "Slight" ///
+graph bar, percent over(long_covid) over(selfcare, label(labsize(vsmall)) relabel(1 `""No" "Problems""' 2 "Slight" ///
 3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
 bar(1, color(red%40)) bar(2, color(blue%40)) ///
 legend(order(1 2) label(1 "Long COVID") label(2 "No Long COVID")) ///
@@ -196,7 +196,7 @@ restore
 
 preserve
 drop if survey_response>1
-graph bar, over(long_covid) over(activity, label(labsize(vsmall)) relabel(1 `""No" "Problems""' 2 "Slight" ///
+graph bar, percent over(long_covid) over(activity, label(labsize(vsmall)) relabel(1 `""No" "Problems""' 2 "Slight" ///
 3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
 bar(1, color(red%40)) bar(2, color(blue%40)) ///
 legend(order(1 2) label(1 "Long COVID") label(2 "No Long COVID")) ///
@@ -209,7 +209,7 @@ restore
 
 preserve
 drop if survey_response>1
-graph bar, over(long_covid) over(pain, label(labsize(vsmall)) relabel(1 `""No" "Problems""' 2 "Slight" ///
+graph bar, percent over(long_covid) over(pain, label(labsize(vsmall)) relabel(1 `""No" "Problems""' 2 "Slight" ///
 3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
 bar(1, color(red%40)) bar(2, color(blue%40)) ///
 legend(order(1 2) label(1 "Long COVID") label(2 "No Long COVID")) ///
@@ -222,7 +222,7 @@ restore
 
 preserve
 drop if survey_response>1
-graph bar, over(long_covid) over(anxiety, label(labsize(vsmall)) relabel(1 `""No" "Problems""' 2 "Slight" ///
+graph bar, percent over(long_covid) over(anxiety, label(labsize(vsmall)) relabel(1 `""No" "Problems""' 2 "Slight" ///
 3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
 bar(1, color(red%40)) bar(2, color(blue%40)) ///
 legend(order(1 2) label(1 "Long COVID") label(2 "No Long COVID")) ///
@@ -268,10 +268,23 @@ twoway rcap upper lower n_vax2 if tag & long_covid==0, lc(blue%40) ///
 || rcap upper lower n_vax2 if tag & long_covid==1, lc(red%40) ///
 || scatter mean_vas n_vax2 if tag & long_covid==1, mc(red%80) ///
 legend(order(4 "Long COVID" 2 "No Long COVID")) legend(margin(vsmall) region(lstyle(none))) ///
-xtitle("Number of COVID-19 Cases") ylabel(, angle(0)) ///
+xtitle("Number of COVID-19 Vaccines") ylabel(, angle(0)) ///
 xlabel(1 "0" 2 "1" 3 "2" 4 "3" 5 "4" 6 "5" 7 "6+") ytitle(Mean and SD of EQ-VAS) ///
 title("EQ-VAS Score by COVID-19 Vaccines")
 graph export "$projectdir/output/figures/VAS_by_vaccines.svg", width(12in) replace
 restore
+
+//*** FACIT-F Scores ***
+hist fscore if long_covid==1 & survey_response==1, freq color(red%40) ///
+xtitle(FACIT-F Scores at baseline) ylabel(, angle(0)) xlabel(0(10)52) ///
+title(Long COVID) name(fatigue_long_covid, replace)
+
+hist fscore if long_covid==0 & survey_response==1, freq color(blue%40) ///
+xtitle(FACIT-F Scores at baseline) ylabel(, angle(0)) xlabel(0(10)52) ///
+title(No Long COVID) name(fatigue_nolong_covid, replace)
+
+graph combine fatigue_long_covid fatigue_nolong_covid, ///
+title("FACIT-F Subscale Scores (Frequency Distribution)")
+graph export "$projectdir/output/figures/facit_baseline.svg", width(12in) replace
 
 log close
