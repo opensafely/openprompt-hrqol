@@ -62,55 +62,58 @@ hist disutility if survey_response==1, freq xtitle(EQ-5D Index Score (disutility
 title("Frequency Distribution of baseline EQ-5D Index Score (disutility)", size(medlarge))
 graph export "$projectdir/output/figures/baseline_EQ5D_disutility.svg", width(12in) replace
 
+codebook mobility selfcare activity pain anxiety if survey_response==1, m
+tab2 mobility selfcare activity pain anxiety if survey_response==1, m
+
 //*** Baseline EQ-5D-5L by long COVID ***
 graph bar (count) if survey_response==1, over(long_covid) over(mobility, label(labsize(vsmall)) ///
-relabel(1 `""No" "Problems""' 2 "Slight" 3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) ///
-asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+relabel(1 `""No" "Problems""' 2 "Slight" 3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) ///
+asyvars blabel(bar, size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Mobility", size(medsmall)) ///
 ytitle("") ///
-ylabel(, labsize(2) angle(0)) ///
+ylabel(0(250)1500, labsize(2) angle(0)) ///
 name(mobility_freq, replace)
 
 graph bar (count) if survey_response==1, over(long_covid) over(selfcare, label(labsize(vsmall)) /// 
 relabel(1 `""No" "Problems""' 2 "Slight" ///
-3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Self Care", size(medsmall)) ///
 ytitle("") ///
-ylabel(, labsize(2) angle(0)) ///
+ylabel(0(250)1500, labsize(2) angle(0)) ///
 name(selfcare_freq, replace)
 
 graph bar (count) if survey_response==1, over(long_covid) over(activity, label(labsize(vsmall)) ///
 relabel(1 `""No" "Problems""' 2 "Slight" ///
-3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Usual Activities", size(medsmall)) ///
 ytitle("") ///
-ylabel(, labsize(2) angle(0)) ///
+ylabel(0(250)1500, labsize(2) angle(0)) ///
 name(activity_freq, replace)
 
 graph bar (count) if survey_response==1, over(long_covid) over(pain, label(labsize(vsmall)) ///
 relabel(1 `""No" "Problems""' 2 "Slight" ///
-3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Pain/Discomfort", size(medsmall)) ///
 ytitle("") ///
-ylabel(, labsize(2) angle(0)) ///
+ylabel(0(250)1500, labsize(2) angle(0)) ///
 name(pain_freq, replace)
 
 graph bar (count) if survey_response==1, over(long_covid) over(anxiety, label(labsize(vsmall)) ///
 relabel(1 `""No" "Problems""' 2 "Slight" ///
-3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Anxiety/Depression", size(medsmall)) ///
 ytitle("") ///
-ylabel(, labsize(2) angle(0)) ///
+ylabel(0(250)1500, labsize(2) angle(0)) ///
 name(anxiety_freq, replace)
 
 graph combine mobility_freq selfcare_freq activity_freq pain_freq anxiety_freq, ///
@@ -118,9 +121,9 @@ title("Responses at baseline (Frequency)", size(medlarge))
 graph export "$projectdir/output/figures/baseline_EQ5D_responses.svg", width(12in) replace
 
 
-//*** Percentages for baseline survey response ***
+//*** Percentages for baseline EQ-5D response ***
 graph bar if survey_response==1, percent over(long_covid) over(mobility, label(labsize(vsmall)) ///
-relabel(1 `""No" "Problems""' 2 "Slight" 3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) ///
+relabel(1 `""No" "Problems""' 2 "Slight" 3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) ///
 asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
@@ -131,7 +134,7 @@ name(mobility_perc, replace)
 
 graph bar if survey_response==1, percent over(long_covid) over(selfcare, label(labsize(vsmall)) /// 
 relabel(1 `""No" "Problems""' 2 "Slight" ///
-3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Self Care", size(medsmall)) ///
@@ -141,7 +144,7 @@ name(selfcare_perc, replace)
 
 graph bar if survey_response==1, percent over(long_covid) over(activity, label(labsize(vsmall)) ///
 relabel(1 `""No" "Problems""' 2 "Slight" ///
-3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Usual Activities", size(medsmall)) ///
@@ -151,7 +154,7 @@ name(activity_perc, replace)
 
 graph bar if survey_response==1, percent over(long_covid) over(pain, label(labsize(vsmall)) ///
 relabel(1 `""No" "Problems""' 2 "Slight" ///
-3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Pain/Discomfort", size(medsmall)) ///
@@ -161,7 +164,7 @@ name(pain_perc, replace)
 
 graph bar if survey_response==1, percent over(long_covid) over(anxiety, label(labsize(vsmall)) ///
 relabel(1 `""No" "Problems""' 2 "Slight" ///
-3 "Moderate" 4 "Severe" 5 `""Extreme" "Problems""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Anxiety/Depression", size(medsmall)) ///
@@ -212,11 +215,11 @@ restore
 
 //*** FACIT-F Scores ***
 hist fscore if long_covid==1 & survey_response==1, freq color(red%40) ///
-xtitle(FACIT-F Scores at baseline) ylabel(, angle(0)) xlabel(0(10)52) ///
+xtitle(FACIT-F Scores at baseline) ylabel(0(50)250, angle(0)) xlabel(0(10)52) ///
 title(Long COVID) name(fatigue_long_covid, replace)
 
 hist fscore if long_covid==0 & survey_response==1, freq color(blue%40) ///
-xtitle(FACIT-F Scores at baseline) ylabel(, angle(0)) xlabel(0(10)52) ///
+xtitle(FACIT-F Scores at baseline) ylabel(0(50)250, angle(0)) xlabel(0(10)52) ///
 title(No Long COVID) name(fatigue_nolong_covid, replace)
 
 graph combine fatigue_long_covid fatigue_nolong_covid, ///
