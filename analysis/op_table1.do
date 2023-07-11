@@ -64,6 +64,7 @@ graph export "$projectdir/output/figures/baseline_EQ5D_disutility.svg", width(12
 
 codebook mobility selfcare activity pain anxiety if survey_response==1, m
 tab2 mobility selfcare activity pain anxiety if survey_response==1, m
+tab2 covid_duration recovered_from_covid if survey_response==1, m
 
 //*** Baseline EQ-5D-5L by long COVID ***
 graph bar (count) if survey_response==1, over(long_covid) over(mobility, label(labsize(vsmall)) ///
