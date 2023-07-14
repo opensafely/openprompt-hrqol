@@ -123,19 +123,19 @@ actions:
         data: output/openprompt_dataset.dta
         log: output/open-prompt-combine.log
    
-  gen_baseline_tables:
-    run: >
-      stata-mp:latest analysis/op_table1.do
-    needs: [generate_openprompt_dataset]
-    outputs:
-      moderately_sensitive:
-        demographic_data: output/tables/table1_demographic.csv
-        questionnaire_data: output/tables/table1_questions.csv
-        utility_score: output/figures/baseline_EQ5D_utility.svg
-        disutility_score: output/figures/baseline_EQ5D_disutility.svg
-        question_responses: output/figures/baseline_EQ5D_responses.svg
-        question_percents: output/figures/baseline_EQ5D_percentage.svg
-        vas_ncovids: output/figures/VAS_by_covids.svg
-        vas_nvaccines: output/figures/VAS_by_vaccines.svg
-        facit_fscore: output/figures/facit_baseline.svg
-        log_tables: output/op-baseline-table1.log
+  # gen_baseline_tables:
+  #   run: >
+  #     stata-mp:latest analysis/op_table1.do
+  #   needs: [generate_openprompt_dataset]
+  #   outputs:
+  #     moderately_sensitive:
+  #       demographic_data: output/tables/table1_demographic.csv
+  #       questionnaire_data: output/tables/table1_questions.csv
+  #       utility_score: output/figures/baseline_EQ5D_utility.svg
+  #       disutility_score: output/figures/baseline_EQ5D_disutility.svg
+  #       question_responses: output/figures/baseline_EQ5D_responses.svg
+  #       question_percents: output/figures/baseline_EQ5D_percentage.svg
+  #       vas_ncovids: output/figures/VAS_by_covids.svg
+  #       vas_nvaccines: output/figures/VAS_by_vaccines.svg
+  #       facit_fscore: output/figures/facit_baseline.svg
+  #       log_tables: output/op-baseline-table1.log
