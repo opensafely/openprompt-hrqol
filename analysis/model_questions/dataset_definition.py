@@ -27,23 +27,15 @@ print(f"{args.window=}", file=sys.stderr)
 # (i.e. we don't end up with unwanted strings in our CSV/SQL).
 print(f"{args.day=}", file=sys.stderr)
 
-ctv3_codes = set().union(*(q.ctv3_codes for q in questions))
-# remove the 3 questions that have a date response in the app 
-# because there are unusually early consultation_date values 
-# recorded in these questions. We want to exclude these in order
-# to accurately define index_date 
-date_questions = {"Y3a9f", "Y3aa0", "Y3a97"}
-ctv3_codes_nondate = ctv3_codes - date_questions
-
-# The date of the earliest response
+# The date of the earliest response from teh `creation_date` column
 index_date = (
     open_prompt
-    .where(open_prompt.ctv3_code.is_in(ctv3_codes_nondate))
-    .consultation_date.minimum_for_patient()
+    .creation_date.minimum_for_patient()
 )
+
 # The number of days from the date of the earliest response to the date of each
 # response. We expect this to be >= 0.
-offset_from_index_date = (open_prompt.consultation_date - index_date).days
+offset_from_index_date = (open_prompt.creation_date - index_date).days
 
 # Filter opne_prompt table to only include responses recorded within 5 days 
 # of the --days argument
@@ -55,13 +47,13 @@ dataset = Dataset()
 
 dataset.define_population(filtered_open_prompt.exists_for_patient())
 
-dataset.consult_date = (
+dataset.creation_date = (
     filtered_open_prompt
-    .sort_by(open_prompt.consultation_date)
+    .sort_by(open_prompt.creation_date)
     .last_for_patient()
-    .consultation_date
+    .creation_date
     )
-dataset.days_since_baseline = (dataset.consult_date - index_date).days
+dataset.days_since_baseline = (dataset.creation_date - index_date).days
 
 # A row represents a response to a question in a questionnaire. There are six
 # questionnaires. For more information, see DATA.md.
@@ -70,30 +62,40 @@ for question in questions:
         # don't extract responses to baseline questionnaire after the index date
         continue
     
-    response_row = (
-        filtered_open_prompt
-        .where(open_prompt.ctv3_code.is_in(question.ctv3_codes))
-        # If the response is a CTV3 code, then the numeric value should be zero and
-        # sorting by the numeric value should have no effect. However, if the response
-        # is a numeric value, then zero may represent:
-        #
-        # 1. a missing value, because the question was not compulsory
-        # 2. a missing value, because the response failed form-validation
-        # 3. a measured value
-        #
-        # In each case, we think that sorting by numeric value should give the true
-        # response because if there are two responses, then:
-        #
-        # 1. the responses are identical
-        # 2. the first response failed form-validation; the second response passed
-        #
-        # We acknowledge that the true response for 3. is undetermined.
-        .sort_by(open_prompt.numeric_value)
-        .last_for_patient()
-    )
-    # the response itself may be a CTV3 code or a numeric value
+    if (question.search_col == "ctv3_code"):
+        response_row = (
+            filtered_open_prompt
+            .where(open_prompt.ctv3_code.is_in(question.q_code))
+            # If the response is a CTV3 code OR snomedct_code, then the numeric value should be zero and
+            # sorting by the numeric value should have no effect. However, if the response
+            # is a numeric value, then zero may represent:
+            #
+            # 1. a missing value, because the question was not compulsory
+            # 2. a missing value, because the response failed form-validation
+            # 3. a measured value
+            #
+            # In each case, we think that sorting by numeric value should give the true
+            # response because if there are two responses, then:
+            #
+            # 1. the responses are identical
+            # 2. the first response failed form-validation; the second response passed
+            #
+            # We acknowledge that the true response for 3. is undetermined.
+            .sort_by(open_prompt.numeric_value)
+            .last_for_patient()
+        )            
+    ## do not need an ELSE statement here because only one of ctv3_code OR snomedct_code exist for each question
+    if (question.search_col == "snomedct_code"):
+        response_row = (
+            filtered_open_prompt
+            .where(open_prompt.snomedct_code.is_in(question.q_code))
+            .sort_by(open_prompt.numeric_value)
+            .last_for_patient()
+        )            
+    
+    # the response itself may be a CTV3 code, snomedct code, a numeric value or a date
     response_value = getattr(response_row, question.value_property)
     setattr(dataset, f"{question.id}", response_value)
 
     # the date of this response may be different from the dates of the other responses
-    setattr(dataset, f"{question.id}_consult_date", response_row.consultation_date)
+    setattr(dataset, f"{question.id}_creation_date", response_row.creation_date)
