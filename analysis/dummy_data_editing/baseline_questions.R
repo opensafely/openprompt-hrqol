@@ -85,8 +85,7 @@ questions_baseline <- bind_rows(
       "Y24b9",
       "Y24ba",
       "Y24bb",
-      "Y24bc",
-      "X90UG"
+      "Y24bc"
     ),
     "ctv3_code"
   )

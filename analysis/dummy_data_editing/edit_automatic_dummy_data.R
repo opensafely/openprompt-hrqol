@@ -19,7 +19,7 @@ get_ctv3_snomed_date_numeric <- function(qq, return_value = "ctv3"){
   subset_qs <- questions[questions$id == qq,]
   q_type <- subset_qs[1, "value_property"]
   # set default values for all four possible `return_value` objects
-  num_val <- NA
+  num_val <- 0
   consultation_date <- NA
   ctv3 <- "None"
   snomedct_code <- "None"
