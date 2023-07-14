@@ -6,7 +6,7 @@ clear
 //*** Import ***
 use "output/op_stata.dta"
 //*** Drop non answered ***
-drop if base_ethnicity_consult_date==.
+drop if base_ethnicity_creation_date==.
 
 rename long_covid covid_history
 gen long_covid=0 if covid_duration==1 | covid_duration==2
