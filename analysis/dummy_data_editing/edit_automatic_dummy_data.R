@@ -15,15 +15,25 @@ op_baseline <- read_csv(here::here("output/dummydata/open_prompt.csv"))
 
 questions <- bind_rows(questions_baseline, questions_research)
 
-get_ctv3_or_numeric <- function(qq, return_value = "ctv3"){
+get_ctv3_snomed_date_numeric <- function(qq, return_value = "ctv3"){
   subset_qs <- questions[questions$id == qq,]
-  if(subset_qs[1, "value_property"] == "ctv3_code"){
-    num_val <- 0
-    ctv3 <- sample(subset_qs$ctv3_codes, 1)
-  }else{
-    num_val <- sample(0:10, size = 1)
-    ctv3 <- subset_qs[1, "ctv3_codes"]
+  q_type <- subset_qs[1, "value_property"]
+  # set default values for all four possible `return_value` objects
+  num_val <- 0
+  consultation_date <- NA
+  ctv3 <- "None"
+  snomedct_code <- "None"
+  if(q_type == "ctv3_code"){
+    ctv3 <- sample(subset_qs$q_codes, 1)
+  }else if(q_type == "snomedct_code"){
+    snomedct_code <- sample(subset_qs$q_codes, 1)
+  }else if(q_type == "consultation_date"){
+    ctv3 <- subset_qs$q_codes
+    consultation_date <- as.Date("2016-08-05") + abs(rnorm(1, 200, sd = 150))
+  }else if(q_type == "numeric_value"){
+    num_val <- sample(1:10, 1)
   }
+  ## return whichever of those we need
   return(get(return_value))
 }
 
@@ -39,10 +49,12 @@ for(patid in unique_ids){
     dummy_data, 
     bind_cols(
       patient_id = patid,
-      consultation_date = as.Date("2022-11-01") + sample(1:180, 1),
       consultation_id = round(runif(1, 531513,5314141)),
-      ctv3_code = sapply(unique(questions$id), function(xx){get_ctv3_or_numeric(xx, return_value = "ctv3")}),
-      numeric_value = sapply(unique(questions$id), function(xx){get_ctv3_or_numeric(xx, return_value = "num_val")})
+      creation_date = as.Date("2022-11-01") + sample(1:180, 1),
+      consultation_date = sapply(unique(questions$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "consultation_date")}),
+      ctv3_code = sapply(unique(questions$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "ctv3")}),
+      snomedct_code = sapply(unique(questions$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "snomedct_code")}),
+      numeric_value = sapply(unique(questions$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "num_val")})
       )
   )
 }
@@ -56,11 +68,13 @@ for(patid in sample_ids){
     dummy_data_survey2,
     bind_cols(
       patient_id = patid, 
-      consultation_date = pull(dummy_data[dummy_data$patient_id==patid, "consultation_date"])[1] + runif(1, 25, 35),
       consultation_id = round(runif(1, 531513,5314141)),
-      ctv3_code = sapply(unique(questions_research$id), function(xx){get_ctv3_or_numeric(xx, return_value = "ctv3")}),
-      numeric_value = sapply(unique(questions_research$id), function(xx){get_ctv3_or_numeric(xx, return_value = "num_val")})
-      )
+      creation_date = pull(dummy_data[dummy_data$patient_id==patid, "creation_date"])[1] + runif(1, 25, 35),
+      consultation_date = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "consultation_date")}),
+      ctv3_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "ctv3")}),
+      snomedct_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "snomedct_code")}),
+      numeric_value = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "num_val")})
+    )
   )
 }
 
@@ -73,11 +87,13 @@ for(patid in sample_ids){
     dummy_data_survey3,
     bind_cols(
       patient_id = patid, 
-      consultation_date = pull(dummy_data[dummy_data$patient_id==patid, "consultation_date"])[1] + runif(1, 55, 65),
       consultation_id = round(runif(1, 531513,5314141)),
-      ctv3_code = sapply(unique(questions_research$id), function(xx){get_ctv3_or_numeric(xx, return_value = "ctv3")}),
-      numeric_value = sapply(unique(questions_research$id), function(xx){get_ctv3_or_numeric(xx, return_value = "num_val")})
-    )
+      creation_date = pull(dummy_data[dummy_data$patient_id==patid, "creation_date"])[1] + runif(1, 55, 65),
+      consultation_date = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "consultation_date")}),
+      ctv3_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "ctv3")}),
+      snomedct_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "snomedct_code")}),
+      numeric_value = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "num_val")})
+      )
   )
 }
 
@@ -90,11 +106,13 @@ for(patid in sample_ids){
     dummy_data_survey4,
     bind_cols(
       patient_id = patid, 
-      consultation_date = pull(dummy_data[dummy_data$patient_id==patid, "consultation_date"])[1] + runif(1, 85, 95),
       consultation_id = round(runif(1, 531513,5314141)),
-      ctv3_code = sapply(unique(questions_research$id), function(xx){get_ctv3_or_numeric(xx, return_value = "ctv3")}),
-      numeric_value = sapply(unique(questions_research$id), function(xx){get_ctv3_or_numeric(xx, return_value = "num_val")})
-    )
+      creation_date = pull(dummy_data[dummy_data$patient_id==patid, "creation_date"])[1] + runif(1, 85, 95),
+      consultation_date = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "consultation_date")}),
+      ctv3_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "ctv3")}),
+      snomedct_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "snomedct_code")}),
+      numeric_value = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "num_val")})
+      )
   )
 }
 
@@ -105,6 +123,13 @@ dummy_data_combined <- bind_rows(
   dummy_data_survey3,
   dummy_data_survey4
 )
+
+dummy_data_combined$consultation_date <-
+  ifelse(
+    is.na(dummy_data_combined$consultation_date),
+    dummy_data_combined$creation_date,
+    dummy_data_combined$consultation_date
+  ) %>% as.Date(origin = "1970-01-01")
 
 
 # some final manual bodge edits on the numeric_value

@@ -10,7 +10,7 @@ source(here("analysis/model_questions/master_mapping.R"))
 op_baseline <- read_csv(here("output/openprompt_survey1.csv"),
                         col_types = list(
                           patient_id = "d",
-                          consult_date = "D",
+                          creation_date = "D",
                           base_ethnicity = "c",
                           base_highest_edu = "c",
                           base_disability = "c",
@@ -18,23 +18,23 @@ op_baseline <- read_csv(here("output/openprompt_survey1.csv"),
                           base_gender = "c",
                           base_hh_income = "c"
                         )) %>% 
-  dplyr::select(patient_id, consult_date, starts_with("base_"))
+  dplyr::select(patient_id, creation_date, starts_with("base_"))
 
 # get index_date as the first recorded of any "base_" variable
 op_baseline$index_date <- pmin(
-  op_baseline$consult_date,
-  op_baseline$base_ethnicity_consult_date,
-  op_baseline$base_highest_edu_consult_date,
-  op_baseline$base_disability_consult_date,
-  op_baseline$base_relationship_consult_date,
-  op_baseline$base_gender_consult_date,
-  op_baseline$base_hh_income_consult_date
+  op_baseline$creation_date,
+  op_baseline$base_ethnicity_creation_date,
+  op_baseline$base_highest_edu_creation_date,
+  op_baseline$base_disability_creation_date,
+  op_baseline$base_relationship_creation_date,
+  op_baseline$base_gender_creation_date,
+  op_baseline$base_hh_income_creation_date
 )
 
 # Survey column specification 
 research_col_spec <- list(
   patient_id = "d",
-  consult_date = "D",
+  creation_date = "D",
   days_since_baseline = "d",
   long_covid = "c",
   first_covid = "D",
@@ -51,7 +51,8 @@ research_col_spec <- list(
   eq5d_pain_discomfort = "d",
   eq5d_anxiety_depression = "d",
   EuroQol_score = "d",
-  employment_status = "c",
+  #FIXME: when employment data comes back "online"
+  #employment_status = "c",
   work_affected = "d",
   life_affected = "d",
   facit_fatigue = "d",
@@ -68,39 +69,40 @@ research_col_spec <- list(
   facit_frustrated = "d",
   facit_limit_social_activity = "d",
   mrc_breathlessness = "c",
-  # repeat for _consultation_date
-  long_covid_consult_date = "D",
-  first_covid_consult_date = "D",
-  n_covids_consult_date = "D",
-  recovered_from_covid_consult_date = "D",
-  covid_duration_consult_date = "D",
-  vaccinated_consult_date = "D",
-  n_vaccines_consult_date = "D",
-  first_vaccine_date_consult_date = "D",
-  most_recent_vaccine_date_consult_date = "D",
-  eq5d_mobility_consult_date = "D",
-  eq5d_selfcare_consult_date = "D",
-  eq5d_usualactivities_consult_date = "D",
-  eq5d_pain_discomfort_consult_date = "D",
-  eq5d_anxiety_depression_consult_date = "D",
-  EuroQol_score_consult_date = "D",
-  employment_status_consult_date = "D",
-  work_affected_consult_date = "D",
-  life_affected_consult_date = "D",
-  facit_fatigue_consult_date = "D",
-  facit_weak_consult_date = "D",
-  facit_listless_consult_date = "D",
-  facit_tired_consult_date = "D",
-  facit_trouble_starting_consult_date = "D",
-  facit_trouble_finishing_consult_date = "D",
-  facit_energy_consult_date = "D",
-  facit_usual_activities_consult_date = "D",
-  facit_sleep_during_day_consult_date = "D",
-  facit_eat_consult_date = "D",
-  facit_need_help_consult_date = "D",
-  facit_frustrated_consult_date = "D",
-  facit_limit_social_activity_consult_date = "D",
-  mrc_breathlessness_consult_date = "D"
+  # repeat for _creation_date
+  long_covid_creation_date = "D",
+  first_covid_creation_date = "D",
+  n_covids_creation_date = "D",
+  recovered_from_covid_creation_date = "D",
+  covid_duration_creation_date = "D",
+  vaccinated_creation_date = "D",
+  n_vaccines_creation_date = "D",
+  first_vaccine_date_creation_date = "D",
+  most_recent_vaccine_date_creation_date = "D",
+  eq5d_mobility_creation_date = "D",
+  eq5d_selfcare_creation_date = "D",
+  eq5d_usualactivities_creation_date = "D",
+  eq5d_pain_discomfort_creation_date = "D",
+  eq5d_anxiety_depression_creation_date = "D",
+  EuroQol_score_creation_date = "D",
+  #FIXME: when employment data comes back "online"
+  #employment_status_creation_date = "D",
+  work_affected_creation_date = "D",
+  life_affected_creation_date = "D",
+  facit_fatigue_creation_date = "D",
+  facit_weak_creation_date = "D",
+  facit_listless_creation_date = "D",
+  facit_tired_creation_date = "D",
+  facit_trouble_starting_creation_date = "D",
+  facit_trouble_finishing_creation_date = "D",
+  facit_energy_creation_date = "D",
+  facit_usual_activities_creation_date = "D",
+  facit_sleep_during_day_creation_date = "D",
+  facit_eat_creation_date = "D",
+  facit_need_help_creation_date = "D",
+  facit_frustrated_creation_date = "D",
+  facit_limit_social_activity_creation_date = "D",
+  mrc_breathlessness_creation_date = "D"
 )
 
 op_survey1 <- read_csv(here("output/openprompt_survey1.csv"), 
@@ -137,8 +139,8 @@ op_surveys <- bind_rows(
 op_raw <- op_baseline %>% 
   left_join(op_surveys, by = "patient_id") %>% 
   arrange(patient_id) %>% 
-  rename("baseline_consult_date"="consult_date.x") %>% 
-  rename("survey_date"="consult_date.y") 
+  rename("baseline_creation_date"="creation_date.x") %>% 
+  rename("survey_date"="creation_date.y") 
 
 # Output a summary of the raw data ----------------------------------------
 summarise_data(data_in = op_raw, filename = "op_raw")
@@ -207,7 +209,7 @@ op_neat$n_vaccines <- factor(op_neat$n_vaccines, levels = 0:6,
                                         "5",
                                         "6+"))
 # - EQ-5d questions: scored from 1:5 in increasing levels of disability
-eq5d_questions <- op_neat %>% dplyr::select(starts_with("eq5d_")) %>% dplyr::select(!contains("consult_date")) %>% names()
+eq5d_questions <- op_neat %>% dplyr::select(starts_with("eq5d_")) %>% dplyr::select(!contains("creation_date")) %>% names()
 op_neat <- op_neat %>% 
   mutate_at(all_of(eq5d_questions), ~factor(., levels = 1:5, 
                                             labels = c("none",
@@ -254,7 +256,7 @@ labels_facit_reverse <- c(
   "Very much"
 )
 
-facit_questions <- op_neat %>% dplyr::select(starts_with("facit")) %>% dplyr::select(!contains("consult_date")) %>% names()
+facit_questions <- op_neat %>% dplyr::select(starts_with("facit")) %>% dplyr::select(!contains("creation_date")) %>% names()
 facit_questions_reverse <- c("facit_energy", "facit_usual_activities")
 facit_questions_proper <- facit_questions[!facit_questions %in% facit_questions_reverse]
 
@@ -368,7 +370,8 @@ op_neat$base_hh_income <- factor(op_neat$base_hh_income,
                                             ))
 
 # Employment Status
-op_neat$employment_status <- as_factor(op_neat$employment_status)
+#FIXME: when employment data comes back "online"
+#op_neat$employment_status <- as_factor(op_neat$employment_status)
 
 # Covid history 
 op_neat$long_covid <- factor(op_neat$long_covid,
@@ -499,7 +502,8 @@ tab1 <- op_neat %>%
       long_covid ~ "categorical",
       recovered_from_covid ~ "categorical",
       vaccinated ~ "categorical",
-      employment_status ~ "categorical",
+      #FIXME: when employment data comes back "online"
+      #employment_status ~ "categorical",
       mrc_breathlessness ~ "categorical"
     ),
     digits = all_continuous() ~ 1
@@ -520,17 +524,17 @@ ggplot(op_neat, aes(x = index_date)) +
   theme_classic()
 dev.off()
 
-# is consult_date consistent across participant survey responses?  ---------
+# is creation_date consistent across participant survey responses?  ---------
 date_consistency <- op_neat %>% 
   ungroup() %>% 
-  # only keep the idenitifier cols and the consult_date variables
-  dplyr::select(patient_id, survey_response, survey_date, contains("consult_date")) %>% 
+  # only keep the idenitifier cols and the creation_date variables
+  dplyr::select(patient_id, survey_response, survey_date, contains("creation_date")) %>% 
   # get rid of those with missing survey_date: this means there was no valid response in the dataset_definition
   filter(!is.na(survey_date)) %>% 
-  # remove survey_date and baseline_consult_date to avoid confusion
-  dplyr::select(-survey_date, -baseline_consult_date) %>% 
+  # remove survey_date and baseline_creation_date to avoid confusion
+  dplyr::select(-survey_date, -baseline_creation_date) %>% 
   # make it a long data.frame to summarise 
-  pivot_longer(cols = contains("consult_date"), names_to = "var", values_to = "date") %>%
+  pivot_longer(cols = contains("creation_date"), names_to = "var", values_to = "date") %>%
   # group by each participant for each survey response
   group_by(patient_id, survey_response) %>% 
   # summarise the date column: number of unique values, number NA, min and max
