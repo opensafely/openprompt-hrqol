@@ -18,24 +18,31 @@ questions <- bind_rows(questions_baseline, questions_research)
 get_ctv3_snomed_date_numeric <- function(qq, return_value = "ctv3"){
   subset_qs <- questions[questions$id == qq,]
   q_type <- subset_qs[1, "value_property"]
+  
   # set default values for all four possible `return_value` objects
   num_val <- 0
   consultation_date <- NA
   ctv3 <- "None"
   snomedct_code <- "None"
+  
   if(q_type == "ctv3_code"){
     ctv3 <- sample(subset_qs$q_codes, 1)
   }else if(q_type == "snomedct_code"){
     snomedct_code <- sample(subset_qs$q_codes, 1)
   }else if(q_type == "consultation_date"){
-    ctv3 <- subset_qs$q_codes
+    ctv3 <- subset_qs[1, "q_codes"]
     consultation_date <- as.Date("2016-08-05") + abs(rnorm(1, 200, sd = 150))
   }else if(q_type == "numeric_value"){
+    ctv3 <- snomedct_code <- subset_qs[1, "q_codes"]
     num_val <- sample(1:10, 1)
   }
   ## return whichever of those we need
-  return(get(return_value))
+  output <- get(return_value)
+  names(output) <- NULL
+  return(output)
 }
+#get_ctv3_snomed_date_numeric("mrc_breathlessness")
+#get_ctv3_snomed_date_numeric("base_ethnicity", "snomedct_code")
 
 unique_ids <- unique(op_baseline$patient_id)
 # number of patients in the dummy data
@@ -51,10 +58,10 @@ for(patid in unique_ids){
       patient_id = patid,
       consultation_id = round(runif(1, 531513,5314141)),
       creation_date = as.Date("2022-11-01") + sample(1:180, 1),
-      consultation_date = sapply(unique(questions$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "consultation_date")}),
-      ctv3_code = sapply(unique(questions$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "ctv3")}),
-      snomedct_code = sapply(unique(questions$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "snomedct_code")}),
-      numeric_value = sapply(unique(questions$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "num_val")})
+      consultation_date = sapply(unique(questions$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "consultation_date")}, USE.NAMES = FALSE),
+      ctv3_code = sapply(unique(questions$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "ctv3")}, USE.NAMES = FALSE),
+      snomedct_code = sapply(unique(questions$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "snomedct_code")}, USE.NAMES = FALSE),
+      numeric_value = sapply(unique(questions$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "num_val")}, USE.NAMES = FALSE)
       )
   )
 }
@@ -70,10 +77,10 @@ for(patid in sample_ids){
       patient_id = patid, 
       consultation_id = round(runif(1, 531513,5314141)),
       creation_date = pull(dummy_data[dummy_data$patient_id==patid, "creation_date"])[1] + runif(1, 25, 35),
-      consultation_date = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "consultation_date")}),
-      ctv3_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "ctv3")}),
-      snomedct_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "snomedct_code")}),
-      numeric_value = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "num_val")})
+      consultation_date = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "consultation_date")}, USE.NAMES = FALSE),
+      ctv3_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "ctv3")}, USE.NAMES = FALSE),
+      snomedct_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "snomedct_code")}, USE.NAMES = FALSE),
+      numeric_value = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "num_val")}, USE.NAMES = FALSE)
     )
   )
 }
@@ -89,10 +96,10 @@ for(patid in sample_ids){
       patient_id = patid, 
       consultation_id = round(runif(1, 531513,5314141)),
       creation_date = pull(dummy_data[dummy_data$patient_id==patid, "creation_date"])[1] + runif(1, 55, 65),
-      consultation_date = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "consultation_date")}),
-      ctv3_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "ctv3")}),
-      snomedct_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "snomedct_code")}),
-      numeric_value = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "num_val")})
+      consultation_date = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "consultation_date")}, USE.NAMES = FALSE),
+      ctv3_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "ctv3")}, USE.NAMES = FALSE),
+      snomedct_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "snomedct_code")}, USE.NAMES = FALSE),
+      numeric_value = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "num_val")}, USE.NAMES = FALSE)
       )
   )
 }
@@ -108,10 +115,10 @@ for(patid in sample_ids){
       patient_id = patid, 
       consultation_id = round(runif(1, 531513,5314141)),
       creation_date = pull(dummy_data[dummy_data$patient_id==patid, "creation_date"])[1] + runif(1, 85, 95),
-      consultation_date = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "consultation_date")}),
-      ctv3_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "ctv3")}),
-      snomedct_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "snomedct_code")}),
-      numeric_value = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "num_val")})
+      consultation_date = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "consultation_date")}, USE.NAMES = FALSE),
+      ctv3_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "ctv3")}, USE.NAMES = FALSE),
+      snomedct_code = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "snomedct_code")}, USE.NAMES = FALSE),
+      numeric_value = sapply(unique(questions_research$id), function(xx){get_ctv3_snomed_date_numeric(xx, return_value = "num_val")}, USE.NAMES = FALSE)
       )
   )
 }
@@ -133,11 +140,11 @@ dummy_data_combined$consultation_date <-
 
 
 # some final manual bodge edits on the numeric_value
-new_euroqol <- dummy_data_combined[dummy_data_combined$ctv3_code == "XaZ2m", "numeric_value"] * 9 + round(runif(1, 0, 10))
-dummy_data_combined[dummy_data_combined$ctv3_code == "XaZ2m", "numeric_value"] <- new_euroqol
+new_euroqol <- dummy_data_combined[dummy_data_combined$snomedct_code == "736535009", "numeric_value"] * 9 + round(runif(1, 0, 10))
+dummy_data_combined[dummy_data_combined$snomedct_code == "736535009", "numeric_value"] <- new_euroqol
 
 # Eq5d should be between 1-5
-eq5d_row_ids <- dummy_data_combined$ctv3_code %in% c("XaYwl", "XaYwm", "XaYwn", "XaYwo", "XaYwp") 
+eq5d_row_ids <- dummy_data_combined$snomedct_code %in% c("821551000000108", "821561000000106", "821581000000102", "821591000000100", "821611000000108") 
 new_eq5d <- sample(x = 1:5, sum(eq5d_row_ids), replace = TRUE)
 dummy_data_combined[eq5d_row_ids, "numeric_value"] <- new_eq5d
 
