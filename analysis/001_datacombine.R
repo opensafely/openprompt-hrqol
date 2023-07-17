@@ -119,7 +119,6 @@ op_survey3 <- read_csv(here("output/openprompt_survey3.csv"), col_types = resear
 op_survey4 <- read_csv(here("output/openprompt_survey4.csv"), col_types = research_col_spec) %>% 
   mutate(survey_response = 4)
 
-
 # output raw data summaries -----------------------------------------------
 summarise_data(data_in = op_baseline, filename = "op_baseline")
 summarise_data(data_in = op_survey1, filename = "op_survey1")
@@ -137,7 +136,7 @@ op_surveys <- bind_rows(
 
 # left join baseline vars -------------------------------------------------
 op_raw <- op_baseline %>% 
-  left_join(op_surveys, by = "patient_id") %>% 
+  left_join(op_surveys, by = "patient_id") %>%
   arrange(patient_id) %>% 
   rename("baseline_creation_date"="creation_date.x") %>% 
   rename("survey_date"="creation_date.y") 
@@ -163,8 +162,8 @@ dev.off()
 # map ctv3codes to the description ----------------------------------------
 op_mapped <- op_raw %>% 
   dplyr::select(patient_id, survey_response, where(is_character)) %>% 
-  pivot_longer(cols = c(-patient_id, -survey_response), names_to = "varname", values_to = "ctv3_code") %>% 
-  left_join(openprompt_mapping, by = c("ctv3_code" = "codes")) %>% 
+  pivot_longer(cols = c(-patient_id, -survey_response), names_to = "varname", values_to = "q_code") %>% 
+  left_join(openprompt_mapping, by = c("q_code" = "codes")) %>% 
   pivot_wider(id_cols = c(patient_id, survey_response), names_from = varname, values_from = description)
 
 op_numeric <- op_raw %>% 
@@ -211,7 +210,7 @@ op_neat$n_vaccines <- factor(op_neat$n_vaccines, levels = 0:6,
 # - EQ-5d questions: scored from 1:5 in increasing levels of disability
 eq5d_questions <- op_neat %>% dplyr::select(starts_with("eq5d_")) %>% dplyr::select(!contains("creation_date")) %>% names()
 op_neat <- op_neat %>% 
-  mutate_at(all_of(eq5d_questions), ~factor(., levels = 1:5, 
+  mutate_at(eq5d_questions, ~factor(., levels = 1:5, 
                                             labels = c("none",
                                                        "slight", 
                                                        "moderate",
