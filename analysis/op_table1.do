@@ -30,7 +30,7 @@ label variable base_hh_income "Household Income"
 
 table1_mc if survey_response==1, vars(base_ethnicity cat %5.1f \ base_gender cat %5.1f \ ///
 base_highest_edu cat %5.1f\ base_relationship cat %5.1f\ base_hh_income cat %5.1f \ base_disability cat %5.1f\ ///
-employment_status cat %5.1f\ n_covids cat %5.1f \ n_vaccines cat %5.1f \ vaccinated cat %5.1f \ ///
+n_covids cat %5.1f \ n_vaccines cat %5.1f \ vaccinated cat %5.1f \ ///
 covid_history cat %5.1f \ recovered_from_covid cat %5.1f \ covid_duration cat %5.1f) ///
 nospacelowpercent percent_n onecol missing iqrmiddle(",")  ///
 saving("$projectdir/output/tables/table1_demographic.xls", replace)
