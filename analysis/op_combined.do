@@ -17,8 +17,8 @@ label define long_covid_symptoms 0 "No Long COVID" 1 "Long COVID"
 label values long_covid long_covid_symptoms
 gen covid_n=n_covids-1
 replace covid_n=4 if n_covids==5 | n_covids==6 | n_covids==7
-label define n_covids 4 "4+"
-label values covid_n n_covids
+label define covids_n 4 "4+"
+label values covid_n covids_n
 
 //*** WPAI Score ***
 gen work_effect=work_affected
