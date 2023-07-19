@@ -8,12 +8,17 @@ use "output/op_stata.dta"
 //*** Drop non answered ***
 drop if base_ethnicity_creation_date==.
 
+//*** Long COVID ***
 rename long_covid covid_history
 gen long_covid=0 if covid_duration==1 | covid_duration==2
-replace long_covid=1 if covid_duration==3 | covid_duration==4
+replace long_covid=1 if covid_duration==3 & recovered_from_covid==2 | covid_duration==4 & recovered_from_covid==2
 replace long_covid=0 if recovered_from_covid==1
 label define long_covid_symptoms 0 "No Long COVID" 1 "Long COVID"
 label values long_covid long_covid_symptoms
+gen covid_n=n_covids-1
+replace covid_n=4 if n_covids==5 | n_covids==6 | n_covids==7
+label define n_covids 4 "4+"
+label values covid_n n_covids
 
 //*** WPAI Score ***
 gen work_effect=work_affected
