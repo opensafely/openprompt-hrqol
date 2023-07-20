@@ -27,7 +27,7 @@ actions:
 
   generate_openprompt_survey1: 
     run: >
-      databuilder:v0
+      ehrql:v0
         generate-dataset 
         analysis/model_questions/dataset_definition.py 
         --output output/openprompt_survey1.csv
@@ -42,7 +42,7 @@ actions:
 
   generate_openprompt_survey2: 
     run: >
-      databuilder:v0
+      ehrql:v0
         generate-dataset 
         analysis/model_questions/dataset_definition.py 
         --output output/openprompt_survey2.csv
@@ -57,7 +57,7 @@ actions:
 
   generate_openprompt_survey3: 
     run: >
-      databuilder:v0
+      ehrql:v0
         generate-dataset 
         analysis/model_questions/dataset_definition.py 
         --output output/openprompt_survey3.csv
@@ -72,7 +72,7 @@ actions:
 
   generate_openprompt_survey4: 
     run: >
-      databuilder:v0
+      ehrql:v0
         generate-dataset 
         analysis/model_questions/dataset_definition.py 
         --output output/openprompt_survey4.csv
@@ -139,3 +139,22 @@ actions:
         vas_nvaccines: output/figures/VAS_by_vaccines.svg
         facit_fscore: output/figures/facit_baseline.svg
         log_tables: output/op-baseline-table1.log
+
+  extract_linked_tpp_info: 
+    run: >
+      ehrql:v0
+        generate-dataset 
+        analysis/add_tpp_data.py 
+        --output output/openprompt_linked_tpp.csv.gz
+    outputs:
+      highly_sensitive:
+        openprompt_survey1: output/openprompt_linked_tpp.csv.gz
+
+  import_linked_tpp: 
+    run:   
+      r:latest analysis/002_import_linked_tpp.R
+    needs: [extract_linked_tpp_info]
+    outputs: 
+      moderately_sensitive:
+        openprompt_tpp_skim: output/data_properties/op_tpp_skim.txt
+        openprompt_tpp_tab: output/data_properties/op_tpp_tabulate.txt
