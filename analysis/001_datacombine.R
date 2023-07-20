@@ -59,7 +59,8 @@ research_col_spec <- list(
   patient_id = "d",
   creation_date = "D",
   days_since_baseline = "d",
-  long_covid = "c",
+  covid_history = "c",
+  covid_history_snomed = "c",
   first_covid = "D",
   n_covids = "d",
   recovered_from_covid = "c",
@@ -93,7 +94,8 @@ research_col_spec <- list(
   facit_limit_social_activity = "d",
   mrc_breathlessness = "c",
   # repeat for _creation_date
-  long_covid_creation_date = "D",
+  covid_history_creation_date = "D",
+  covid_history_snomed_creation_date = "D",
   first_covid_creation_date = "D",
   n_covids_creation_date = "D",
   recovered_from_covid_creation_date = "D",
@@ -156,6 +158,13 @@ op_surveys <- bind_rows(
   op_survey3,
   op_survey4
 )
+
+# combine covid_history ctv3 and snomed -----------------------------------
+op_surveys <- op_surveys %>% 
+  mutate(covid_history = ifelse(is.na(covid_history), covid_history_snomed, covid_history),
+         covid_history_creation_date = pmin(covid_history_creation_date, covid_history_snomed_creation_date, na.rm = TRUE)
+  ) %>% 
+  dplyr::select(-c(covid_history_snomed, covid_history_snomed_creation_date))
 
 # left join baseline vars -------------------------------------------------
 op_raw <- op_baseline %>% 
@@ -396,7 +405,7 @@ op_neat$base_hh_income <- factor(op_neat$base_hh_income,
 #op_neat$employment_status <- as_factor(op_neat$employment_status)
 
 # Covid history 
-op_neat$long_covid <- factor(op_neat$long_covid,
+op_neat$covid_history <- factor(op_neat$covid_history,
                              levels = c(
                                "My test for COVID-19 was positive",
                                "I think I have already had COVID-19 (coronavirus) disease",
@@ -521,7 +530,7 @@ tab1 <- op_neat %>%
       base_relationship ~ "categorical",
       base_gender ~ "categorical",
       base_hh_income ~ "categorical",
-      long_covid ~ "categorical",
+      covid_history ~ "categorical",
       recovered_from_covid ~ "categorical",
       vaccinated ~ "categorical",
       #FIXME: when employment data comes back "online"

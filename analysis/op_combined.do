@@ -9,7 +9,6 @@ use "output/op_stata.dta"
 drop if base_ethnicity_creation_date==.
 
 //*** Long COVID ***
-rename long_covid covid_history
 gen long_covid=0 if covid_duration==1 | covid_duration==2
 replace long_covid=1 if covid_duration==3 & recovered_from_covid==2 | covid_duration==4 & recovered_from_covid==2
 replace long_covid=0 if recovered_from_covid==1

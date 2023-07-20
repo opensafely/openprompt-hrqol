@@ -185,28 +185,35 @@ dummy_data_combined <- dummy_data_combined[-sample(optional_response_rows, size 
 #' IF not-missing in snomed, then missing in ctv3 and vice versa
 annoying_question_codes_ctv3 <- c("Y1bd8", "Y1f4b")
 annoying_question_codes_snomed <- "261665006"
+annoying_question_codes_covid19_snomed <- "840544004"
 
 optional_response_rows <- which(dummy_data_combined$ctv3_code %in% annoying_question_codes_ctv3 | 
-                                  dummy_data_combined$snomedct_code %in% annoying_question_codes_snomed)
-# remove 95% of these
-dummy_data_combined <- dummy_data_combined[-sample(optional_response_rows, size = length(optional_response_rows)*0.99), ]
+                                  dummy_data_combined$snomedct_code %in% annoying_question_codes_snomed |
+                                  dummy_data_combined$snomedct_code %in% annoying_question_codes_covid19_snomed
+                                  )
+# remove 99% of these
+set.seed(1351)
+dummy_data_with_missing <- dummy_data_combined[-sample(optional_response_rows, size = length(optional_response_rows)*0.99), ]
 
 # if they have a response to the annoying codes, remove their response to the otehr coding system 
 # e.g., if they have a ctv3_code for gender, then remove any snomed gender codes
 # vice versa for hh_income
 gender_snomed <- questions_baseline %>% filter(id == "base_gender") %>% pull(q_codes)
 hh_ctv3 <- questions_baseline %>% filter(id == "base_hh_income") %>% pull(q_codes)
+covid19_ctv3 <- questions_research %>% filter(id == "covid_history") %>% pull(q_codes)
 
-dummy_data_combined <- dummy_data_combined %>% 
+dummy_data_with_missing <- dummy_data_with_missing %>% 
   group_by(patient_id) %>%
   mutate(
     gender_ctv = max(ctv3_code %in% annoying_question_codes_ctv3),
-    hh_snomed = max(snomedct_code %in% annoying_question_codes_snomed)
+    hh_snomed = max(snomedct_code %in% annoying_question_codes_snomed),
+    covid_snomed = max(snomedct_code %in% annoying_question_codes_covid19_snomed)
     ) %>% 
   ungroup() %>% 
   mutate(
     gender_snomed_exists = snomedct_code %in% gender_snomed, 
-    hh_ctv3_exists = ctv3_code %in% hh_ctv3
+    hh_ctv3_exists = ctv3_code %in% hh_ctv3,
+    covid_ctv3_exists = ctv3_code %in% covid19_ctv3
   ) %>% 
   filter(
     gender_ctv == 0 | gender_ctv == 1 & !gender_snomed_exists
@@ -214,7 +221,10 @@ dummy_data_combined <- dummy_data_combined %>%
   filter(
     hh_snomed == 0 | hh_snomed == 1 & !hh_ctv3_exists
   ) %>% 
+  filter(
+    covid_snomed == 0 | covid_snomed == 1 & !covid_ctv3_exists
+  ) %>% 
   dplyr::select(patient_id:numeric_value)
 
 # export this mess --------------------------------------------------------
-write_csv(dummy_data_combined, here::here("output/dummydata/dummy_edited/open_prompt.csv"))
+write_csv(dummy_data_with_missing, here::here("output/dummydata/dummy_edited/open_prompt.csv"))
