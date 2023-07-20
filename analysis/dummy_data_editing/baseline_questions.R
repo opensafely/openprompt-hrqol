@@ -76,6 +76,14 @@ questions_baseline <- bind_rows(
     "snomedct_code"
   ),
   Question(
+    "base_gender_ctv3", # What is your gender
+    c(
+      "Y1bd8",
+      "Y1f4b"
+    ),
+    "ctv3_code"
+  ),
+  Question(
     "base_hh_income", 
     c(
       "Y24b5",
@@ -88,6 +96,13 @@ questions_baseline <- bind_rows(
       "Y24bc"
     ),
     "ctv3_code"
+  ),
+  Question(
+    "base_hh_income_snomed", # What is your current relationship status?
+    c(
+      "261665006"
+    ),
+    "snomedct_code"
   )
 )
 

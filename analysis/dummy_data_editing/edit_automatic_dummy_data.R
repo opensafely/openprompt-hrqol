@@ -123,7 +123,6 @@ for(patid in sample_ids){
   )
 }
 
-
 dummy_data_combined <- bind_rows(
   dummy_data, 
   dummy_data_survey2,
@@ -176,6 +175,46 @@ optional_questions <- c("Y3a80",
 optional_response_rows <- which(dummy_data_combined$ctv3_code %in% optional_questions)
 # delete some of the optional responses:
 dummy_data_combined <- dummy_data_combined[-sample(optional_response_rows, size = length(optional_response_rows)*0.4), ]
+
+## create dependent missingness for HH income and gender
+#' There are two annoying variables that are the combination of some ctv3_codes and some snomed codes
+#' As such, they need to be generated as two separate variables (`questions` in the `dataset_definition`) and 
+#' then recombined at a later point. 
+#' However, if someone answers with a ctv3_code they cannot also contribute a snomed code (and vice versa)
+#' So - create a lot of missingness in either snomed or ctv3 for gender/hh_income
+#' IF not-missing in snomed, then missing in ctv3 and vice versa
+annoying_question_codes_ctv3 <- c("Y1bd8", "Y1f4b")
+annoying_question_codes_snomed <- "261665006"
+
+optional_response_rows <- which(dummy_data_combined$ctv3_code %in% annoying_question_codes_ctv3 | 
+                                  dummy_data_combined$snomedct_code %in% annoying_question_codes_snomed)
+# remove 95% of these
+dummy_data_combined <- dummy_data_combined[-sample(optional_response_rows, size = length(optional_response_rows)*0.99), ]
+
+# if they have a response to the annoying codes, remove their response to the otehr coding system 
+# e.g., if they have a ctv3_code for gender, then remove any snomed gender codes
+# vice versa for hh_income
+gender_snomed <- questions_baseline %>% filter(id == "base_gender") %>% pull(q_codes)
+hh_ctv3 <- questions_baseline %>% filter(id == "base_hh_income") %>% pull(q_codes)
+
+dummy_data_combined <- dummy_data_combined %>% 
+  group_by(patient_id) %>%
+  mutate(
+    gender_ctv = max(ctv3_code %in% annoying_question_codes_ctv3),
+    hh_snomed = max(snomedct_code %in% annoying_question_codes_snomed)
+    ) %>% 
+  ungroup() %>% 
+  mutate(
+    gender_snomed_exists = snomedct_code %in% gender_snomed, 
+    hh_ctv3_exists = ctv3_code %in% hh_ctv3
+  ) %>% 
+  filter(
+    gender_ctv == 0 | gender_ctv == 1 & !gender_snomed_exists
+  ) %>% 
+  filter(
+    hh_snomed == 0 | hh_snomed == 1 & !hh_ctv3_exists
+  ) %>% 
+  dplyr::select(patient_id:numeric_value)
 
 # export this mess --------------------------------------------------------
 write_csv(dummy_data_combined, here::here("output/dummydata/dummy_edited/open_prompt.csv"))
