@@ -137,7 +137,7 @@ questions = [
         [
             "Y3a97",
         ],
-        "consultation_date",
+        "ctv3_code",
         "consultation_date",
     ),
     Question( 
