@@ -52,7 +52,7 @@ openprompt_mapping <- data.frame(
         "Y24bc",
         "261665006",
         "Y26b2",
-        "Y31ce",
+        "840544004",
         "Y25a5",
         "Y3a94",
         "Y3a95",

@@ -8,16 +8,22 @@ Question <- function(id, q_codes, value_property){
 
 questions_research <- bind_rows(
     Question(
-    "long_covid", # "Do you think that you currently have or have ever had COVID-19?
+    "covid_history", # "Do you think that you currently have or have ever had COVID-19?
     c(
       "Y26b2",
-      "Y31ce",
       "Y25a5",
       "Y3a94",
       "Y3a95",
       "Y3a96"
     ),
     "ctv3_code"
+  ),
+  Question(
+    "covid_history_snomed", 
+    c(
+      "840544004"
+    ),
+    "snomedct_code"
   ),
   Question(
     "first_covid", # "When do you think you first got (or might have got) COVID-19? If you do not remember exactly, please put your best estimate.
