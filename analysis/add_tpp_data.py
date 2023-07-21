@@ -23,7 +23,7 @@ from variable_lib import (
 import codelists
 
 dataset = Dataset()
-
+dataset.define_population(open_prompt.exists_for_patient())
 study_start_date = datetime.date(2020, 3, 1)
 end_date = datetime.date(2023, 7, 20)
 
@@ -213,6 +213,5 @@ dataset.comorbid_count = binary_haem_cancer + \
 
 # Exclusion criteria - consistent with protocols
 # remove missing age and anyone not male/female
-population = (open_prompt.exists_for_patient()) & (dataset.age <= 100) & (dataset.age >= 18) & (dataset.sex.contains("male")) & (registrations_number == 1)
+population = (dataset.age <= 100) & (dataset.age >= 18) & (dataset.sex.contains("male")) & (registrations_number == 1)
 dataset.define_population(population)
-#dataset.define_population()
