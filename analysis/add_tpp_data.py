@@ -16,7 +16,9 @@ from variable_lib import (
     age_as_of,
     address_as_of,
     create_sequential_variables,
-    hospitalisation_diagnosis_matches
+    hospitalisation_diagnosis_matches,
+    long_covid_events_during,
+    long_covid_dx_during
 )
 import codelists
 
@@ -62,6 +64,17 @@ dataset.ethnicity = clinical_events.where(clinical_events.ctv3_code.is_in(codeli
     .sort_by(clinical_events.date) \
     .last_for_patient() \
     .ctv3_code.to_category(codelists.ethnicity)
+
+# Long COVID 
+long_covid_record = long_covid_events_during(dataset.pt_start_date, dataset.pt_end_date)
+first_long_covid_record = long_covid_record.sort_by(long_covid_record.date).first_for_patient()
+
+dataset.first_lc = first_long_covid_record.date
+dataset.first_lc_code = first_long_covid_record.snomedct_code
+dataset.n_lc_records = long_covid_record.count_for_patient()
+dataset.n_distinct_lc_records = long_covid_record.snomedct_code.count_distinct_for_patient()
+dataset.has_covid_dx = long_covid_record.where(long_covid_record.snomedct_code.is_in(codelists.long_covid_dx_codes)).count_for_patient()
+
 
 # covid tests
 all_test_positive = sgss_covid_all_tests \
