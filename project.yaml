@@ -158,3 +158,12 @@ actions:
       moderately_sensitive:
         openprompt_tpp_skim: output/data_properties/op_tpp_skim.txt
         openprompt_tpp_tab: output/data_properties/op_tpp_tabulate.txt
+
+  combine_linked_tpp:
+    run: > 
+      stata-mp:latest analysis/op_tpp_linked.do
+    needs: [generate_openprompt_dataset, extract_linked_tpp_info]
+    outputs: 
+      highly_sensitive:
+        data: output/op_tpp_linked.dta
+        logs: output/linked-tpp.log
