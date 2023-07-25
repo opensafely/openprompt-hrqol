@@ -31,7 +31,7 @@ label variable comorbid_count "Number of comorbidities"
 label variable age_bands "Age"
 
 table1_mc if survey_response==1, vars(age_bands cat %5.1f \ base_ethnicity cat %5.1f \ ///
-base_gender cat %5.1f \ region cat%5.1f \ base_highest_edu cat %5.1f\ base_relationship cat %5.1f\ ///
+base_gender cat %5.1f \ region cat %5.1f \ base_highest_edu cat %5.1f\ base_relationship cat %5.1f\ ///
 base_hh_income cat %5.1f \ base_disability cat %5.1f \ comorbid_count cat %5.1f \ ///
 covid_n cat %5.1f \ n_vaccines cat %5.1f \ vaccinated cat %5.1f \ ///
 covid_history cat %5.1f \ recovered_from_covid cat %5.1f \ covid_duration cat %5.1f) ///
