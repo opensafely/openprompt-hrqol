@@ -12,7 +12,7 @@ clear
 adopath + "analysis/Extra_ados"
 
 //*** Import data ***
-use "output/openprompt_dataset.dta", clear
+use "output/op_tpp_linked.dta", clear
 
 //*** Table1_mc baseline demographic ***
 label variable base_ethnicity "Ethnicity"
@@ -27,9 +27,12 @@ label variable covid_history "Have you had COVID-19"
 label variable recovered_from_covid "Recovered from COVID-19"
 label variable covid_duration "Length of COVID-19 symptoms"
 label variable base_hh_income "Household Income"
+label variable comorbid_count "Number of comorbidities"
+label variable age_bands "Age"
 
-table1_mc if survey_response==1, vars(base_ethnicity cat %5.1f \ base_gender cat %5.1f \ ///
-base_highest_edu cat %5.1f\ base_relationship cat %5.1f\ base_hh_income cat %5.1f \ base_disability cat %5.1f\ ///
+table1_mc if survey_response==1, vars(age_bands cat %5.1f \ base_ethnicity cat %5.1f \ ///
+base_gender cat %5.1f \ region cat%5.1f \ base_highest_edu cat %5.1f\ base_relationship cat %5.1f\ ///
+base_hh_income cat %5.1f \ base_disability cat %5.1f \ comorbid_count cat %5.1f \ ///
 covid_n cat %5.1f \ n_vaccines cat %5.1f \ vaccinated cat %5.1f \ ///
 covid_history cat %5.1f \ recovered_from_covid cat %5.1f \ covid_duration cat %5.1f) ///
 nospacelowpercent percent_n onecol missing iqrmiddle(",")  ///
@@ -53,11 +56,10 @@ outsheet * using "$projectdir/output/tables/table1_questions.csv", comma nonames
 
 restore
 set scheme s1color
-hist UK_crosswalk if survey_response==1, freq xtitle(EQ-5D Index Score) color(green%40) ///
+hist utility if survey_response==1, freq xtitle(EQ-5D Index Score) color(green%40) ///
 title("Frequency Distribution of baseline EQ-5D Index Score", size(medlarge))
 graph export "$projectdir/output/figures/baseline_EQ5D_utility.svg", width(12in) replace
 
-gen disutility=1-UK_crosswalk
 hist disutility if survey_response==1, freq xtitle(EQ-5D Index Score (disutility)) color(orange%60) ///
 title("Frequency Distribution of baseline EQ-5D Index Score (disutility)", size(medlarge))
 graph export "$projectdir/output/figures/baseline_EQ5D_disutility.svg", width(12in) replace
