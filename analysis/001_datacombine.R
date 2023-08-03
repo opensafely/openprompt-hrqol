@@ -16,17 +16,13 @@ op_baseline <- read_csv(here("output/openprompt_survey1.csv"),
                           base_disability = "c",
                           base_relationship = "c",
                           base_gender = "c",
-                          base_gender_ctv3 = "c",
                           base_hh_income = "c",
-                          base_hh_income_snomed = "c",
                           base_ethnicity_creation_date = "D",
                           base_highest_edu_creation_date = "D",
                           base_disability_creation_date = "D",
                           base_relationship_creation_date = "D",
                           base_gender_creation_date = "D",
-                          base_gender_ctv3_creation_date = "D",
-                          base_hh_income_creation_date = "D",
-                          base_hh_income_snomed_creation_date = "D"
+                          base_hh_income_creation_date = "D"
                         )) %>% 
   dplyr::select(patient_id, creation_date, starts_with("base_"))
 
@@ -38,21 +34,9 @@ op_baseline$index_date <- pmin(
   op_baseline$base_disability_creation_date,
   op_baseline$base_relationship_creation_date,
   op_baseline$base_gender_creation_date,
-  op_baseline$base_gender_ctv3_creation_date,
   op_baseline$base_hh_income_creation_date,
-  op_baseline$base_hh_income_snomed_creation_date,
   na.rm = T
 )
-
-## Combine the ctv3 and snomed codes for hh_income and gender
-op_baseline <- op_baseline %>% 
-  mutate(base_gender = ifelse(is.na(base_gender), base_gender_ctv3, base_gender),
-         base_hh_income = ifelse(is.na(base_hh_income), base_hh_income_snomed, base_hh_income),
-         base_gender_creation_date = pmin(base_gender_creation_date, base_gender_ctv3_creation_date, na.rm = TRUE),
-         base_hh_income_creation_date = pmin(base_hh_income_creation_date, base_hh_income_snomed_creation_date, na.rm = TRUE)
-         ) %>% 
-  dplyr::select(-c(base_gender_ctv3, base_gender_ctv3_creation_date,
-                base_hh_income_snomed, base_hh_income_snomed_creation_date))
 
 # Survey column specification 
 research_col_spec <- list(
@@ -60,7 +44,6 @@ research_col_spec <- list(
   creation_date = "D",
   days_since_baseline = "d",
   covid_history = "c",
-  covid_history_snomed = "c",
   first_covid = "D",
   n_covids = "d",
   recovered_from_covid = "c",
@@ -75,8 +58,7 @@ research_col_spec <- list(
   eq5d_pain_discomfort = "d",
   eq5d_anxiety_depression = "d",
   EuroQol_score = "d",
-  #FIXME: when employment data comes back "online"
-  #employment_status = "c",
+  employment_status = "c",
   work_affected = "d",
   life_affected = "d",
   facit_fatigue = "d",
@@ -95,7 +77,6 @@ research_col_spec <- list(
   mrc_breathlessness = "c",
   # repeat for _creation_date
   covid_history_creation_date = "D",
-  covid_history_snomed_creation_date = "D",
   first_covid_creation_date = "D",
   n_covids_creation_date = "D",
   recovered_from_covid_creation_date = "D",
@@ -110,8 +91,7 @@ research_col_spec <- list(
   eq5d_pain_discomfort_creation_date = "D",
   eq5d_anxiety_depression_creation_date = "D",
   EuroQol_score_creation_date = "D",
-  #FIXME: when employment data comes back "online"
-  #employment_status_creation_date = "D",
+  employment_status_creation_date = "D",
   work_affected_creation_date = "D",
   life_affected_creation_date = "D",
   facit_fatigue_creation_date = "D",
@@ -159,12 +139,6 @@ op_surveys <- bind_rows(
   op_survey4
 )
 
-# combine covid_history ctv3 and snomed -----------------------------------
-op_surveys <- op_surveys %>% 
-  mutate(covid_history = ifelse(is.na(covid_history), covid_history_snomed, covid_history),
-         covid_history_creation_date = pmin(covid_history_creation_date, covid_history_snomed_creation_date, na.rm = TRUE)
-  ) %>% 
-  dplyr::select(-c(covid_history_snomed, covid_history_snomed_creation_date))
 
 # left join baseline vars -------------------------------------------------
 op_raw <- op_baseline %>% 
@@ -194,8 +168,8 @@ dev.off()
 # map ctv3codes to the description ----------------------------------------
 op_mapped <- op_raw %>% 
   dplyr::select(patient_id, survey_response, where(is_character)) %>% 
-  pivot_longer(cols = c(-patient_id, -survey_response), names_to = "varname", values_to = "q_code") %>% 
-  left_join(openprompt_mapping, by = c("q_code" = "codes")) %>% 
+  pivot_longer(cols = c(-patient_id, -survey_response), names_to = "varname", values_to = "ctv3_code") %>% 
+  left_join(openprompt_mapping, by = c("ctv3_code" = "codes")) %>% 
   pivot_wider(id_cols = c(patient_id, survey_response), names_from = varname, values_from = description)
 
 op_numeric <- op_raw %>% 
@@ -401,8 +375,7 @@ op_neat$base_hh_income <- factor(op_neat$base_hh_income,
                                             ))
 
 # Employment Status
-#FIXME: when employment data comes back "online"
-#op_neat$employment_status <- as_factor(op_neat$employment_status)
+op_neat$employment_status <- as_factor(op_neat$employment_status)
 
 # Covid history 
 op_neat$covid_history <- factor(op_neat$covid_history,
@@ -533,8 +506,7 @@ tab1 <- op_neat %>%
       covid_history ~ "categorical",
       recovered_from_covid ~ "categorical",
       vaccinated ~ "categorical",
-      #FIXME: when employment data comes back "online"
-      #employment_status ~ "categorical",
+      employment_status ~ "categorical",
       mrc_breathlessness ~ "categorical"
     ),
     digits = all_continuous() ~ 1
