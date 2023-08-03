@@ -64,7 +64,7 @@ for question in questions:
     
     response_row = (
         filtered_open_prompt
-        .where(open_prompt.ctv3_code.is_in(question.q_code))
+        .where(open_prompt.ctv3_code.is_in(question.ctv3_codes))
         # If the response is a CTV3 code, then the numeric value should be zero and
         # sorting by the numeric value should have no effect. However, if the response
         # is a numeric value, then zero may represent:
