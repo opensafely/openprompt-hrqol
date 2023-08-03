@@ -1,8 +1,8 @@
-Question <- function(id, q_codes, value_property){
+Question <- function(id, ctv3_codes, value_property){
   data.frame(
-    id = rep(id, length(q_codes)),
-    q_codes, 
-    value_property = rep(value_property, length(q_codes))
+    id = rep(id, length(ctv3_codes)),
+    ctv3_codes, 
+    value_property = rep(value_property, length(ctv3_codes))
   )
 }
 
@@ -17,13 +17,6 @@ questions_research <- bind_rows(
       "Y3a96"
     ),
     "ctv3_code"
-  ),
-  Question(
-    "covid_history_snomed", 
-    c(
-      "840544004"
-    ),
-    "snomedct_code"
   ),
   Question(
     "first_covid", # "When do you think you first got (or might have got) COVID-19? If you do not remember exactly, please put your best estimate.
@@ -75,65 +68,65 @@ questions_research <- bind_rows(
     c(
       "Y3a9f"
     ),
-    "consultation_date" 
+    "consultation_date" # FIXME: should be date
   ),
   Question(
     "most_recent_vaccine_date",
     c(
       "Y3aa0"
     ),
-    "consultation_date" 
+    "consultation_date" # FIXME: should be date
   ),
   Question( 
     "eq5d_mobility", # "How many times do you think you have had an episode of COVID-19?
     c(
-      "821551000000108"
+      "XaYwl"
     ),
     "numeric_value" # should be 0-5
   ),
   Question( 
     "eq5d_selfcare", # "How many times do you think you have had an episode of COVID-19?
     c(
-      "821561000000106"
+      "XaYwm"
     ),
     "numeric_value" # should be 0-5
   ),
   Question( 
     "eq5d_usualactivities", # "How many times do you think you have had an episode of COVID-19?
     c(
-      "821581000000102"
+      "XaYwo"
     ),
     "numeric_value" # should be 0-5
   ),
   Question( 
     "eq5d_pain_discomfort", # "How many times do you think you have had an episode of COVID-19?
     c(
-      "821591000000100"
+      "XaYwp"
     ),
     "numeric_value" # should be 0-5
   ),
   Question( 
     "eq5d_anxiety_depression", # "How many times do you think you have had an episode of COVID-19?
     c(
-      "821611000000108"
+      "XaYwr"
     ),
     "numeric_value" # should be 0-5
   ),
   Question(
     "EuroQol_score",
     c(
-      "736535009"
+      "XaZ2m"
     ),
     "numeric_value"
   ),
-  # Question(
-  #   "employment_status",
-  #   c(
-  #     "Ua0TB",
-  #     "13J7."
-  #   ),
-  #   "ctv3_code"
-  # ),
+  Question(
+    "employment_status",
+    c(
+      "Ua0TB",
+      "13J7."
+    ),
+    "ctv3_code"
+  ),
   # Question( FIXME: Ua0pu used for three questions, can't disambiguate 
   #     "hours_worked",
   #     c(
