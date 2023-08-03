@@ -83,32 +83,32 @@ questions = [
     ),
     Question(
         "base_hh_income", 
-    [
-        "Y24b5",
-        "Y24b6",
-        "Y24b7",
-        "Y24b8",
-        "Y24b9",
+        [
+            "Y24b5",
+            "Y24b6",
+            "Y24b7",
+            "Y24b8",
+            "Y24b9",
             "Y24ba",
             "Y24bb",
             "Y24bc",
             "X90UG",
-        ],
-        "ctv3_code"
-    ),
+            ],
+            "ctv3_code"
+        ),
     # Research questionnaire starts here
     Question(
-    "long_covid", # "Do you think that you currently have or have ever had COVID-19?
-    [
-        "Y26b2",
-        "Y31ce",
-        "Y25a5",
-        "Y3a94",
-        "Y3a95",
+        "covid_history", # "Do you think that you currently have or have ever had COVID-19?
+        [
+            "Y26b2",
+            "Y31ce",
+            "Y25a5",
+            "Y3a94",
+            "Y3a95",
             "Y3a96",
         ],
-        "ctv3_code",  
-    ),
+            "ctv3_code",  
+        ),
     Question(
         "first_covid", # "When do you think you first got (or might have got) COVID-19? If you do not remember exactly, please put your best estimate.
         [
@@ -124,29 +124,29 @@ questions = [
         "numeric_value", 
     ),
     Question(
-    "recovered_from_covid",
-    [
-        "Y3a99",
+        "recovered_from_covid",
+        [
+            "Y3a99",
             "Y3a9a",
         ],
-        "ctv3_code",
-    ),
+            "ctv3_code",
+        ),
     Question(
         "covid_duration",
         [
             "Y3a7f"
         ],
         "numeric_value",
-    ),
+        ),
     Question(
-    "vaccinated",
-    [
-        "Y3a9b",
-        "Y3a9c",
+        "vaccinated",
+        [
+            "Y3a9b",
+            "Y3a9c",
             "Y3a9d",
-        ],
-        "ctv3_code",
-    ),
+            ],
+            "ctv3_code",
+        ),
     Question(
         "n_vaccines",
         [
@@ -337,7 +337,7 @@ Question(
         "XaIUl",
         "XaIUm",
         "XaIUn",
-            "XaIUo",            
+        "XaIUo",            
         ],
         "ctv3_code",
     ),
