@@ -62,36 +62,27 @@ for question in questions:
         # don't extract responses to baseline questionnaire after the index date
         continue
     
-    if (question.search_col == "ctv3_code"):
-        response_row = (
-            filtered_open_prompt
-            .where(open_prompt.ctv3_code.is_in(question.q_code))
-            # If the response is a CTV3 code OR snomedct_code, then the numeric value should be zero and
-            # sorting by the numeric value should have no effect. However, if the response
-            # is a numeric value, then zero may represent:
-            #
-            # 1. a missing value, because the question was not compulsory
-            # 2. a missing value, because the response failed form-validation
-            # 3. a measured value
-            #
-            # In each case, we think that sorting by numeric value should give the true
-            # response because if there are two responses, then:
-            #
-            # 1. the responses are identical
-            # 2. the first response failed form-validation; the second response passed
-            #
-            # We acknowledge that the true response for 3. is undetermined.
-            .sort_by(open_prompt.numeric_value)
-            .last_for_patient()
-        )            
-    ## do not need an ELSE statement here because only one of ctv3_code OR snomedct_code exist for each question
-    if (question.search_col == "snomedct_code"):
-        response_row = (
-            filtered_open_prompt
-            .where(open_prompt.snomedct_code.is_in(question.q_code))
-            .sort_by(open_prompt.numeric_value)
-            .last_for_patient()
-        )            
+    response_row = (
+        filtered_open_prompt
+        .where(open_prompt.ctv3_code.is_in(question.q_code))
+        # If the response is a CTV3 code, then the numeric value should be zero and
+        # sorting by the numeric value should have no effect. However, if the response
+        # is a numeric value, then zero may represent:
+        #
+        # 1. a missing value, because the question was not compulsory
+        # 2. a missing value, because the response failed form-validation
+        # 3. a measured value
+        #
+        # In each case, we think that sorting by numeric value should give the true
+        # response because if there are two responses, then:
+        #
+        # 1. the responses are identical
+        # 2. the first response failed form-validation; the second response passed
+        #
+        # We acknowledge that the true response for 3. is undetermined.
+        .sort_by(open_prompt.numeric_value)
+        .last_for_patient()
+    )
     
     # the response itself may be a CTV3 code, snomedct code, a numeric value or a date
     response_value = getattr(response_row, question.value_property)
