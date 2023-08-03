@@ -162,5 +162,10 @@ optional_response_rows <- which(dummy_data_combined$ctv3_code %in% optional_ques
 # delete some of the optional responses:
 dummy_data_combined <- dummy_data_combined[-sample(optional_response_rows, size = length(optional_response_rows)*0.4), ]
 
+# fix consultation_date ---------------------------------------------------
+# cannot have NA as date in the dataset_definition so replace NA with creation_date
+dummy_data_combined <- dummy_data_combined %>% 
+  mutate(consultation_date = as.Date(ifelse(is.na(consultation_date), creation_date, consultation_date), origin = "1970-01-01"))
+
 # export this mess --------------------------------------------------------
 write_csv(dummy_data_combined, here::here("output/dummydata/dummy_edited/open_prompt.csv"))
