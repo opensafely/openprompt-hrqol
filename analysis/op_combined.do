@@ -18,18 +18,16 @@ gen covid_n=n_covids-1
 replace covid_n=4 if n_covids==5 | n_covids==6 | n_covids==7
 label define covids_n 4 "4+"
 label values covid_n covids_n
+replace covid_history=. if covid_history==6
+replace vaccinated=. if vaccinated==3
 
 //*** WPAI Score ***
-gen work_effect=work_affected
-replace work_effect=0 if work_affected==1
-replace work_effect=10 if work_affected==11
+gen work_effect=work_affected-1
 label define affect 0 "0 (No effect on my daily activities)" ///
 10 "10 (Completely prevented me from doing my daily activities)"
 label values work_effect affect
 
-gen life_effect=life_affected
-replace life_effect=0 if life_affected==1
-replace life_effect=10 if life_affected==11
+gen life_effect=life_affected-1
 label values life_effect affect
 
 //*** FACIT fatigue ***
