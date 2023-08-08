@@ -20,8 +20,13 @@ gen first_covhosp_date=date(first_covid_hosp, "YMD")
 format first_lc_date first_covhosp_date %td
 
 recode comorbid_count (3=3) (4=3) (5=3) (6=3) (7=3) (8=3) (9=3)
-label define comorbidity 3 "3+"
-label values comorbid_count comorbidity
+label define count_factor 3 "3+"
+label values comorbid_count count_factor
+
+recode n_lc_records (3=3) (4=3) (5=3) (6=3) (7=3) (8=3) (9=3) (10=3) (11=3) (12=3) (13=3) (14=3)
+label values n_lc_records count_factor
+recode all_covid_hosp (3=3) (4=3) (5=3) (6=3) (7=3) (8=3) (9=3) (10=3) (11=3) (12=3) (13=3) (14=3)
+label values all_covid_hosp count_factor
 
 gen age_bands = age
 replace age_bands = 1 if age <=29

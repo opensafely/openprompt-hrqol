@@ -26,6 +26,8 @@ label variable vaccinated "Have you had a COVID-19 vaccine"
 label variable covid_history "Have you had COVID-19"
 label variable recovered_from_covid "Recovered from COVID-19"
 label variable covid_duration "Length of COVID-19 symptoms"
+label variable n_lc_records "Number of long COVID records"
+label variable all_covid_hosp "Number of COVID-19 Hospitalisations"
 label variable base_hh_income "Household Income"
 label variable comorbid_count "Number of comorbidities"
 label variable age_bands "Age"
@@ -33,7 +35,7 @@ label variable age_bands "Age"
 table1_mc if survey_response==1, vars(age_bands cat %5.1f \ base_ethnicity cat %5.1f \ ///
 base_gender cat %5.1f \ region cat %5.1f \ base_highest_edu cat %5.1f\ base_relationship cat %5.1f\ ///
 base_hh_income cat %5.1f \ base_disability cat %5.1f \ comorbid_count cat %5.1f \ ///
-covid_n cat %5.1f \ n_vaccines cat %5.1f \ vaccinated cat %5.1f \ ///
+all_covid_hosp cat %5.1f \ covid_n cat %5.1f \ n_vaccines cat %5.1f \ vaccinated cat %5.1f \ ///
 covid_history cat %5.1f \ recovered_from_covid cat %5.1f \ covid_duration cat %5.1f) ///
 nospacelowpercent percent_n onecol missing iqrmiddle(",")  ///
 saving("$projectdir/output/tables/table1_demographic.xls", replace)
