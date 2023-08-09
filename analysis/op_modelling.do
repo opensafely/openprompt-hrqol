@@ -25,8 +25,9 @@ replace disutI=1 if disutility>0
 replace disutI=. if disutility==.
 
 //*** GEE ***
-/* DUMMY DATA ONLY */
+/* DUMMY DATA ONLY 
 replace disutI=0 if disutI==.
+*/
 
 xtlogit disutI male i.age_bands ib2.vaccinated i.comorbid_count, pa vce(robust) base 
 //predict prob_disutility
