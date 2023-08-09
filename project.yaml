@@ -167,3 +167,13 @@ actions:
         vas_nvaccines: output/figures/VAS_by_vaccines.svg
         facit_fscore: output/figures/facit_baseline.svg
         log_tables: output/op-baseline-table1.log
+
+  gee_analysis:
+    run: >
+      stata-mp:latest analysis/op_modelling.do
+    needs: [combine_linked_tpp]
+    outputs: 
+      moderately_sensitive:
+        nonzero_disutility: output/figures/nonzero_EQ5D_disutility.svg
+        gee_regression: output/tables/twopart-model.csv
+        log_regression: output/models.log
