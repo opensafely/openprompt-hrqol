@@ -34,6 +34,8 @@ replace disutI=. if disutility==.
 logit disutI male long_covid i.age_bands i.n_vaccines i.comorbid_count if survey_response==1
 eststo part_one
 reg disutility male long_covid i.age_bands i.n_vaccines i.comorbid_count if survey_response==1, vce(robust)
+eststo part_two
+
 esttab part_one part_two using "$projectdir/output/tables/twopart-model.csv", ///
 replace b(a2) ci(2) label wide compress eform ///
 	title ("`i'") ///
