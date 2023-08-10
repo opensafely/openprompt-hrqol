@@ -129,9 +129,15 @@ new_euroqol <- dummy_data_combined[dummy_data_combined$ctv3_code == "XaZ2m", "nu
 dummy_data_combined[dummy_data_combined$ctv3_code == "XaZ2m", "numeric_value"] <- new_euroqol
 
 # Eq5d should be between 1-5
-eq5d_row_ids <- dummy_data_combined$ctv3_code %in% c("XaYwl", "XaYwm", "XaYwn", "XaYwo", "XaYwp") 
-new_eq5d <- sample(x = 1:5, sum(eq5d_row_ids), replace = TRUE)
+eq5d_row_ids <- dummy_data_combined$ctv3_code %in% c("XaYwl", "XaYwm", "XaYwo", "XaYwp", "XaYwr")
+new_eq5d <- sample(x = 1:5, sum(eq5d_row_ids), replace = TRUE, prob = c(0.5, rep(0.5/4, 4)))
 dummy_data_combined[eq5d_row_ids, "numeric_value"] <- new_eq5d
+
+# overwrite values for a subset so that they have perfect health on eq5d
+scored_one <- dummy_data_combined$patient_id[dummy_data_combined$ctv3_code == "XaYwl" & dummy_data_combined$numeric_value == 1]
+sample_ids <- sample(scored_one, size = length(scored_one)*0.5)
+select_rows <- (dummy_data_combined$patient_id %in% sample_ids) & (dummy_data_combined$ctv3_code %in% c("XaYwl", "XaYwm", "XaYwo", "XaYwp", "XaYwr"))
+dummy_data_combined[select_rows, "numeric_value"] <- 1
 
 # long covid duration (Y3a7f) should be 0-3
 covid_duration_ids <- dummy_data_combined$ctv3_code == "Y3a7f"
