@@ -27,40 +27,16 @@ title("Frequency Distribution of baseline EQ-5D Index Score (disutility)")
 graph export "$projectdir/output/figures/nonzero_EQ5D_disutility.svg", width(12in) replace
 
 // Baseline models 
-gen disutI=0 if disutility==0
-replace disutI=1 if disutility>0
+gen disutI=0 if mobility==1 & selfcare==1 & activity==1 & pain==1 & anxiety==1
+replace disutI=1 if disutI==.
 replace disutI=. if disutility==.
 
-logit disutI male long_covid i.age_bands i.n_vaccines i.comorbid_count if survey_response==1, or
-
-/* Longitudinal complicated stuff
-//*** Set panel/time variables ***
-xtset patient_id survey_response
-
-//*** GEE ***
-/* DUMMY DATA ONLY */
-replace disutI=0 if disutI==.
-
-xtlogit disutI male i.age_bands ib2.vaccinated i.comorbid_count, pa corr(exch) vce(robust) base 
-//predict prob_disutility
+logit disutI male long_covid i.age_bands i.n_vaccines i.comorbid_count if survey_response==1
 eststo part_one
-xtgee disutI male i.base_ethnicity i.age_bands ib2.vaccinated i.comorbid_count, ///
-family(binomial 1) link(logit) corr(exch) base
-
-xtgee disutility male i.age_bands ib2.vaccinated if disutility>0, family(gamma) link(log)
-//predict disut
-eststo part_two
+reg disutility male long_covid i.age_bands i.n_vaccines i.comorbid_count if survey_response==1, vce(robust)
 esttab part_one part_two using "$projectdir/output/tables/twopart-model.csv", ///
 replace b(a2) ci(2) label wide compress eform ///
 	title ("`i'") ///
 	varlabels(`e(labels)') 
-
- gen pred_disut=prob_disutility*disut
-xtgee disutility male i.age_bands i.comorbid_count if disutility>0, family(gamma) link(log) 
-Mixed *
-xtlogit disutI male i.age_bands ib2.vaccinated i.comorbid_count, re base or
-xtmelogit disutI male i.age_bands ib2.vaccinated i.comorbid_count || patient_id:, base or
-mixed disutility male i.age_bands ib2.vaccinated comorbid_count || patient_id: if disutility>0, base
-*/
 
 log close
