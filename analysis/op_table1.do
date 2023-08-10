@@ -70,6 +70,8 @@ codebook mobility selfcare activity pain anxiety if survey_response==1, m
 tab2 mobility selfcare activity pain anxiety if survey_response==1, m
 tab2 covid_duration recovered_from_covid if survey_response==1, m
 
+sum utility if mobility==1 & selfcare==1 & activity==1 & pain==1 & anxiety==1 & survey_response==1
+tab utility if mobility==1 & selfcare==1 & activity==1 & pain==1 & anxiety==1 & survey_response==1
 //*** Baseline EQ-5D-5L by long COVID ***
 graph bar (count) if survey_response==1, over(long_covid) over(mobility, label(labsize(vsmall)) ///
 relabel(1 `""No" "Problems""' 2 "Slight" 3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) ///
