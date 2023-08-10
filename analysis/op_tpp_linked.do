@@ -25,8 +25,9 @@ label values comorbid_count count_factor
 
 recode n_lc_records (3=3) (4=3) (5=3) (6=3) (7=3) (8=3) (9=3) (10=3) (11=3) (12=3) (13=3) (14=3)
 label values n_lc_records count_factor
-recode all_covid_hosp (3=3) (4=3) (5=3) (6=3) (7=3) (8=3) (9=3) (10=3) (11=3) (12=3) (13=3) (14=3)
-label values all_covid_hosp count_factor
+recode all_covid_hosp (3=2) (4=2) (5=2) (6=2) (7=2) (8=2) (9=2) (10=2) (11=2) (12=2) (13=2) (14=2)
+label define two_count 2 "2+"
+label values all_covid_hosp two_count
 
 gen age_bands = age
 replace age_bands = 1 if age <=29

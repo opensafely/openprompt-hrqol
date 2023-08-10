@@ -18,8 +18,18 @@ gen covid_n=n_covids-1
 replace covid_n=4 if n_covids==5 | n_covids==6 | n_covids==7
 label define covids_n 4 "4+"
 label values covid_n covids_n
+gen vaccines_n=n_vaccines-1
+replace vaccines_n=4 if n_vaccines==5 | n_vaccines==6 | n_vaccines==7
+label values vaccines_n covids_n
+
 replace covid_history=. if covid_history==6
 replace vaccinated=. if vaccinated==3
+
+label drop base_highest_edu
+recode base_highest_edu (2=1) (3=2) (4=3) (5=4) (6=5)
+label define education 1 "Primary School/Less" 2 "Secondary/high school" ///
+3 "College/University" 4 "Postgraduate qualification" 5 "Not stated"
+label values base_highest_edu education
 
 //*** WPAI Score ***
 gen work_effect=work_affected-1

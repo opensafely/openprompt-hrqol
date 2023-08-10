@@ -21,7 +21,7 @@ label variable base_gender "Gender"
 label variable base_relationship "Relationship status"
 label variable base_disability "Disability"
 label variable covid_n "Number of COVID-19 episodes"
-label variable n_vaccines "Number of COVID-19 vaccines"
+label variable vaccines_n "Number of COVID-19 vaccines"
 label variable vaccinated "Have you had a COVID-19 vaccine"
 label variable covid_history "Have you had COVID-19"
 label variable recovered_from_covid "Recovered from COVID-19"
@@ -35,7 +35,7 @@ label variable age_bands "Age"
 table1_mc if survey_response==1, vars(age_bands cat %5.1f \ base_ethnicity cat %5.1f \ ///
 base_gender cat %5.1f \ region cat %5.1f \ base_highest_edu cat %5.1f\ base_relationship cat %5.1f\ ///
 base_hh_income cat %5.1f \ base_disability cat %5.1f \ comorbid_count cat %5.1f \ ///
-all_covid_hosp cat %5.1f \ covid_n cat %5.1f \ n_vaccines cat %5.1f \ vaccinated cat %5.1f \ ///
+all_covid_hosp cat %5.1f \ covid_n cat %5.1f \ vaccines_n cat %5.1f \ vaccinated cat %5.1f \ ///
 covid_history cat %5.1f \ recovered_from_covid cat %5.1f \ covid_duration cat %5.1f) ///
 nospacelowpercent percent_n onecol missing iqrmiddle(",")  ///
 saving("$projectdir/output/tables/table1_demographic.xls", replace)
@@ -129,7 +129,7 @@ graph export "$projectdir/output/figures/baseline_EQ5D_responses.svg", width(12i
 //*** Percentages for baseline EQ-5D response ***
 graph bar if survey_response==1, percent over(long_covid) over(mobility, label(labsize(vsmall)) ///
 relabel(1 `""No" "Problems""' 2 "Slight" 3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) ///
-asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+asyvars blabel(bar, format(%9.0f) size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Mobility", size(medsmall)) ///
@@ -139,7 +139,7 @@ name(mobility_perc, replace)
 
 graph bar if survey_response==1, percent over(long_covid) over(selfcare, label(labsize(vsmall)) /// 
 relabel(1 `""No" "Problems""' 2 "Slight" ///
-3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, format(%9.0f) size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Self Care", size(medsmall)) ///
@@ -149,7 +149,7 @@ name(selfcare_perc, replace)
 
 graph bar if survey_response==1, percent over(long_covid) over(activity, label(labsize(vsmall)) ///
 relabel(1 `""No" "Problems""' 2 "Slight" ///
-3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, format(%9.0f) size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Usual Activities", size(medsmall)) ///
@@ -159,7 +159,7 @@ name(activity_perc, replace)
 
 graph bar if survey_response==1, percent over(long_covid) over(pain, label(labsize(vsmall)) ///
 relabel(1 `""No" "Problems""' 2 "Slight" ///
-3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, format(%9.0f) size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Pain/Discomfort", size(medsmall)) ///
@@ -169,7 +169,7 @@ name(pain_perc, replace)
 
 graph bar if survey_response==1, percent over(long_covid) over(anxiety, label(labsize(vsmall)) ///
 relabel(1 `""No" "Problems""' 2 "Slight" ///
-3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, format(%9.1f) size(vsmall)) ///
+3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, format(%9.0f) size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Anxiety/Depression", size(medsmall)) ///
@@ -183,10 +183,10 @@ graph export "$projectdir/output/figures/baseline_EQ5D_percentage.svg", width(12
 
 //*** EQ-VAS by COVID ***
 preserve
-egen mean_vas = mean(EuroQol_score), by(long_covid n_covids)
-egen sd_vas = sd(EuroQol_score), by(long_covid n_covids)
-egen tag_vas = tag(long_covid n_covids)
-gen n_covid2 = cond(long_covid==1, n_covids - 0.1, n_covids + 0.1)
+egen mean_vas = mean(EuroQol_score), by(long_covid covid_n)
+egen sd_vas = sd(EuroQol_score), by(long_covid covid_n)
+egen tag_vas = tag(long_covid covid_n)
+gen n_covid2 = cond(long_covid==1, covid_n - 0.1, covid_n + 0.1)
 gen upper= mean_vas +sd_vas
 gen lower= mean_vas-sd_vas
 twoway rcap upper lower n_covid2 if tag & long_covid==0, lc(blue%40) ///
@@ -195,16 +195,16 @@ twoway rcap upper lower n_covid2 if tag & long_covid==0, lc(blue%40) ///
 || scatter mean_vas n_covid2 if tag & long_covid==1, mc(red%80) ///
 legend(order(4 "Long COVID" 2 "No Long COVID")) legend(margin(vsmall) region(lstyle(none))) ///
 xtitle("Number of COVID-19 Cases") ylabel(, angle(0)) ///
-xlabel(1 "0" 2 "1" 3 "2" 4 "3" 5 "4" 6 "5" 7 "6+") ytitle(Mean and SD of EQ-VAS) ///
+xlabel(0 "0" 1 "1" 2 "2" 3 "3" 4 "4+") ytitle(Mean and SD of EQ-VAS) ///
 title("EQ-VAS Score by COVID-19 Cases")
 graph export "$projectdir/output/figures/VAS_by_covids.svg", width(12in) replace
 restore
 
 preserve
-egen mean_vas = mean(EuroQol_score), by(long_covid n_vaccines)
-egen sd_vas = sd(EuroQol_score), by(long_covid n_vaccines)
-egen tag_vas = tag(long_covid n_vaccines)
-gen n_vax2 = cond(long_covid==1, n_vaccines - 0.1, n_vaccines + 0.1)
+egen mean_vas = mean(EuroQol_score), by(long_covid vaccines_n)
+egen sd_vas = sd(EuroQol_score), by(long_covid vaccines_n)
+egen tag_vas = tag(long_covid vaccines_n)
+gen n_vax2 = cond(long_covid==1, vaccines_n - 0.1, vaccines_n + 0.1)
 gen upper= mean_vas +sd_vas
 gen lower= mean_vas-sd_vas
 twoway rcap upper lower n_vax2 if tag & long_covid==0, lc(blue%40) ///
@@ -213,7 +213,7 @@ twoway rcap upper lower n_vax2 if tag & long_covid==0, lc(blue%40) ///
 || scatter mean_vas n_vax2 if tag & long_covid==1, mc(red%80) ///
 legend(order(4 "Long COVID" 2 "No Long COVID")) legend(margin(vsmall) region(lstyle(none))) ///
 xtitle("Number of COVID-19 Vaccines") ylabel(, angle(0)) ///
-xlabel(1 "0" 2 "1" 3 "2" 4 "3" 5 "4" 6 "5" 7 "6+") ytitle(Mean and SD of EQ-VAS) ///
+xlabel(0 "0" 1 "1" 2 "2" 3 "3" 4 "4+") ytitle(Mean and SD of EQ-VAS) ///
 title("EQ-VAS Score by COVID-19 Vaccines")
 graph export "$projectdir/output/figures/VAS_by_vaccines.svg", width(12in) replace
 restore
