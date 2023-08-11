@@ -31,10 +31,11 @@ label variable all_covid_hosp "Number of COVID-19 Hospitalisations"
 label variable base_hh_income "Household Income"
 label variable comorbid_count "Number of comorbidities"
 label variable age_bands "Age"
+label variable imd_q5 "IMD (quintiles)"
 
 table1_mc if survey_response==1, vars(age_bands cat %5.1f \ base_ethnicity cat %5.1f \ ///
 base_gender cat %5.1f \ region cat %5.1f \ base_highest_edu cat %5.1f\ base_relationship cat %5.1f\ ///
-base_hh_income cat %5.1f \ base_disability cat %5.1f \ comorbid_count cat %5.1f \ ///
+base_hh_income cat %5.1f \ imd_q5 cat %5.1f \ base_disability cat %5.1f \ comorbid_count cat %5.1f \ ///
 all_covid_hosp cat %5.1f \ covid_n cat %5.1f \ vaccines_n cat %5.1f \ vaccinated cat %5.1f \ ///
 covid_history cat %5.1f \ recovered_from_covid cat %5.1f \ covid_duration cat %5.1f) ///
 nospacelowpercent percent_n onecol missing iqrmiddle(",")  ///
@@ -69,9 +70,10 @@ graph export "$projectdir/output/figures/baseline_EQ5D_disutility.svg", width(12
 codebook mobility selfcare activity pain anxiety if survey_response==1, m
 tab2 mobility selfcare activity pain anxiety if survey_response==1, m
 tab2 covid_duration recovered_from_covid if survey_response==1, m
-
+tab2 long_covid has_covid_dx, m
 sum utility if mobility==1 & selfcare==1 & activity==1 & pain==1 & anxiety==1 & survey_response==1
 tab utility if mobility==1 & selfcare==1 & activity==1 & pain==1 & anxiety==1 & survey_response==1
+
 //*** Baseline EQ-5D-5L by long COVID ***
 graph bar (count) if survey_response==1, over(long_covid) over(mobility, label(labsize(vsmall)) ///
 relabel(1 `""No" "Problems""' 2 "Slight" 3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) ///

@@ -40,6 +40,11 @@ replace age_bands=. if age==.
 label define ages 1 "18-29" 2 "30-39" 3 "40-49" 4 "50-59" 5 "60-69" 6 "70+"
 label values age_bands ages
 
+egen imd_q5 = cut(imd), at (0.0 6558.8 13137.6 19706.4 26275.2 32844.0)
+recode imd_q5 (0=1) (6558.8=2) (13137.6=3) (19706.4=4) (26275.2=5)
+label define quintiles 1 "1st (most deprived)" 2 "2nd" 3 "3rd" 4 "4th" 5 "5th (least deprived)"
+label values imd_q5 quintiles
+
 sort patient_id
 save "./output/openprompt_linked_tpp.dta", replace
 clear

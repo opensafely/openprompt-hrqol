@@ -168,7 +168,7 @@ actions:
         facit_fscore: output/figures/facit_baseline.svg
         log_tables: output/op-baseline-table1.log
 
-  gee_analysis:
+  reg_analysis:
     run: >
       stata-mp:latest analysis/op_modelling.do
     needs: [combine_linked_tpp]
