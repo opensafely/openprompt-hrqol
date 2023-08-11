@@ -31,7 +31,7 @@ title("Frequency Distribution of baseline EQ-5D Index Score (disutility)")
 graph export "$projectdir/output/figures/nonzero_EQ5D_disutility.svg", width(12in) replace
 
 // Baseline models 
-logit disutI male long_covid i.age_bands i.n_vaccines i.comorbid_count if survey_response==1
+logit disutI male long_covid i.age_bands i.vaccinated i.comorbid_count if survey_response==1
 eststo part_one
 mixed disutility male long_covid i.age_bands i.n_vaccines i.comorbid_count if survey_response==1, vce(robust)
 eststo part_two
@@ -42,11 +42,11 @@ replace b(a2) ci(2) label wide compress eform ///
 
 logit disutI male long_covid i.age_bands ib2.vaccinated i.comorbid_count i.imd_q5 if survey_response==1
 eststo follow_up
-mixed disutility male long_covid i.age_bands i.n_vaccines i.comorbid_count  ///
+mixed disutility male long_covid i.age_bands ib2.vaccinated i.comorbid_count  ///
 if survey_response==1 & disutI>0, vce(robust)
 eststo mixed_followup 
 esttab follow_up mixed_followup using "$projectdir/output/tables/twopart-model.csv", ///
-replace b(a2) ci(2) label wide compress eform ///
+b(a2) ci(2) label wide compress eform ///
 	title ("`i'") ///
 	varlabels(`e(labels)') ///
 	append
