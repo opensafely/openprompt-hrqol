@@ -33,7 +33,8 @@ graph export "$projectdir/output/figures/nonzero_EQ5D_disutility.svg", width(12i
 // Baseline models 
 logit disutI male long_covid i.age_bands i.vaccinated i.comorbid_count if survey_response==1
 eststo part_one
-mixed disutility male long_covid i.age_bands i.vaccinated i.comorbid_count if survey_response==1, vce(robust)
+mixed disutility male long_covid i.age_bands i.vaccinated i.comorbid_count ///
+if survey_response==1 & disutI>0, vce(robust)
 eststo part_two
 esttab part_one part_two using "$projectdir/output/tables/twopart-model.csv", ///
 replace b(a2) ci(2) label wide compress eform ///
@@ -51,7 +52,19 @@ b(a2) ci(2) label wide compress eform ///
 	varlabels(`e(labels)') ///
 	append
 
+// Longitudinal 
+xtset patient_id survey_response
+xtlogit disutI long_covid male i.age_bands i.vaccinated i.comorbid_count, pa corr(exch) vce(robust) base 
+eststo xtpart_one
+xtgee disutility long_covid male i.age_bands i.vaccinated i.comorbid_count if disutI>0, family(gamma) link(log)
+eststo xtpart_two
 
-/* mixed disutility male long_covid i.age_bands i.vaccinated i.comorbid_count if disutI>0 || patient_id: */
+mixed disutility long_covid male i.age_bands i.vaccinated i.comorbid_count if disutI>0 || patient_id: 
+eststo xt_mixed
 
+esttab xtpart_one xtpart_two xt_mixed using "$projectdir/output/tables/longit-model.csv", ///
+replace b(a2) ci(2) label wide compress eform ///
+	title ("`i'") ///
+	varlabels(`e(labels)') 
+	
 log close

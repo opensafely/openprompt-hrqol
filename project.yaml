@@ -168,12 +168,13 @@ actions:
         facit_fscore: output/figures/facit_baseline.svg
         log_tables: output/op-baseline-table1.log
 
-  reg_analysis:
+  twopart_models:
     run: >
       stata-mp:latest analysis/op_modelling.do
     needs: [combine_linked_tpp]
     outputs: 
       moderately_sensitive:
         nonzero_disutility: output/figures/nonzero_EQ5D_disutility.svg
-        gee_regression: output/tables/twopart-model.csv
+        baseline_regression: output/tables/twopart-model.csv
+        longitudinal_models: output/tables/longit-model.csv
         log_regression: output/models.log
