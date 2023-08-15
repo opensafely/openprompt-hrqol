@@ -19,11 +19,11 @@ replace disutI=1 if disutI==.
 replace disutI=. if disutility==.
 
 hist disutility if disutI==1 & long_covid==1, freq color(red%40) ///
-xtitle(EQ-5D Index Score (Non-Zero)) ylabel(, angle(0)) ///
+xtitle(EQ-5D Index Score (Non-Zero)) ylabel(0(100)400, angle(0)) ///
 title("Long COVID", size(medlarge)) name(long_covid_disutility, replace)
 
 hist disutility if disutI==1 & long_covid==0, freq color(blue%40) ///
-xtitle(EQ-5D Index Score (Non-Zero)) ylabel(, angle(0)) ///
+xtitle(EQ-5D Index Score (Non-Zero)) ylabel(0(100)400, angle(0)) ///
 title("No Long COVID", size(medlarge)) name(recovered_disutility, replace)
 
 graph combine long_covid_disutility recovered_disutility, ///
@@ -37,7 +37,7 @@ mixed disutility male long_covid i.age_bands i.vaccinated i.comorbid_count ///
 if survey_response==1 & disutI>0, vce(robust)
 eststo part_two
 esttab part_one part_two using "$projectdir/output/tables/twopart-model.csv", ///
-replace b(a2) ci(2) label wide compress eform ///
+replace b(a2) se(2) label wide compress eform ///
 	title ("`i'") ///
 	varlabels(`e(labels)') 
 
@@ -47,7 +47,7 @@ mixed disutility male long_covid i.age_bands i.vaccinated i.comorbid_count  ///
 if survey_response==1 & disutI>0, vce(robust)
 eststo mixed_followup 
 esttab follow_up mixed_followup using "$projectdir/output/tables/twopart-model.csv", ///
-b(a2) ci(2) label wide compress eform ///
+b(a2) se(2) label wide compress eform ///
 	title ("`i'") ///
 	varlabels(`e(labels)') ///
 	append
@@ -59,12 +59,20 @@ eststo xtpart_one
 xtgee disutility long_covid male i.age_bands i.vaccinated i.comorbid_count if disutI>0, family(gamma) link(log)
 eststo xtpart_two
 
+esttab xtpart_one xtpart_two using "$projectdir/output/tables/longit-model.csv", ///
+replace b(a2) se(2) label wide compress eform ///
+	title ("`i'") ///
+	varlabels(`e(labels)') 
+	
+melogit disutility long_covid male i.age_bands i.vaccinated i.comorbid_count if disutI>0 || patient_id: 
+eststo xt_melogit
 mixed disutility long_covid male i.age_bands i.vaccinated i.comorbid_count if disutI>0 || patient_id: 
 eststo xt_mixed
 
-esttab xtpart_one xtpart_two xt_mixed using "$projectdir/output/tables/longit-model.csv", ///
-replace b(a2) ci(2) label wide compress eform ///
+esttab xt_melogit xt_mixed using "$projectdir/output/tables/longit-model.csv", ///
+b(a2) se(2) label wide compress eform ///
 	title ("`i'") ///
-	varlabels(`e(labels)') 
+	varlabels(`e(labels)') ///
+	append
 	
 log close

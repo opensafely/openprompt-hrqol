@@ -33,12 +33,12 @@ label variable comorbid_count "Number of comorbidities"
 label variable age_bands "Age"
 label variable imd_q5 "IMD (quintiles)"
 
-table1_mc if survey_response==1, vars(age_bands cat %5.1f \ base_ethnicity cat %5.1f \ ///
+table1_mc if survey_response==1, by(covid_duration) vars(age_bands cat %5.1f \ base_ethnicity cat %5.1f \ ///
 base_gender cat %5.1f \ region cat %5.1f \ base_highest_edu cat %5.1f\ base_relationship cat %5.1f\ ///
 base_hh_income cat %5.1f \ imd_q5 cat %5.1f \ base_disability cat %5.1f \ comorbid_count cat %5.1f \ ///
 all_covid_hosp cat %5.1f \ covid_n cat %5.1f \ vaccines_n cat %5.1f \ vaccinated cat %5.1f \ ///
-covid_history cat %5.1f \ recovered_from_covid cat %5.1f \ covid_duration cat %5.1f) ///
-nospacelowpercent percent_n onecol missing iqrmiddle(",")  ///
+covid_history cat %5.1f \ recovered_from_covid cat %5.1f \ ) ///
+nospacelowpercent total(before) onecol missing iqrmiddle(",")  ///
 saving("$projectdir/output/tables/table1_demographic.xls", replace)
 preserve
 
@@ -82,7 +82,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Mobility", size(medsmall)) ///
 ytitle("") ///
-ylabel(0(500)2375, labsize(2) angle(0)) ///
+ylabel(0(500)2500, labsize(2) angle(0)) ///
 name(mobility_freq, replace)
 
 graph bar (count) if survey_response==1, over(long_covid) over(selfcare, label(labsize(vsmall)) /// 
@@ -92,7 +92,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Self Care", size(medsmall)) ///
 ytitle("") ///
-ylabel(0(500)2375, labsize(2) angle(0)) ///
+ylabel(0(500)2500, labsize(2) angle(0)) ///
 name(selfcare_freq, replace)
 
 graph bar (count) if survey_response==1, over(long_covid) over(activity, label(labsize(vsmall)) ///
@@ -102,7 +102,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Usual Activities", size(medsmall)) ///
 ytitle("") ///
-ylabel(0(500)2375, labsize(2) angle(0)) ///
+ylabel(0(500)2500, labsize(2) angle(0)) ///
 name(activity_freq, replace)
 
 graph bar (count) if survey_response==1, over(long_covid) over(pain, label(labsize(vsmall)) ///
@@ -112,7 +112,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Pain/Discomfort", size(medsmall)) ///
 ytitle("") ///
-ylabel(0(500)2375, labsize(2) angle(0)) ///
+ylabel(0(500)2500, labsize(2) angle(0)) ///
 name(pain_freq, replace)
 
 graph bar (count) if survey_response==1, over(long_covid) over(anxiety, label(labsize(vsmall)) ///
@@ -122,7 +122,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Anxiety/Depression", size(medsmall)) ///
 ytitle("") ///
-ylabel(0(500)2375, labsize(2) angle(0)) ///
+ylabel(0(500)2500, labsize(2) angle(0)) ///
 name(anxiety_freq, replace)
 
 graph combine mobility_freq selfcare_freq activity_freq pain_freq anxiety_freq, ///
@@ -138,7 +138,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Mobility", size(medsmall)) ///
 ytitle("") ///
-ylabel(, labsize(2) angle(0)) ///
+ylabel(0(20)100, labsize(2) angle(0)) ///
 name(mobility_perc, replace)
 
 graph bar if survey_response==1, percent over(long_covid) over(selfcare, label(labsize(vsmall)) /// 
@@ -148,7 +148,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Self Care", size(medsmall)) ///
 ytitle("") ///
-ylabel(, labsize(2) angle(0)) ///
+ylabel(0(20)100, labsize(2) angle(0)) ///
 name(selfcare_perc, replace)
 
 graph bar if survey_response==1, percent over(long_covid) over(activity, label(labsize(vsmall)) ///
@@ -158,7 +158,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Usual Activities", size(medsmall)) ///
 ytitle("") ///
-ylabel(, labsize(2) angle(0)) ///
+ylabel(0(20)100, labsize(2) angle(0)) ///
 name(activity_perc, replace)
 
 graph bar if survey_response==1, percent over(long_covid) over(pain, label(labsize(vsmall)) ///
@@ -168,7 +168,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Pain/Discomfort", size(medsmall)) ///
 ytitle("") ///
-ylabel(, labsize(2) angle(0)) ///
+ylabel(0(20)100, labsize(2) angle(0)) ///
 name(pain_perc, replace)
 
 graph bar if survey_response==1, percent over(long_covid) over(anxiety, label(labsize(vsmall)) ///
@@ -178,7 +178,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Anxiety/Depression", size(medsmall)) ///
 ytitle("") ///
-ylabel(, labsize(2) angle(0)) ///
+ylabel(0(20)100, labsize(2) angle(0)) ///
 name(anxiety_perc, replace)
 
 graph combine mobility_perc selfcare_perc activity_perc pain_perc anxiety_perc, ///
