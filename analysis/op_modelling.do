@@ -64,7 +64,7 @@ replace b(a2) se(2) label wide compress eform ///
 	title ("`i'") ///
 	varlabels(`e(labels)') 
 	
-melogit disutility long_covid male i.age_bands i.vaccinated i.comorbid_count if disutI>0 || patient_id: 
+melogit disutI long_covid male i.age_bands i.vaccinated i.comorbid_count || patient_id: 
 eststo xt_melogit
 mixed disutility long_covid male i.age_bands i.vaccinated i.comorbid_count if disutI>0 || patient_id: 
 eststo xt_mixed
