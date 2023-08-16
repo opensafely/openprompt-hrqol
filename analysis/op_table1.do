@@ -33,7 +33,7 @@ label variable comorbid_count "Number of comorbidities"
 label variable age_bands "Age"
 label variable imd_q5 "IMD (quintiles)"
 
-table1_mc if survey_response==1, by(covid_duration) vars(age_bands cat %5.1f \ base_ethnicity cat %5.1f \ ///
+table1_mc if survey_response==1, vars(age_bands cat %5.1f \ base_ethnicity cat %5.1f \ ///
 base_gender cat %5.1f \ region cat %5.1f \ base_highest_edu cat %5.1f\ base_relationship cat %5.1f\ ///
 base_hh_income cat %5.1f \ imd_q5 cat %5.1f \ base_disability cat %5.1f \ comorbid_count cat %5.1f \ ///
 all_covid_hosp cat %5.1f \ covid_n cat %5.1f \ vaccines_n cat %5.1f \ vaccinated cat %5.1f \ ///
