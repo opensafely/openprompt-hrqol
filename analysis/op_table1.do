@@ -27,13 +27,17 @@ label variable covid_history "Have you had COVID-19"
 label variable recovered_from_covid "Recovered from COVID-19"
 label variable covid_duration "Length of COVID-19 symptoms"
 label variable n_lc_records "Number of long COVID records"
-label variable all_covid_hosp "Number of COVID-19 Hospitalisations"
+label variable all_covid_hosp "COVID-19 Hospitalisation"
 label variable base_hh_income "Household Income"
 label variable comorbid_count "Number of comorbidities"
 label variable age_bands "Age"
 label variable imd_q5 "IMD (quintiles)"
 
-table1_mc if survey_response==1, vars(age_bands cat %5.1f \ base_ethnicity cat %5.1f \ ///
+recode all_covid_hosp (2=1)
+label define hosps 0 "No" 1 "Yes"
+label values all_covid_hosp hosps
+
+table1_mc if survey_response==1, by(covid_duration) vars(age_bands cat %5.1f \ base_ethnicity cat %5.1f \ ///
 base_gender cat %5.1f \ region cat %5.1f \ base_highest_edu cat %5.1f\ base_relationship cat %5.1f\ ///
 base_hh_income cat %5.1f \ imd_q5 cat %5.1f \ base_disability cat %5.1f \ comorbid_count cat %5.1f \ ///
 all_covid_hosp cat %5.1f \ covid_n cat %5.1f \ vaccines_n cat %5.1f \ vaccinated cat %5.1f \ ///
