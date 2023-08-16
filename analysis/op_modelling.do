@@ -31,9 +31,9 @@ title("Frequency Distribution of baseline EQ-5D Index Score (disutility)")
 graph export "$projectdir/output/figures/nonzero_EQ5D_disutility.svg", width(12in) replace
 
 // Baseline models 
-logit disutI male long_covid i.age_bands i.vaccinated i.comorbid_count if survey_response==1
+logit disutI male i.base_ethnicity long_covid i.age_bands i.vaccinated i.comorbid_count if survey_response==1
 eststo part_one
-mixed disutility male long_covid i.age_bands i.vaccinated i.comorbid_count ///
+mixed disutility male i.base_ethnicity long_covid i.age_bands i.vaccinated i.comorbid_count ///
 if survey_response==1 & disutI>0, vce(robust)
 eststo part_two
 esttab part_one part_two using "$projectdir/output/tables/twopart-model.csv", ///
@@ -51,6 +51,7 @@ b(a2) se(2) label wide compress eform ///
 	title ("`i'") ///
 	varlabels(`e(labels)') ///
 	append
+eststo clear
 
 // Longitudinal 
 xtset patient_id survey_response
@@ -60,7 +61,7 @@ xtgee disutility long_covid male i.age_bands i.vaccinated i.comorbid_count if di
 eststo xtpart_two
 
 esttab xtpart_one xtpart_two using "$projectdir/output/tables/longit-model.csv", ///
-replace b(a2) se(2) label wide compress eform ///
+replace b(a2) se(2) aic label wide compress eform ///
 	title ("`i'") ///
 	varlabels(`e(labels)') 
 	
@@ -70,9 +71,31 @@ mixed disutility long_covid male i.age_bands i.vaccinated i.comorbid_count if di
 eststo xt_mixed
 
 esttab xt_melogit xt_mixed using "$projectdir/output/tables/longit-model.csv", ///
-b(a2) se(2) label wide compress eform ///
+b(a2) se(2) aic label wide compress eform ///
 	title ("`i'") ///
 	varlabels(`e(labels)') ///
 	append
-	
+
+// PROMS
+mixed disutility long_covid male i.age_bands i.vaccinated i.comorbid_count if disutI>0 || patient_id: 
+eststo base
+
+mixed disutility long_covid male i.age_bands i.vaccinated i.comorbid_count i.mrc_breathlessness ///
+if disutI>0 || patient_id: 
+eststo base_mrc
+
+mixed disutility long_covid male i.age_bands i.vaccinated i.comorbid_count fscore ///
+if disutI>0 || patient_id: 
+eststo base_fscore
+
+mixed disutility long_covid male i.age_bands i.vaccinated i.comorbid_count i.mrc_breathlessness ///
+fscore if disutI>0 || patient_id: 
+eststo all_proms
+
+esttab base base_mrc base_fscore all_proms using "$projectdir/output/tables/stepwise-proms.csv", ///
+replace b(a2) se(2) aic label wide compress eform ///
+	title ("`i'") ///
+	varlabels(`e(labels)') ///
+
+
 log close
