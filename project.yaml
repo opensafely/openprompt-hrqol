@@ -175,6 +175,7 @@ actions:
     outputs: 
       moderately_sensitive:
         nonzero_disutility: output/figures/nonzero_EQ5D_disutility.svg
+        EQ5D_by_longcovd: output/figures/EQ5D_longcovid.svg
         baseline_regression: output/tables/twopart-model.csv
         longitudinal_models: output/tables/longit-model.csv
         stepwise_proms: output/tables/stepwise-proms.csv
