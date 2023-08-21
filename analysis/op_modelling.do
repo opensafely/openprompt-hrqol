@@ -77,14 +77,14 @@ esttab xtpart_one xtpart_two using "$projectdir/output/tables/longit-model.csv",
 replace mtitles("Logit GEE" "GEE (gamma & log link)") b(a2) se(2) aic label wide compress eform ///
 	varlabels(`e(labels)') 
 	
-/* melogit disutI long_covid male i.age_bands i.vaccinated i.comorbid_count || patient_id: 
-eststo xt_melogit */
+xtmelogit disutI long_covid male i.age_bands i.vaccinated i.comorbid_count || patient_id: 
+eststo xt_melogit 
 
 mixed disutility long_covid male i.age_bands i.vaccinated i.comorbid_count if disutI>0 || patient_id: 
 eststo xt_mixed
 
-esttab xt_mixed using "$projectdir/output/tables/longit-model.csv", ///
-mtitles("Mixed effect") b(a2) se(2) aic label wide compress eform append 
+esttab xt_melogit xt_mixed using "$projectdir/output/tables/longit-model.csv", ///
+mtitles("Mixed effect logit" "Mixed effect") b(a2) se(2) aic label wide compress eform append 
 
 // PROMS
 mixed disutility long_covid male i.age_bands i.vaccinated i.comorbid_count if disutI>0 || patient_id: 

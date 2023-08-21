@@ -180,3 +180,12 @@ actions:
         longitudinal_models: output/tables/longit-model.csv
         stepwise_proms: output/tables/stepwise-proms.csv
         log_regression: output/models.log
+
+  mixed_models:
+    run: >
+      stata-mp:latest analysis/op_mixed_models.do
+    needs: [combine_linked_tpp]
+    outputs:
+      moderately_sensitive:
+        mixed_glm: output/tables/mixed-models.csv
+        glm_log: output/mixed-glm.log
