@@ -56,16 +56,20 @@ meglm disutility long_covid male i.age_bands i.comorbid_count i.imd_q5 ///
 if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
 eststo base_imd
 
-esttab base base_eth base_inc base_disabled base_educ base_region base_imd ///
+meglm disutility long_covid male i.age_bands i.comorbid_count i.all_covid_hosp ///
+if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
+eststo base_hosps
+
+esttab base base_eth base_inc base_disabled base_educ base_region base_imd base_hosps ///
 using "$projectdir/output/tables/mixed-models.csv", ///
-replace mtitles("Base" "Ethnicity" "Income" "Disability" "Education" "Region" "IMD") ///
+replace mtitles("Base" "Ethnicity" "Income" "Disability" "Education" "Region" "IMD" "Hospitalised") ///
 b(a2) se(2) aic label wide compress eform ///
 	varlabels(`e(labels)') 
 
 eststo clear
 
 // Mixed effect GLMs
-/* meglm disutility long_covid male i.age_bands i.comorbid_count all_covid_hosp ///
+meglm disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
 if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
 eststo base
 
@@ -81,9 +85,9 @@ meglm disutility long_covid male i.age_bands i.comorbid_count i.mrc_breathlessne
 fscore if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
 eststo all_proms
 
-esttab base base_mrc base_fscore all_proms using "$projectdir/output/tables/mixed-models.csv", ///
+esttab base base_mrc base_fscore all_proms using "$projectdir/output/tables/glm-proms.csv", ///
 replace mtitles("Base" "MRC" "Facit" "All") b(a2) se(2) aic label wide compress eform ///
-	varlabels(`e(labels)') /// */
+	varlabels(`e(labels)') 
 
 log close
 
