@@ -23,6 +23,10 @@ label define hosps 0 "No" 1 "Yes"
 label values all_covid_hosp hosps
 xtset patient_id survey_response
 
+replace base_disability=. if base_disability==3
+replace base_highest_edu=. if base_highest_edu==5
+replace base_hh_income=. if base_hh_income==9 | base_hh_income==10
+
 // Demographic comparison
 meglm disutility long_covid male i.age_bands i.comorbid_count ///
 if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
