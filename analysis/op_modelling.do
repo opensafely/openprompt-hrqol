@@ -56,7 +56,7 @@ graph export "$projectdir/output/figures/EQ5D_longcovid.svg", width(12in) replac
 restore 
 
 xtset patient_id survey_response
-xtmelogit disutI long_covid male i.age_bands i.base_disability i.comorbid_count || patient_id: 
+xtmelogit disutI long_covid male i.age_bands i.base_disability i.comorbid_count || patient_id:, or
 eststo xt_melogit 
 
 mixed disutility long_covid male i.age_bands i.base_disability i.comorbid_count if disutI>0 || patient_id: 
@@ -65,25 +65,6 @@ eststo xt_mixed
 esttab xt_melogit xt_mixed using "$projectdir/output/tables/longit-model.csv", ///
 replace mtitles("Mixed effect logit" "Mixed effect") b(a2) se(2) aic label wide compress eform  
 
-// PROMS
-mixed disutility long_covid male i.age_bands i.vaccinated i.comorbid_count if disutI>0 || patient_id: 
-eststo base
-
-mixed disutility long_covid male i.age_bands i.vaccinated i.comorbid_count i.mrc_breathlessness ///
-if disutI>0 || patient_id: 
-eststo base_mrc
-
-mixed disutility long_covid male i.age_bands i.vaccinated i.comorbid_count fscore ///
-if disutI>0 || patient_id: 
-eststo base_fscore
-
-mixed disutility long_covid male i.age_bands i.vaccinated i.comorbid_count i.mrc_breathlessness ///
-fscore if disutI>0 || patient_id: 
-eststo all_proms
-
-esttab base base_mrc base_fscore all_proms using "$projectdir/output/tables/stepwise-proms.csv", ///
-replace mtitles("Base" "MRC" "Facit" "All") b(a2) se(2) aic label wide compress eform ///
-	varlabels(`e(labels)') ///
 
 // Model by long COVID
 meglm disutility male i.age_bands i.comorbid_count i.base_disability i.imd_q5 ///

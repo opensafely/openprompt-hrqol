@@ -177,7 +177,6 @@ actions:
         EQ5D_by_longcovd: output/figures/EQ5D_longcovid.svg
         baseline_regression: output/tables/twopart-model.csv
         longitudinal_models: output/tables/longit-model.csv
-        stepwise_proms: output/tables/stepwise-proms.csv
         log_regression: output/models.log
 
   mixed_models:
