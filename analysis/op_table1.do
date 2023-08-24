@@ -55,11 +55,11 @@ label variable n_lc_records "Number of long COVID records"
 
 table1_mc if survey_response==1, vars(long_covid cat %5.1f \ n_lc_records cat %5.1f \ ///
 n_distinct_lc_records cat %5.1f \) nospacelowpercent total(before) onecol missing iqrmiddle(",")  ///
-saving("projectdir/output/tables/long-covid-dx.xls", replace)
+saving("$projectdir/output/tables/long-covid-dx.xls", replace)
 preserve
 
-import excel "projectdir/output/tables/long-covid-dx.xls", clear
-outsheet * using "projectdir/output/tables/long-covid-dx.csv", comma nonames replace
+import excel "$projectdir/output/tables/long-covid-dx.xls", clear
+outsheet * using "$projectdir/output/tables/long-covid-dx.csv", comma nonames replace
 
 //*** Questionnaire responses ***
 restore
