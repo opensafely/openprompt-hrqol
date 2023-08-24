@@ -26,7 +26,6 @@ label variable vaccinated "Have you had a COVID-19 vaccine"
 label variable covid_history "Have you had COVID-19"
 label variable recovered_from_covid "Recovered from COVID-19"
 label variable covid_duration "Length of COVID-19 symptoms"
-label variable n_lc_records "Number of long COVID records"
 label variable all_covid_hosp "COVID-19 Hospitalisation"
 label variable base_hh_income "Household Income"
 label variable comorbid_count "Number of comorbidities"
@@ -48,6 +47,19 @@ preserve
 
 import excel "$projectdir/output/tables/table1_demographic.xls", clear
 outsheet * using "$projectdir/output/tables/table1_demographic.csv", comma nonames replace
+
+//*** Self reported vs diagnosis of LC ***
+label variable long_covid "Self-reported long COVID"
+label variable n_distinct_lc_records "Number of distinct Long COVID records"
+label variable n_lc_records "Number of long COVID records"
+
+table1_mc if survey_response==1, vars(long_covid cat %5.1f \ n_lc_records cat %5.1f \ ///
+n_distinct_lc_records cat %5.1f \) nospacelowpercent total(before) onecol missing iqrmiddle(",")  ///
+saving("projectdir/output/tables/long-covid-dx.xls", replace)
+preserve
+
+import excel "projectdir/output/tables/long-covid-dx.xls", clear
+outsheet * using "projectdir/output/tables/long-covid-dx.csv", comma nonames replace
 
 //*** Questionnaire responses ***
 restore
