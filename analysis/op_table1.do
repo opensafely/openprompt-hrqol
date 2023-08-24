@@ -49,6 +49,7 @@ import excel "$projectdir/output/tables/table1_demographic.xls", clear
 outsheet * using "$projectdir/output/tables/table1_demographic.csv", comma nonames replace
 
 //*** Self reported vs diagnosis of LC ***
+restore
 label variable long_covid "Self-reported long COVID"
 label variable n_distinct_lc_records "Number of distinct Long COVID records"
 label variable n_lc_records "Number of long COVID records"

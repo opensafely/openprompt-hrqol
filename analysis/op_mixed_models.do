@@ -73,16 +73,16 @@ meglm disutility long_covid male i.age_bands i.comorbid_count i.base_disability 
 if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
 eststo base
 
-meglm disutility long_covid male i.age_bands i.comorbid_count i.mrc_breathlessness ///
-if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
+meglm disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
+i.mrc_breathlessness if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
 eststo base_mrc
 
-meglm disutility long_covid male i.age_bands i.comorbid_count fscore ///
+meglm disutility long_covid male i.age_bands i.comorbid_count i.base_disability fscore ///
 if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
 eststo base_fscore
 
-meglm disutility long_covid male i.age_bands i.comorbid_count i.mrc_breathlessness ///
-fscore if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
+meglm disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
+i.mrc_breathlessness fscore if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
 eststo all_proms
 
 esttab base base_mrc base_fscore all_proms using "$projectdir/output/tables/glm-proms.csv", ///
