@@ -28,36 +28,36 @@ replace base_highest_edu=. if base_highest_edu==5
 replace base_hh_income=. if base_hh_income==9 | base_hh_income==10
 
 // Demographic comparison
-meglm disutility long_covid male i.age_bands i.comorbid_count ///
-if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
+mixed disutility long_covid male i.age_bands i.comorbid_count ///
+if disutI>0 || patient_id:, cov(exch) 
 eststo base
 
-meglm disutility long_covid male i.age_bands i.comorbid_count i.base_ethnicity ///
-if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
+mixed disutility long_covid male i.age_bands i.comorbid_count i.base_ethnicity ///
+if disutI>0 || patient_id:, cov(exch) 
 eststo base_eth
 
-meglm disutility long_covid male i.age_bands i.comorbid_count i.base_hh_income ///
-if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
+mixed disutility long_covid male i.age_bands i.comorbid_count i.base_hh_income ///
+if disutI>0 || patient_id:, cov(exch) 
 eststo base_inc
 
-meglm disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
-if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
+mixed disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
+if disutI>0 || patient_id:, cov(exch) 
 eststo base_disabled
 
-meglm disutility long_covid male i.age_bands i.comorbid_count i.base_highest_edu ///
-if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
+mixed disutility long_covid male i.age_bands i.comorbid_count i.base_highest_edu ///
+if disutI>0 || patient_id:, cov(exch) 
 eststo base_educ
 
-meglm disutility long_covid male i.age_bands i.comorbid_count i.region ///
-if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
+mixed disutility long_covid male i.age_bands i.comorbid_count i.region ///
+if disutI>0 || patient_id:, cov(exch) 
 eststo base_region
 
-meglm disutility long_covid male i.age_bands i.comorbid_count i.imd_q5 ///
-if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
+mixed disutility long_covid male i.age_bands i.comorbid_count i.imd_q5 ///
+if disutI>0 || patient_id:, cov(exch) 
 eststo base_imd
 
-meglm disutility long_covid male i.age_bands i.comorbid_count i.all_covid_hosp ///
-if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
+mixed disutility long_covid male i.age_bands i.comorbid_count i.all_covid_hosp ///
+if disutI>0 || patient_id:, cov(exch) 
 eststo base_hosps
 
 esttab base base_eth base_inc base_disabled base_educ base_region base_imd base_hosps ///
@@ -66,28 +66,40 @@ replace mtitles("Base" "Ethnicity" "Income" "Disability" "Education" "Region" "I
 b(a2) se(2) aic label wide compress eform ///
 	varlabels(`e(labels)') 
 
+mixed disutility long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
+i.base_disability i.base_highest_edu i.base_hh_income i.region i.imd_q5 ///
+if disutI>0 || patient_id:, cov(exch) 
+eststo full
+
+esttab full using "$projectdir/output/tables/mixed-models.csv", ///
+mtitles("Full model") b(a2) se(2) aic label wide compress eform ///
+	varlabels(`e(labels)') 
+	append
+	
 eststo clear
 
-// Mixed effect GLMs
-meglm disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
-if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
+/*
+// Mixed effects
+mixed disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
+if disutI>0 || patient_id:, cov(exch) 
 eststo base
 
-meglm disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
-i.mrc_breathlessness if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
+mixed disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
+i.mrc_breathlessness if disutI>0 || patient_id:, cov(exch) 
 eststo base_mrc
 
-meglm disutility long_covid male i.age_bands i.comorbid_count i.base_disability fscore ///
-if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
+mixed disutility long_covid male i.age_bands i.comorbid_count i.base_disability fscore ///
+if disutI>0 || patient_id:, cov(exch) 
 eststo base_fscore
 
-meglm disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
-i.mrc_breathlessness fscore if disutI>0 || patient_id:, cov(exch) family(gamma) link(log)
+mixed disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
+i.mrc_breathlessness fscore if disutI>0 || patient_id:, cov(exch) 
 eststo all_proms
 
-esttab base base_mrc base_fscore all_proms using "$projectdir/output/tables/glm-proms.csv", ///
+esttab base base_mrc base_fscore all_proms using "$projectdir/output/tables/mixed-proms.csv", ///
 replace mtitles("Base" "MRC" "Facit" "All") b(a2) se(2) aic label wide compress eform ///
 	varlabels(`e(labels)') 
+*/
 
 log close
 
