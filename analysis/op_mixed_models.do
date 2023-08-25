@@ -73,7 +73,7 @@ eststo full
 
 esttab full using "$projectdir/output/tables/mixed-models.csv", ///
 mtitles("Full model") b(a2) se(2) aic label wide compress eform ///
-	varlabels(`e(labels)') 
+	varlabels(`e(labels)') ///
 	append
 	
 eststo clear
