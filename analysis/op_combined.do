@@ -41,54 +41,56 @@ gen life_effect=life_affected-1
 label values life_effect affect
 
 //*** FACIT fatigue ***
-label define rvs_facit 0 "Very much" 1 "Quite a bit" 2 "Somewhat" 3 "A little bit" 4 "Not at all"
+label define facit 0 "Not at all" 1 "A little bit" 2 "Somewhat" 3 "Quite a bit" 4 "Very much"
 gen fatigue_facit=facit_fatigue-1
-label values fatigue_facit rvs_facit
+label values fatigue_facit facit
 
 gen weak_facit=facit_weak-1
-label values weak_facit rvs_facit
+label values weak_facit facit
 
 gen listless_facit=facit_listless-1
-label values listless_facit rvs_facit
+label values listless_facit facit
 
 gen tired_facit=facit_tired-1
-label values tired_facit rvs_facit
+label values tired_facit facit
 
 gen starting_trouble_facit=facit_trouble_starting-1
-label values starting_trouble_facit rvs_facit
+label values starting_trouble_facit facit
 
 gen finishing_trouble_facit=facit_trouble_finishing-1
-label values finishing_trouble_facit rvs_facit
+label values finishing_trouble_facit facit
 
-label define facit 0 "Not at all" 1 "A little bit" 2 "Somewhat" 3 "Quite a bit" 4 "Very much"
 gen energy_facit=facit_energy-1
 label values energy_facit facit
 
 gen activity_facit=facit_usual_activities-1
 label values activity_facit facit
 
+gen energy_rvs_facit=4-energy_facit
+gen activity_rvs_facit=4-activity_facit
+
 gen sleep_facit=facit_sleep_during_day-1
-label values sleep_facit rvs_facit
+label values sleep_facit facit
 
 gen eat_facit=facit_eat-1
-label values eat_facit rvs_facit
+label values eat_facit facit
 
 gen help_facit=facit_need_help-1
-label values help_facit rvs_facit
+label values help_facit facit
 
 gen frustrated_facit=facit_frustrated-1
-label values frustrated_facit rvs_facit
+label values frustrated_facit facit
 
 gen social_limited_facit=facit_limit_social_activity-1
-label values social_limited_facit rvs_facit
+label values social_limited_facit facit
 
 //*** Fscore ***
 egen qtotal_facit= rownonmiss(fatigue_facit weak_facit listless_facit tired_facit ///
-starting_trouble_facit finishing_trouble_facit energy_facit activity_facit ///
+starting_trouble_facit finishing_trouble_facit energy_rvs_facit activity_rvs_facit ///
 sleep_facit eat_facit help_facit frustrated_facit social_limited_facit)
 egen score_facit=rowtotal(fatigue_facit weak_facit listless_facit ///
 tired_facit starting_trouble_facit finishing_trouble_facit ///
-energy_facit activity_facit sleep_facit eat_facit help_facit ///
+energy_rvs_facit activity_rvs_facit sleep_facit eat_facit help_facit ///
 frustrated_facit social_limited_facit)
 gen fscore = (13*(score_facit)/qtotal_facit)
 
