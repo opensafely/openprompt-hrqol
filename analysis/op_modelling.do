@@ -57,8 +57,8 @@ graph export "$projectdir/output/figures/EQ5D_longcovid.svg", width(12in) replac
 restore 
 
 xtset patient_id survey_response
-xtmelogit disutI long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
-i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5 || patient_id:
+xtlogit disutI long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
+i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5, re
 eststo xt_melogit 
 
 mixed disutility long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
