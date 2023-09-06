@@ -176,6 +176,10 @@ actions:
     outputs: 
       moderately_sensitive:
         EQ5D_by_longcovd: output/figures/EQ5D_longcovid.svg
+        demographic_indicators: output/figures/mixed_odds_ratio.svg
+        demographic_coefficients: output/figures/mixed_coefs.svg
+        socioeconomic_indicators: output/figures/socio_odds.svg
+        socioeconomic_coefficients: output/figures/socio_coefs.svg
         baseline_regression: output/tables/twopart-model.csv
         longitudinal_models: output/tables/longit-model.csv
         log_regression: output/models.log

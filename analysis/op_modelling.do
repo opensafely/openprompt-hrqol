@@ -67,6 +67,7 @@ graph export "$projectdir/output/figures/EQ5D_longcovid.svg", width(12in) replac
 restore 
 
 xtset patient_id survey_response
+replace base_disability=. if base_disability==3
 xtlogit disutI long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
 i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5, re
 eststo xt_melogit 
@@ -75,6 +76,30 @@ mixed disutility long_covid male i.age_bands i.base_ethnicity i.comorbid_count /
 i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5 ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo xt_mixed
+
+coefplot, keep(long_covid male 1.age_bands 2.age_bands 3.age_bands 4.age_bands 5.age_bands ///
+6.age_bands 1.base_disability 2.base_disability) xline(1) eform xtitle("Odds ratio") ///
+title("Demographic indicators", size(medlarge))
+graph export "$projectdir/output/figures/mixed_odds_ratio.svg", width(12in) replace
+
+coefplot, keep(long_covid male 1.age_bands 2.age_bands 3.age_bands 4.age_bands 5.age_bands ///
+6.age_bands 1.base_disability 2.base_disability) xline(0) xtitle("Coefficients") ///
+title("Demographic indicators", size(medlarge))
+graph export "$projectdir/output/figures/mixed_coefs.svg", width(12in) replace
+
+coefplot, keep(1.base_highest_edu 2.base_highest_edu 3.base_highest_edu 4.base_highest_edu ///
+5.base_highest_edu 1.base_hh_income 2.base_hh_income 3.base_hh_income 4.base_hh_income ///
+5.base_hh_income 6.base_hh_income 7.base_hh_income 8.base_hh_income 1.imd_q5 2.imd_q5 ///
+3.imd_q5 4.imd_q5 5.imd_q5) xline(1) eform xtitle("Odds ratio") title("Socioeconomic factors", ///
+size(medlarge))
+graph export "$projectdir/output/figures/socio_odds.svg", width(12in) replace
+
+coefplot, keep(1.base_highest_edu 2.base_highest_edu 3.base_highest_edu 4.base_highest_edu ///
+5.base_highest_edu 1.base_hh_income 2.base_hh_income 3.base_hh_income 4.base_hh_income ///
+5.base_hh_income 6.base_hh_income 7.base_hh_income 8.base_hh_income 1.imd_q5 2.imd_q5 ///
+3.imd_q5 4.imd_q5 5.imd_q5) xline(0) xtitle("Coefficients") title("Socioeconomic factors", ///
+size(medlarge))
+graph export "$projectdir/output/figures/socio_coefs.svg", width(12in) replace
 
 esttab xt_melogit xt_mixed using "$projectdir/output/tables/longit-model.csv", ///
 replace mtitles("Mixed effect logit" "Mixed effect") b(a2) ci(2) aic label wide compress eform  
