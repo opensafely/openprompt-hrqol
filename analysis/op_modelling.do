@@ -68,6 +68,7 @@ restore
 
 xtset patient_id survey_response
 replace base_disability=. if base_disability==3
+replace base_highest_edu=. if base_highest_edu==5
 xtlogit disutI long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
 i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5, re
 eststo xt_melogit 
@@ -78,7 +79,8 @@ if disutI>0 || patient_id:, cov(exch)
 eststo xt_mixed
 
 coefplot, keep(long_covid male 1.age_bands 2.age_bands 3.age_bands 4.age_bands 5.age_bands ///
-6.age_bands 1.base_disability 2.base_disability) xline(1) eform xtitle("Odds ratio") ///
+6.age_bands 1.base_disability 2.base_disability 1.comorbid_count 2.comorbid_count ///
+3.comorbid_count) xline(1) eform xtitle("Odds ratio") ///
 title("Demographic indicators", size(medlarge))
 graph export "$projectdir/output/figures/mixed_odds_ratio.svg", width(12in) replace
 
