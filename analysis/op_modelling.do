@@ -85,7 +85,8 @@ title("Demographic indicators", size(medlarge))
 graph export "$projectdir/output/figures/mixed_odds_ratio.svg", width(12in) replace
 
 coefplot, keep(long_covid male 1.age_bands 2.age_bands 3.age_bands 4.age_bands 5.age_bands ///
-6.age_bands 1.base_disability 2.base_disability) xline(0) xtitle("Coefficients") ///
+6.age_bands 1.base_disability 2.base_disability 1.comorbid_count 2.comorbid_count ///
+3.comorbid_count) xline(0) xtitle("Coefficients") ///
 title("Demographic indicators", size(medlarge))
 graph export "$projectdir/output/figures/mixed_coefs.svg", width(12in) replace
 
