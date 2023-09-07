@@ -17,6 +17,9 @@ use "./output/op_tpp_linked.dta", clear
 gen disutI=0 if mobility==1 & selfcare==1 & activity==1 & pain==1 & anxiety==1
 replace disutI=1 if disutI==.
 replace disutI=. if disutility==.
+replace base_disability=. if base_disability==3
+replace base_highest_edu=. if base_highest_edu==5
+replace base_hh_income=. if base_hh_income==9
 
 // Baseline models 
 logit disutI male i.base_ethnicity long_covid i.age_bands i.vaccinated i.comorbid_count if survey_response==1
