@@ -76,8 +76,8 @@ outsheet * using "$projectdir/output/tables/table1_questions.csv", comma nonames
 
 restore
 set scheme s1color
-hist utility if survey_response==1, freq xtitle(EQ-5D Index Score) color(green%40) ///
-title("Frequency Distribution of baseline EQ-5D Index Score", size(medlarge))
+hist utility if survey_response==1, xtitle(EQ-5D Index Score) color(green%40) ///
+title("Distribution of baseline EQ-5D Index Score", size(medlarge))
 graph export "$projectdir/output/figures/baseline_EQ5D_utility.svg", width(12in) replace
 
 hist disutility if survey_response==1, freq xtitle(EQ-5D Index Score (disutility)) color(orange%60) ///
