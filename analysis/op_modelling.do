@@ -55,6 +55,8 @@ gen upper = mean_full +1.96*sd_full
 gen lower = mean_full -1.96*sd_full
 sum mean_full if long_covid==0
 sum mean_full if long_covid==1
+tab survey_response if long_covid==1 & maxsurvey==4, sum(utility)
+tab survey_response if long_covid==0 & maxsurvey==4, sum(utility)
 
 /*egen mean_three=mean(utility) if maxsurvey==3, by(survey_response long_covid)
 egen mean_two=mean(utility) if maxsurvey==2, by(survey_response long_covid)
