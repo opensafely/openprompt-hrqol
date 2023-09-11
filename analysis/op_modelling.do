@@ -50,19 +50,22 @@ sort survey_response
 xtset patient_id survey_response
 bysort patient_id: egen maxsurvey = max(survey_response)
 egen mean_full=mean(utility) if maxsurvey==4, by(survey_response long_covid)
-egen mean_three=mean(utility) if maxsurvey==3, by(survey_response long_covid)
+egen sd_full= sd(utility) if maxsurvey==4, by(survey_response long_covid)
+gen upper = mean_full +1.96*sd_full
+gen lower = mean_full -1.96*sd_full
+sum mean_full if long_covid==0
+sum mean_full if long_covid==1
+
+/*egen mean_three=mean(utility) if maxsurvey==3, by(survey_response long_covid)
 egen mean_two=mean(utility) if maxsurvey==2, by(survey_response long_covid)
-egen mean_one=mean(utility) if maxsurvey==1, by(survey_response long_covid)
+egen mean_one=mean(utility) if maxsurvey==1, by(survey_response long_covid)*/
+
 set scheme s1color
 twoway (tsline mean_full if long_covid==1, lcolor(red%80)) || ///
 (tsline mean_full if long_covid==0, lcolor(blue%80)) || ///
-(tsline mean_three if long_covid==1, lcolor(red%80)) || ///
-(tsline mean_three if long_covid==0, lcolor(blue%80)) || ///
-(tsline mean_two if long_covid==1, lcolor(red%80)) || ///
-(tsline mean_two if long_covid==0, lcolor(blue%80)) || ///
-(tsline mean_one if long_covid==1, lcolor(red%80)) || ///
-(tsline mean_one if long_covid==0, lcolor(blue%80)) ///
-, legend(order(1 "Long COVID" 2 "Recovered from COVID") margin(vsmall) ///
+(rcap upper lower survey_response if long_covid==1, lcolor(green%40)) ///
+(rcap upper lower survey_response if long_covid==0, lcolor(green%40)) ///
+, legend(order(1 "Long COVID" 2 "Recovered from COVID" 3 "95% CI") margin(vsmall) ///
 region(lstyle(none))) ytitle(EQ-5D utility score) ylabel(0(0.2)1, angle(0)) ///
 xtitle(Month) xlabel(1 "0" 2 "1" 3 "2" 4 "3") ///
 title("Mean utility score by Long COVID", size(medlarge))
