@@ -64,7 +64,7 @@ outsheet * using "$projectdir/output/tables/long-covid-dx.csv", comma nonames re
 
 //*** Questionnaire responses ***
 restore
-table1_mc if survey_response==1, vars(mobility cat %5.1f \ selfcare cat %5.1f \ ///
+table1_mc if survey_response==1, by(long_covid) vars(mobility cat %5.1f \ selfcare cat %5.1f \ ///
 activity cat %5.1f \ pain cat %5.1f \ anxiety cat %5.1f \ ///
 work_effect cat %5.1f \ life_effect cat %5.1f \ mrc_breathlessness cat %5.1f \ fscore conts %5.1f \) ///
 nospacelowpercent total(before) onecol missing iqrmiddle(",")  ///
