@@ -58,15 +58,33 @@ sum mean_full if long_covid==1
 tab survey_response if long_covid==1 & maxsurvey==4, sum(utility)
 tab survey_response if long_covid==0 & maxsurvey==4, sum(utility)
 
+egen mean_ut_lc = mean(utility) if long_covid==1 & maxsurvey==4, by(survey_response)
+gen high_lc=.
+gen low_lc=.
+forvalues i = 1/4 {
+	ci mean utility if survey_response == `i' & long_covid==1
+	replace high_lc = r(ub) if survey_response == `i' & long_covid==1
+	replace low_lc = r(lb) if survey_response == `i' & long_covid==1
+}
+
+egen mean_ut = mean(utility) if long_covid==0 & maxsurvey==4, by(survey_response)
+gen high=.
+gen low=.
+forvalues i = 1/4 {
+	ci mean utility if survey_response == `i' & long_covid==0
+	replace high = r(ub) if survey_response == `i' & long_covid==0
+	replace low = r(lb) if survey_response == `i' & long_covid==0
+}
+
 /*egen mean_three=mean(utility) if maxsurvey==3, by(survey_response long_covid)
 egen mean_two=mean(utility) if maxsurvey==2, by(survey_response long_covid)
 egen mean_one=mean(utility) if maxsurvey==1, by(survey_response long_covid)*/
 
 set scheme s1color
-twoway (tsline mean_full if long_covid==1, lcolor(red%80)) || ///
-(tsline mean_full if long_covid==0, lcolor(blue%80)) || ///
-(rcap upper lower survey_response if long_covid==1, lcolor(green%40)) ///
-(rcap upper lower survey_response if long_covid==0, lcolor(green%40)) ///
+twoway (connected mean_ut_lc survey_response, lcolor(red%80) mcolor(red%40)) ///
+(connected mean_ut survey_response, lcolor(blue%80) mcolor(blue%40)) ///
+(rcap low_lc high_lc survey_response, lcolor(green%50)) ///
+(rcap low high survey_response, lcolor(green%50)) ///
 , legend(order(1 "Long COVID" 2 "Recovered from COVID" 3 "95% CI") margin(vsmall) ///
 region(lstyle(none))) ytitle(EQ-5D utility score) ylabel(0(0.2)1, angle(0)) ///
 xtitle(Month) xlabel(1 "0" 2 "1" 3 "2" 4 "3") ///
