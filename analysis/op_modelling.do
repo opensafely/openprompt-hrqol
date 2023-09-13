@@ -92,6 +92,7 @@ graph export "$projectdir/output/figures/EQ5D_longcovid.svg", width(12in) replac
 restore 
 
 preserve
+xtset patient_id survey_response
 twoway (tsline mean_full if long_covid==1, lcolor(red%80)) || ///
 (tsline mean_full if long_covid==0, lcolor(blue%80)) || ///
 (tsline mean_three if long_covid==1, lcolor(red%80)) || ///
