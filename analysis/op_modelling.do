@@ -60,6 +60,10 @@ sum mean_full if long_covid==0
 sum mean_full if long_covid==1
 tab survey_response if long_covid==1 & maxsurvey==4, sum(utility)
 tab survey_response if long_covid==0 & maxsurvey==4, sum(utility)
+tab survey_response if long_covid==1 & maxsurvey==3, sum(utility)
+tab survey_response if long_covid==0 & maxsurvey==3, sum(utility)
+tab survey_response if long_covid==1 & maxsurvey==2, sum(utility)
+tab survey_response if long_covid==0 & maxsurvey==2, sum(utility)
 
 egen mean_ut_lc = mean(utility) if long_covid==1 & maxsurvey==4, by(survey_response)
 gen high_lc=.
@@ -89,9 +93,7 @@ region(lstyle(none))) ytitle(EQ-5D utility score) ylabel(0(0.2)1, angle(0)) ///
 xtitle(Month) xlabel(1 "0" 2 "1" 3 "2" 4 "3") ///
 title("Mean utility score by Long COVID", size(medlarge))
 graph export "$projectdir/output/figures/EQ5D_longcovid.svg", width(12in) replace
-restore 
 
-preserve
 xtset patient_id survey_response
 twoway (tsline mean_full if long_covid==1, lcolor(red%80)) || ///
 (tsline mean_full if long_covid==0, lcolor(blue%80)) || ///
