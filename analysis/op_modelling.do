@@ -113,11 +113,11 @@ xtset patient_id survey_response
 replace base_disability=. if base_disability==3
 replace base_highest_edu=. if base_highest_edu==5
 xtlogit disutI long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
-i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5, re
+i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5 days_since_baseline, re
 eststo xt_melogit 
 
 mixed disutility long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
-i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5 ///
+i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5 days_since_baseline ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo xt_mixed
 
