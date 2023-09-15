@@ -158,8 +158,11 @@ actions:
     outputs:
       moderately_sensitive:
         demographic_data: output/tables/table1_demographic.csv
+        rounded_demograpics: output/tables/table1_demographic_rounded.csv
         questionnaire_data: output/tables/table1_questions.csv
+        rounded_questions: output/tables/table1_questions_rounded.csv
         long_covid_dx: output/tables/long-covid-dx.csv
+        rounded_dx: output/tables/long-covid-dx-rounded.csv
         utility_score: output/figures/baseline_EQ5D_utility.svg
         disutility_score: output/figures/baseline_EQ5D_disutility.svg
         question_responses: output/figures/baseline_EQ5D_responses.svg
