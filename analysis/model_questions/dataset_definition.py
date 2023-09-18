@@ -55,6 +55,8 @@ dataset.creation_date = (
     )
 dataset.days_since_baseline = (dataset.creation_date - index_date).days
 
+dataset.configure_dummy_dataset(population_size=5000)
+
 # A row represents a response to a question in a questionnaire. There are six
 # questionnaires. For more information, see DATA.md.
 for question in questions:

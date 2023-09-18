@@ -215,3 +215,5 @@ dataset.comorbid_count = binary_haem_cancer + \
 # remove missing age and anyone not male/female
 population = (dataset.age <= 100) & (dataset.age >= 18) & (dataset.sex.contains("male")) & (registrations_number == 1)
 dataset.define_population(population)
+
+dataset.configure_dummy_dataset(population_size=5000)
