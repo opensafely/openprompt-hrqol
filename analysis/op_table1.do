@@ -165,7 +165,7 @@ graph export "$projectdir/output/figures/baseline_EQ5D_responses.svg", width(12i
 
 
 //*** Percentages for baseline EQ-5D response ***
-graph bar if survey_response==1, percent over(long_covid) over(mobility, label(labsize(vsmall)) ///
+graph bar if survey_response==1, over(long_covid) over(mobility, label(labsize(vsmall)) ///
 relabel(1 `""No" "Problems""' 2 "Slight" 3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) ///
 asyvars blabel(bar, format(%9.0f) size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
@@ -175,7 +175,7 @@ ytitle("") ///
 ylabel(0(20)100, labsize(2) angle(0)) ///
 name(mobility_perc, replace)
 
-graph bar if survey_response==1, percent over(long_covid) over(selfcare, label(labsize(vsmall)) /// 
+graph bar if survey_response==1, over(long_covid) over(selfcare, label(labsize(vsmall)) /// 
 relabel(1 `""No" "Problems""' 2 "Slight" ///
 3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, format(%9.0f) size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
@@ -185,7 +185,7 @@ ytitle("") ///
 ylabel(0(20)100, labsize(2) angle(0)) ///
 name(selfcare_perc, replace)
 
-graph bar if survey_response==1, percent over(long_covid) over(activity, label(labsize(vsmall)) ///
+graph bar if survey_response==1, over(long_covid) over(activity, label(labsize(vsmall)) ///
 relabel(1 `""No" "Problems""' 2 "Slight" ///
 3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, format(%9.0f) size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
@@ -195,7 +195,7 @@ ytitle("") ///
 ylabel(0(20)100, labsize(2) angle(0)) ///
 name(activity_perc, replace)
 
-graph bar if survey_response==1, percent over(long_covid) over(pain, label(labsize(vsmall)) ///
+graph bar if survey_response==1, over(long_covid) over(pain, label(labsize(vsmall)) ///
 relabel(1 `""No" "Problems""' 2 "Slight" ///
 3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, format(%9.0f) size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
@@ -205,7 +205,7 @@ ytitle("") ///
 ylabel(0(20)100, labsize(2) angle(0)) ///
 name(pain_perc, replace)
 
-graph bar if survey_response==1, percent over(long_covid) over(anxiety, label(labsize(vsmall)) ///
+graph bar if survey_response==1, over(long_covid) over(anxiety, label(labsize(vsmall)) ///
 relabel(1 `""No" "Problems""' 2 "Slight" ///
 3 "Moderate" 4 "Severe" 5 `""Extreme/" "Unable to""')) asyvars blabel(bar, format(%9.0f) size(vsmall)) ///
 bar(1, color(blue%40)) bar(2, color(red%40)) ///
