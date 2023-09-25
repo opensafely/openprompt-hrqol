@@ -84,6 +84,7 @@ forvalues i = 1/4 {
 }
 
 set scheme s1color
+sort survey_response
 twoway (connected mean_ut_lc survey_response, lcolor(red%80) mcolor(red%40)) ///
 (connected mean_ut survey_response, lcolor(blue%80) mcolor(blue%40)) ///
 (rcap low_lc high_lc survey_response, lcolor(green%50)) ///
@@ -97,10 +98,12 @@ graph export "$projectdir/output/figures/EQ5D_longcovid.svg", width(12in) replac
 xtset patient_id survey_response
 twoway (tsline mean_full if long_covid==1, lcolor(red%80)) || ///
 (tsline mean_full if long_covid==0, lcolor(blue%80)) || ///
-(tsline mean_three if long_covid==1, lcolor(red%80)) || ///
-(tsline mean_three if long_covid==0, lcolor(blue%80)) || ///
-(tsline mean_two if long_covid==1, lcolor(red%80)) || ///
-(tsline mean_two if long_covid==0, lcolor(blue%80)) || ///
+(tsline mean_three if long_covid==1, lcolor(red%60)) || ///
+(tsline mean_three if long_covid==0, lcolor(blue%60)) || ///
+(tsline mean_two if long_covid==1, lcolor(red%40)) || ///
+(tsline mean_two if long_covid==0, lcolor(blue%40)) || ///
+(tsline mean_one if long_covid==1, lcolor(red%20)) || ///
+(tsline mean_one if long_covid==0, lcolor(blue%20)) ///
 , legend(order(1 "Long COVID" 2 "Recovered from COVID") margin(vsmall) ///
 region(lstyle(none))) ytitle(EQ-5D utility score) ylabel(0(0.2)1, angle(0)) ///
 xtitle(Month) xlabel(1 "0" 2 "1" 3 "2" 4 "3") ///
