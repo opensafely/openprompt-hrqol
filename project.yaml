@@ -195,5 +195,5 @@ actions:
     outputs:
       moderately_sensitive:
         mixed_glm: output/tables/mixed-models.csv
-        # proms_mixed: output/tables/mixed-proms.csv
+        proms_mixed: output/tables/mixed-proms.csv
         glm_log: output/mixed-glm.log
