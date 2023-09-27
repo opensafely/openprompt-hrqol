@@ -78,7 +78,7 @@ mtitles("Full model") b(a2) se(2) aic label wide compress eform ///
 	
 eststo clear
 
-/*
+
 // Mixed effects
 mixed disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
 if disutI>0 || patient_id:, cov(exch) 
@@ -99,7 +99,7 @@ eststo all_proms
 esttab base base_mrc base_fscore all_proms using "$projectdir/output/tables/mixed-proms.csv", ///
 replace mtitles("Base" "MRC" "Facit" "All") b(a2) se(2) aic label wide compress eform ///
 	varlabels(`e(labels)') 
-*/
+
 
 log close
 
