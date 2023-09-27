@@ -69,18 +69,18 @@ egen mean_ut_lc = mean(utility) if long_covid==1 & maxsurvey==4, by(survey_respo
 gen high_lc=.
 gen low_lc=.
 forvalues i = 1/4 {
-	ci mean utility if survey_response == `i' & long_covid==1
-	replace high_lc = r(ub) if survey_response == `i' & long_covid==1
-	replace low_lc = r(lb) if survey_response == `i' & long_covid==1
+	ci mean utility if survey_response == `i' & long_covid==1 & maxsurvey==4
+	replace high_lc = r(ub) if survey_response == `i' & long_covid==1 & maxsurvey==4
+	replace low_lc = r(lb) if survey_response == `i' & long_covid==1 & maxsurvey==4
 }
 
 egen mean_ut = mean(utility) if long_covid==0 & maxsurvey==4, by(survey_response)
 gen high=.
 gen low=.
 forvalues i = 1/4 {
-	ci mean utility if survey_response == `i' & long_covid==0
-	replace high = r(ub) if survey_response == `i' & long_covid==0
-	replace low = r(lb) if survey_response == `i' & long_covid==0
+	ci mean utility if survey_response == `i' & long_covid==0 & maxsurvey==4
+	replace high = r(ub) if survey_response == `i' & long_covid==0 & maxsurvey==4
+	replace low = r(lb) if survey_response == `i' & long_covid==0 & maxsurvey==4
 }
 
 set scheme s1color
