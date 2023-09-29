@@ -99,13 +99,13 @@ title("Disutility Scores by Long COVID") gaps compress par number ///
 varlabels(1 "Baseline" 2 "1 Month" 3 "2 Months" 4 "3 Months")
 
 egen q1= total(disutility) if survey_response<=2, by(patient_id)
-gen qaly1=(q1/2)*(1/12)
+gen qaly1=(q1/2)
 replace qaly1=. if survey_response==1
 egen q2=total(disutility) if survey_response>1 & survey_response<=3, by(patient_id)
-gen qaly2= (q2/2)*(1/12)
+gen qaly2= (q2/2)
 replace qaly2=. if survey_response==2
 egen q3=total(disutility) if survey_response>2 & survey_response<=4, by(patient_id)
-gen qaly3 = (q3/2)*(1/12)
+gen qaly3 = (q3/2)
 replace qaly3=. if survey_response==3
 
 estpost tabstat qaly1 if long_covid==1, statistics(n mean sd)
@@ -123,6 +123,29 @@ eststo qaly3_rec
 esttab qaly_lc qaly2_lc qaly3_lc qaly_rec qaly2_rec qaly3_rec using ///
 "$projectdir/output/tables/utility-scores.csv", append cells(mean(fmt(3)) ///
 sd(fmt(3) par) n) noobs nomtitles varlabels(qaly1 "1 Month" qaly2 "2 Months" ///
-qaly3 "3 Months") title("QALY losses")
+qaly3 "3 Months") title("QALM losses")
 
+keep patient_id survey_response qaly1 qaly2 qaly3 maxsurvey
+reshape wide qaly1 qaly2 qaly3, i(patient_id) j(survey_response)
+egen qalys=rowtotal(qaly12 qaly23 qaly34)
+reshape long
+keep patient_id qalys
+tempfile formerge
+save `formerge', replace
+restore
+merge m:m patient_id using `formerge'
+drop _merge
+
+// Baseline adjustment
+preserve
+keep if maxsurvey==4
+by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
+reg qalys i.long_covid baseline_ut
+estpost margins long_covid, at((mean) baseline_ut)
+eststo adjusted
+esttab adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
+cells(b(fmt(3)) ci(fmt(3) par)) varlabels(0.long_covid "Recovered" ///
+1.long_covid "Long COVID") mtitle("QALM") title("QALM Losses")
+
+restore
 log close
