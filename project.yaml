@@ -205,4 +205,5 @@ actions:
         utility_scores: output/tables/utility-scores.csv
         EQ5D_by_longcovd: output/figures/EQ5D_longcovid.svg
         EQ5D_by_surveys: output/figures/EQ5D_surveys.svg
+        selective_attrition: output/figures/EQ5D_surveys_att.svg
         qaly_log: output/qaly-estimates.log

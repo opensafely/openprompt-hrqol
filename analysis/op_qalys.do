@@ -62,6 +62,84 @@ xtitle(Month) xlabel(1 "0" 2 "1" 3 "2" 4 "3") ///
 title("Mean utility score by Long COVID", size(medlarge))
 graph export "$projectdir/output/figures/EQ5D_longcovid.svg", width(12in) replace
 
+egen mean_ut_lc3 = mean(utility) if long_covid==1 & maxsurvey==3, by(survey_response)
+gen high_lc3=.
+gen low_lc3=.
+forvalues i = 1/4 {
+	ci mean utility if survey_response == `i' & long_covid==1 & maxsurvey==3
+	replace high_lc3 = r(ub) if survey_response == `i' & long_covid==1 & maxsurvey==3
+	replace low_lc3 = r(lb) if survey_response == `i' & long_covid==1 & maxsurvey==3
+}
+
+egen mean_ut3 = mean(utility) if long_covid==0 & maxsurvey==3, by(survey_response)
+gen high3=.
+gen low3=.
+forvalues i = 1/4 {
+	ci mean utility if survey_response == `i' & long_covid==0 & maxsurvey==3
+	replace high3 = r(ub) if survey_response == `i' & long_covid==0 & maxsurvey==3
+	replace low3 = r(lb) if survey_response == `i' & long_covid==0 & maxsurvey==3
+}
+
+egen mean_ut_lc2 = mean(utility) if long_covid==1 & maxsurvey==2, by(survey_response)
+gen high_lc2=.
+gen low_lc2=.
+forvalues i = 1/4 {
+	ci mean utility if survey_response == `i' & long_covid==1 & maxsurvey==2
+	replace high_lc2 = r(ub) if survey_response == `i' & long_covid==1 & maxsurvey==2
+	replace low_lc2 = r(lb) if survey_response == `i' & long_covid==1 & maxsurvey==2
+}
+
+egen mean_ut2 = mean(utility) if long_covid==0 & maxsurvey==2, by(survey_response)
+gen high2=.
+gen low2=.
+forvalues i = 1/4 {
+	ci mean utility if survey_response == `i' & long_covid==0 & maxsurvey==2
+	replace high2 = r(ub) if survey_response == `i' & long_covid==0 & maxsurvey==2
+	replace low2 = r(lb) if survey_response == `i' & long_covid==0 & maxsurvey==2
+}
+
+egen mean_ut_lc_base = mean(utility) if long_covid==1 & maxsurvey==1, by(survey_response)
+gen high_lc_base=.
+gen low_lc_base=.
+forvalues i = 1/4 {
+	ci mean utility if survey_response == `i' & long_covid==1 & maxsurvey==1
+	replace high_lc_base = r(ub) if survey_response == `i' & long_covid==1 & maxsurvey==1
+	replace low_lc_base = r(lb) if survey_response == `i' & long_covid==1 & maxsurvey==1
+}
+
+egen mean_ut_base = mean(utility) if long_covid==0 & maxsurvey==1, by(survey_response)
+gen high_base=.
+gen low_base=.
+forvalues i = 1/4 {
+	ci mean utility if survey_response == `i' & long_covid==0 & maxsurvey==1
+	replace high_base = r(ub) if survey_response == `i' & long_covid==0 & maxsurvey==1
+	replace low_base = r(lb) if survey_response == `i' & long_covid==0 & maxsurvey==1
+}
+
+set scheme s1color
+sort survey_response
+twoway (connected mean_ut_lc survey_response, lcolor(red%80) mcolor(red%40)) ///
+(connected mean_ut survey_response, lcolor(blue%80) mcolor(blue%40)) ///
+(rcap low_lc high_lc survey_response, lcolor(green%50)) ///
+(rcap low high survey_response, lcolor(green%50)) ///
+(connected mean_ut_lc3 survey_response, lcolor(red%80) mcolor(red%40)) ///
+(connected mean_ut3 survey_response, lcolor(blue%80) mcolor(blue%40)) ///
+(connected mean_ut_lc2 survey_response, lcolor(red%80) mcolor(red%40)) ///
+(connected mean_ut2 survey_response, lcolor(blue%80) mcolor(blue%40)) ///
+(connected mean_ut_lc_base survey_response, lcolor(red%80) mcolor(red%40)) ///
+(connected mean_ut_base survey_response, lcolor(blue%80) mcolor(blue%40)) ///
+(rcap low_lc3 high_lc3 survey_response, lcolor(green%50)) ///
+(rcap low3 high3 survey_response, lcolor(green%50)) ///
+(rcap low_lc2 high_lc2 survey_response, lcolor(green%50)) ///
+(rcap low2 high2 survey_response, lcolor(green%50)) ///
+(rcap low_lc_base high_lc_base survey_response, lcolor(green%50)) ///
+(rcap low_base high_base survey_response, lcolor(green%50)) ///
+, legend(order(1 "Long COVID" 2 "Recovered from COVID" 3 "95% CI") margin(vsmall) ///
+region(lstyle(none))) ytitle(EQ-5D utility score) ylabel(0(0.2)1, angle(0)) ///
+xtitle(Month) xlabel(1 "0" 2 "1" 3 "2" 4 "3") ///
+title("Mean utility score by Long COVID", size(medlarge))
+graph export "$projectdir/output/figures/EQ5D_surveys_att.svg", width(12in) replace
+
 xtset patient_id survey_response
 twoway (tsline mean_full if long_covid==1, lcolor(red%80)) || ///
 (tsline mean_full if long_covid==0, lcolor(blue%80)) || ///

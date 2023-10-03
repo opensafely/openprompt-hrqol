@@ -20,6 +20,7 @@ replace disutI=. if disutility==.
 replace base_disability=. if base_disability==3
 replace base_highest_edu=. if base_highest_edu==5
 replace base_hh_income=. if base_hh_income==9
+replace all_covid_hosp=2 if all_covid_hosp>2 & !missing(all_covid_hosp)
 
 // Baseline models 
 logit disutI male i.base_ethnicity long_covid i.age_bands i.vaccinated i.comorbid_count if survey_response==1
@@ -101,6 +102,13 @@ graph export "$projectdir/output/figures/socio_coefs.svg", width(12in) replace
 esttab xt_melogit xt_mixed using "$projectdir/output/tables/longit-model.csv", ///
 replace mtitles("Mixed effect logit" "Mixed effect") b(a2) ci(2) aic label wide compress eform  
 
+mixed disutility long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
+i.base_disability ib3.base_highest_edu ib5.base_hh_income i.imd_q5 || patient_id:
+eststo base_model
+
+esttab base_model using "$projectdir/output/tables/longit-model.csv", ///
+append mtitles("Mixed linear") b(a2) ci(2) aic label wide compress eform
+
 // Baseline utility
 by patient_id (survey_response), sort: gen baseline_ut = utility[1]
 xtlogit disutI long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
@@ -116,13 +124,12 @@ esttab melogit_ut mixed_ut using "$projectdir/output/tables/longit-model.csv", /
 mtitles("ME Logit w/baseline utility" "Mixed model w/baseline utility") b(a2) ci(2) ///
 aic label wide compress eform append
 
-// Model by long COVID
-mixed disutility male i.age_bands i.comorbid_count i.base_disability i.imd_q5 ///
-if disutI>0 & long_covid==1|| patient_id:
-eststo covid_model
+mixed disutility long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
+i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5 i.all_covid_hosp ///
+|| patient_id:
+eststo hosps
 
-esttab covid_model using "$projectdir/output/tables/longit-model.csv", ///
-mtitles("Long COVID specific") b(a2) ci(2) aic label wide compress eform append
-
+esttab hosps using "$projectdir/output/tables/longit-model.csv", ///
+mtitles("Hospitalisations") b(a2) ci(2) aic label wide compress eform append
 
 log close
