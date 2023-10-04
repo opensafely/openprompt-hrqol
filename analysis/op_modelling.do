@@ -133,6 +133,9 @@ eststo hosps
 esttab hosps using "$projectdir/output/tables/longit-model.csv", ///
 mtitles("Hospitalisations") b(a2) ci(2) aic label wide compress eform append
 
+// Selective attrition
+bysort patient_id: egen maxsurvey = max(survey_response)
+
 reg maxsurvey long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
 i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5 
 eststo attrition
