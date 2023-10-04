@@ -184,6 +184,7 @@ actions:
         socioeconomic_coefficients: output/figures/socio_coefs.svg
         baseline_regression: output/tables/twopart-model.csv
         longitudinal_models: output/tables/longit-model.csv
+        attrition_models: output/tables/selective_attrition.csv
         log_regression: output/models.log
 
   mixed_models:

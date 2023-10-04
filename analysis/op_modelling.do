@@ -115,7 +115,7 @@ xtlogit disutI long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
 i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5 baseline_ut if survey_response>1, re
 eststo melogit_ut
 
-mixed disutility long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
+mixed disutility long_covid male i.age_bands i.comorbid_count ///
 i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5 baseline_ut ///
 if disutI>0 & survey_response>1 || patient_id:, cov(exch) 
 eststo mixed_ut
@@ -124,12 +124,20 @@ esttab melogit_ut mixed_ut using "$projectdir/output/tables/longit-model.csv", /
 mtitles("ME Logit w/baseline utility" "Mixed model w/baseline utility") b(a2) ci(2) ///
 aic label wide compress eform append
 
-mixed disutility long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
+eststo clear
+mixed disutility long_covid male i.age_bands i.comorbid_count ///
 i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5 i.all_covid_hosp ///
 || patient_id:
 eststo hosps
 
 esttab hosps using "$projectdir/output/tables/longit-model.csv", ///
 mtitles("Hospitalisations") b(a2) ci(2) aic label wide compress eform append
+
+reg maxsurvey long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
+i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5 
+eststo attrition
+
+esttab attrition using "$projectdir/output/tables/selective_attrition.csv", ///
+replace mtitles("Max survey response") b(a2) ci(2) aic label wide compress
 
 log close

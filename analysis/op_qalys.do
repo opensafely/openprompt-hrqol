@@ -141,6 +141,7 @@ title("Mean utility score by Long COVID", size(medlarge))
 graph export "$projectdir/output/figures/EQ5D_surveys_att.svg", width(12in) replace
 
 xtset patient_id survey_response
+sort survey_response
 twoway (tsline mean_full if long_covid==1, lcolor(red%80)) || ///
 (tsline mean_full if long_covid==0, lcolor(blue%80)) || ///
 (tsline mean_three if long_covid==1, lcolor(red%60)) || ///
@@ -157,23 +158,22 @@ graph export "$projectdir/output/figures/EQ5D_surveys.svg", width(12in) replace
 restore
 
 // Utility scores by exposure 
-// Complete case 
+// Available case analysis
 sort survey_response
 xtset patient_id survey_response
 bysort patient_id: egen maxsurvey = max(survey_response)
 replace base_disability=. if base_disability==3
 replace base_highest_edu=. if base_highest_edu==5
 replace base_hh_income=. if base_hh_income==9
-
 preserve
-keep if maxsurvey==4
+
 estpost tabstat disutility if long_covid==1, by(survey_response) listwise statistics(n mean sd)
 eststo long_covid
 estpost tabstat disutility if long_covid==0, by(survey_response) listwise statistics(n mean sd)
 eststo recovered
 esttab long_covid recovered using "$projectdir/output/tables/utility-scores.csv", ///
 replace cells(mean(fmt(3)) sd(fmt(3) par)) noobs mtitle("Long COVID" "Recovered") ///
-title("Disutility Scores by Long COVID") gaps compress par number ///
+title("Disutility Scores by Long COVID (ACA)") gaps compress par number ///
 varlabels(1 "Baseline" 2 "1 Month" 3 "2 Months" 4 "3 Months")
 
 egen q1= total(disutility) if survey_response<=2, by(patient_id)
@@ -201,7 +201,67 @@ eststo qaly3_rec
 esttab qaly_lc qaly2_lc qaly3_lc qaly_rec qaly2_rec qaly3_rec using ///
 "$projectdir/output/tables/utility-scores.csv", append cells(mean(fmt(3)) ///
 sd(fmt(3) par) n) noobs nomtitles varlabels(qaly1 "1 Month" qaly2 "2 Months" ///
-qaly3 "3 Months") title("QALM losses")
+qaly3 "3 Months") title("QALM losses (ACA)")
+
+gen qalys = qaly1 if survey_response==2
+replace qalys=qaly2 if survey_response==3
+replace qalys=qaly3 if survey_response==4
+egen total_qalys=sum(qalys), by(patient_id)
+
+by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
+reg qalys i.long_covid baseline_ut
+estpost margins long_covid, at((mean) baseline_ut)
+eststo adjusted
+esttab adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
+cells(b(fmt(3)) ci(fmt(3) par)) varlabels(0.long_covid "Recovered" ///
+1.long_covid "Long COVID") mtitle("QALM") title("QALM Losses (ACA)")
+eststo clear
+
+// Complete case analysis
+restore
+sort survey_response
+xtset patient_id survey_response
+replace base_disability=. if base_disability==3
+replace base_highest_edu=. if base_highest_edu==5
+replace base_hh_income=. if base_hh_income==9
+
+preserve
+keep if maxsurvey==4
+estpost tabstat disutility if long_covid==1, by(survey_response) listwise statistics(n mean sd)
+eststo long_covid
+estpost tabstat disutility if long_covid==0, by(survey_response) listwise statistics(n mean sd)
+eststo recovered
+esttab long_covid recovered using "$projectdir/output/tables/utility-scores.csv", ///
+append cells(mean(fmt(3)) sd(fmt(3) par)) noobs mtitle("Long COVID" "Recovered") ///
+title("Disutility Scores by Long COVID (CCA)") gaps compress par number ///
+varlabels(1 "Baseline" 2 "1 Month" 3 "2 Months" 4 "3 Months")
+
+egen q1= total(disutility) if survey_response<=2, by(patient_id)
+gen qaly1=(q1/2)
+replace qaly1=. if survey_response==1
+egen q2=total(disutility) if survey_response>1 & survey_response<=3, by(patient_id)
+gen qaly2= (q2/2)
+replace qaly2=. if survey_response==2
+egen q3=total(disutility) if survey_response>2 & survey_response<=4, by(patient_id)
+gen qaly3 = (q3/2)
+replace qaly3=. if survey_response==3
+
+estpost tabstat qaly1 if long_covid==1, statistics(n mean sd)
+eststo qaly_lc
+estpost tabstat qaly2 if long_covid==1, statistics(n mean sd)
+eststo qaly2_lc
+estpost tabstat qaly3 if long_covid==1, statistics(n mean sd)
+eststo qaly3_lc 
+estpost tabstat qaly1 if long_covid==0, statistics(n mean sd)
+eststo qaly_rec
+estpost tabstat qaly2 if long_covid==0, statistics(n mean sd)
+eststo qaly2_rec
+estpost tabstat qaly3 if long_covid==0, statistics(n mean sd)
+eststo qaly3_rec
+esttab qaly_lc qaly2_lc qaly3_lc qaly_rec qaly2_rec qaly3_rec using ///
+"$projectdir/output/tables/utility-scores.csv", append cells(mean(fmt(3)) ///
+sd(fmt(3) par) n) noobs nomtitles varlabels(qaly1 "1 Month" qaly2 "2 Months" ///
+qaly3 "3 Months") title("QALM losses (CCA)")
 
 keep patient_id survey_response qaly1 qaly2 qaly3 maxsurvey
 reshape wide qaly1 qaly2 qaly3, i(patient_id) j(survey_response)
@@ -223,7 +283,7 @@ estpost margins long_covid, at((mean) baseline_ut)
 eststo adjusted
 esttab adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
 cells(b(fmt(3)) ci(fmt(3) par)) varlabels(0.long_covid "Recovered" ///
-1.long_covid "Long COVID") mtitle("QALM") title("QALM Losses")
+1.long_covid "Long COVID") mtitle("QALM") title("QALM Losses (CCA)")
 
 restore
 log close
