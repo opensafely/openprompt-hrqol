@@ -13,6 +13,7 @@ adopath + "analysis/Extra_ados"
 
 //*** Import data ***
 use "./output/op_tpp_linked.dta", clear
+drop if merge_link!=3
 
 // Longitudinal plots
 preserve
@@ -178,7 +179,7 @@ varlabels(1 "Baseline" 2 "1 Month" 3 "2 Months" 4 "3 Months")
 
 egen q1= total(disutility) if survey_response<=2, by(patient_id)
 gen qaly1=(q1/2)
-replace qaly1=. if survey_response==1
+replace qaly1=. if survey_response==1 & maxsurvey!=1
 egen q2=total(disutility) if survey_response>1 & survey_response<=3, by(patient_id)
 gen qaly2= (q2/2)
 replace qaly2=. if survey_response==2
@@ -206,6 +207,7 @@ qaly3 "3 Months") title("QALM losses (ACA)")
 gen qalys = qaly1 if survey_response==2
 replace qalys=qaly2 if survey_response==3
 replace qalys=qaly3 if survey_response==4
+replace qalys=. if utility==.
 egen total_qalys=sum(qalys), by(patient_id)
 
 by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
