@@ -13,6 +13,7 @@ adopath + "analysis/Extra_ados"
 
 //*** Import data ***
 use "./output/op_tpp_linked.dta", clear
+drop if merge_link!=3
 
 gen disutI=0 if mobility==1 & selfcare==1 & activity==1 & pain==1 & anxiety==1
 replace disutI=1 if disutI==.
