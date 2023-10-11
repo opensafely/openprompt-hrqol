@@ -51,6 +51,7 @@ forvalues i = 1/4 {
 	replace low = r(lb) if survey_response == `i' & long_covid==0 & maxsurvey==4
 }
 
+sum age if mean_ut_lc!=. | mean_ut!=.
 set scheme s1color
 sort survey_response
 twoway (connected mean_ut_lc survey_response, lcolor(red%80) mcolor(red%40)) ///
@@ -283,7 +284,6 @@ cells(b(fmt(3)) ci(fmt(3) par)) varlabels(0.long_covid "Recovered" ///
 1.long_covid "Long COVID") mtitle("QALM") title("QALM Losses (ACA)")
 eststo clear
 
-
 // Complete case analysis
 restore
 eststo clear
@@ -294,7 +294,11 @@ replace base_highest_edu=. if base_highest_edu==5
 replace base_hh_income=. if base_hh_income==9
 
 preserve
-keep if maxsurvey==4
+egen total_survey=sum(survey_response), by(patient_id)
+gen cca=1 if total_survey==10
+replace cca=0 if total_survey<10
+replace cca=. if survey_response==.
+keep if cca==1
 estpost tabstat disutility if long_covid==1, by(survey_response) listwise statistics(n mean sd)
 eststo long_covid
 estpost tabstat disutility if long_covid==0, by(survey_response) listwise statistics(n mean sd)
@@ -331,16 +335,11 @@ esttab qaly_lc qaly2_lc qaly3_lc qaly_rec qaly2_rec qaly3_rec using ///
 sd(fmt(3) par) n) noobs nomtitles varlabels(qaly1 "1 Month" qaly2 "2 Months" ///
 qaly3 "3 Months") title("QALM losses (CCA)")
 
-keep patient_id survey_response qaly1 qaly2 qaly3 maxsurvey
-reshape wide qaly1 qaly2 qaly3, i(patient_id) j(survey_response)
-egen qalys=rowtotal(qaly12 qaly23 qaly34)
-reshape long
-keep patient_id qalys
-tempfile formerge
-save `formerge', replace
-restore
-merge m:m patient_id using `formerge'
-drop _merge
+gen qalys = qaly1 if survey_response==2
+replace qalys=qaly2 if survey_response==3
+replace qalys=qaly3 if survey_response==4
+replace qalys=. if utility==.
+egen total_qalys=sum(qalys), by(patient_id)
 
 // Baseline adjustment
 preserve
