@@ -342,7 +342,6 @@ replace qalys=. if utility==.
 egen total_qalys=sum(qalys), by(patient_id)
 
 // Baseline adjustment
-preserve
 keep if maxsurvey==4
 by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
 reg qalys i.long_covid baseline_ut
