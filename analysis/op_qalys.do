@@ -223,13 +223,13 @@ restore
 
 // QALY by phenotypes
 preserve
-keep if maxsurvey==4
 gen covid_dx=1 if has_covid_dx>0 & !missing(has_covid_dx)
 replace covid_dx=0 if has_covid_dx==0
 tab covid_dx
 gen lc_dx=1 if covid_dx>0 & long_covid==1
 replace lc_dx=0 if covid_dx==0 & long_covid==0
 tab lc_dx long_covid
+keep if covid_dx!=.
 
 estpost tabstat disutility if covid_dx==1, by(survey_response) ///
 listwise statistics(n mean sd)
@@ -298,6 +298,8 @@ egen total_survey=sum(survey_response), by(patient_id)
 gen cca=1 if total_survey==10
 replace cca=0 if total_survey<10
 replace cca=. if survey_response==.
+tab cca
+tab maxsurvey
 keep if cca==1
 estpost tabstat disutility if long_covid==1, by(survey_response) listwise statistics(n mean sd)
 eststo long_covid
@@ -342,7 +344,6 @@ replace qalys=. if utility==.
 egen total_qalys=sum(qalys), by(patient_id)
 
 // Baseline adjustment
-keep if maxsurvey==4
 by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
 reg qalys i.long_covid baseline_ut
 estpost margins long_covid, at((mean) baseline_ut)
