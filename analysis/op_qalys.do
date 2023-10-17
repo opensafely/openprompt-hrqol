@@ -215,7 +215,10 @@ by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
 reg total_qalys i.long_covid baseline_ut
 estpost margins long_covid, at((mean) baseline_ut)
 eststo adjusted
-esttab adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
+reg total_qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut
+estpost margins long_covid age_bands base_disability comorbid_count, at((mean) baseline_ut)
+eststo base_adjusted
+esttab adjusted base_adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
 cells(b(fmt(3)) ci(fmt(3) par)) varlabels(0.long_covid "Recovered" ///
 1.long_covid "Long COVID") mtitle("QALM") title("QALM Losses (ACA)")
 eststo clear
@@ -279,7 +282,10 @@ by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
 reg total_qalys i.long_covid baseline_ut
 estpost margins long_covid, at((mean) baseline_ut)
 eststo adjusted
-esttab adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
+reg total_qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut
+estpost margins long_covid age_bands base_disability comorbid_count, at((mean) baseline_ut)
+eststo base_adjusted
+esttab adjusted base_adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
 cells(b(fmt(3)) ci(fmt(3) par)) varlabels(0.long_covid "Recovered" ///
 1.long_covid "Long COVID") mtitle("QALM") title("QALM Losses (ACA)")
 eststo clear
@@ -348,9 +354,25 @@ by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
 reg qalys i.long_covid baseline_ut
 estpost margins long_covid, at((mean) baseline_ut)
 eststo adjusted
-esttab adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
+reg qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut
+estpost margins long_covid age_bands base_disability comorbid_count, at((mean) baseline_ut)
+eststo base_adjusted
+esttab adjusted base_adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
 cells(b(fmt(3)) ci(fmt(3) par)) varlabels(0.long_covid "Recovered" ///
 1.long_covid "Long COVID") mtitle("QALM") title("QALM Losses (CCA)")
+
+reg qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut
+margins age_bands, at((mean) baseline_ut long_covid==0) post
+est store recovered
+reg qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut
+margins age_bands, at((mean) baseline_ut long_covid==1) post
+est store long_covid
+coefplot  (long_covid, color(red%60) mcolor(red%80) ciopts(recast(rcap) ///
+lcolor(red%80))) (recovered, color(blue%60) msymbol(D) mcolor(blue%80) ciopts(recast(rcap) ///
+lcolor(blue%80))), lwidth(*1) connect(1) vertical ylabel(, angle(0)) ytitle("QALM loss") ///
+xtitle("Age group") title("QALM losses (CCA)", size(medlarge)) legend(order(2 "Long COVID" ///
+4 "Recovered from COVID") margin(vsmall) region(lstyle(none))) 
+graph export "$projectdir/output/figures/QALM_losses_age.svg", width(12in) replace
 
 restore
 log close
