@@ -361,10 +361,10 @@ esttab adjusted base_adjusted using "$projectdir/output/tables/utility-scores.cs
 cells(b(fmt(3)) ci(fmt(3) par)) varlabels(0.long_covid "Recovered" ///
 1.long_covid "Long COVID") mtitle("QALM") title("QALM Losses (CCA)")
 
-reg qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut
+mixed qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut || patient_id:
 margins age_bands, at((mean) baseline_ut comorbid_count base_disability long_covid==0) post
 est store recovered
-reg qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut
+mixed qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut || patient_id:
 margins age_bands, at((mean) baseline_ut comorbid_count base_disability long_covid==1) post
 est store long_covid
 coefplot  (long_covid, color(red%60) mcolor(red%80) ciopts(recast(rcap) ///
