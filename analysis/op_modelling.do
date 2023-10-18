@@ -107,6 +107,26 @@ mixed disutility long_covid male i.age_bands i.base_ethnicity i.comorbid_count /
 i.base_disability ib3.base_highest_edu ib5.base_hh_income i.imd_q5 || patient_id:
 eststo base_model
 
+coefplot, keep(long_covid male 1.age_bands 2.age_bands 3.age_bands 4.age_bands 5.age_bands ///
+6.age_bands 2.base_disability 0.comorbid_count 1.comorbid_count 2.comorbid_count ///
+3.comorbid_count) baselevels coeflabels(2.base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
+long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Base)")  ///
+headings(0.comorbid_count="Comorbidities" 1.age_bands="Age groups") ///
+xline(0) xtitle("Coefficients") ///
+title("Demographic indicators", size(medlarge))
+graph export "$projectdir/output/figures/mixed_demos.svg", width(12in) replace
+
+coefplot, keep(1.base_highest_edu 2.base_highest_edu 3.base_highest_edu 4.base_highest_edu ///
+5.base_highest_edu 0.base_hh_income 1.base_hh_income 2.base_hh_income 3.base_hh_income 4.base_hh_income ///
+5.base_hh_income 6.base_hh_income 7.base_hh_income 8.base_hh_income 1.imd_q5 2.imd_q5 ///
+3.imd_q5 4.imd_q5 5.imd_q5) baselevels headings(1.base_highest_edu="Highest education" ///
+1.base_hh_income="Household income" 1.imd_q5="IMD Quintiles") ///
+coeflabels(3.base_highest_edu="College/University (Base)" ///
+5.base_hh_income="£32,000-47,999 (Base)" 1.imd_q5="1st (most deprived) (Base)") ///
+xline(0) xtitle("Coefficients") title("Socioeconomic factors", ///
+size(medlarge))
+graph export "$projectdir/output/figures/mixed_socio.svg", width(12in) replace
+
 esttab base_model using "$projectdir/output/tables/longit-model.csv", ///
 append mtitles("Mixed linear") b(a2) ci(2) aic label wide compress eform
 
