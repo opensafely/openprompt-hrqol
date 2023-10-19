@@ -142,6 +142,50 @@ xtitle(Month) xlabel(1 "0" 2 "1" 3 "2" 4 "3") ///
 title("Mean utility score by Long COVID", size(medlarge))
 graph export "$projectdir/output/figures/EQ5D_surveys_att.svg", width(12in) replace
 
+twoway (connected mean_ut_lc survey_response, lcolor(red%80) mcolor(red%40)) ///
+(connected mean_ut survey_response, lcolor(blue%80) mcolor(blue%40)) ///
+(rcap low_lc high_lc survey_response, lcolor(green%50)) ///
+(rcap low high survey_response, lcolor(green%50)) ///
+, legend(order(1 "Long COVID" 2 "Recovered from COVID") size(vsmall) margin(vsmall) ///
+region(lstyle(none))) ytitle(EQ-5D utility score, size(small)) ylabel(0(0.2)1, labsize(2) angle(0)) ///
+xtitle(Month, size(small)) xlabel(1 "0" 2 "1" 3 "2" 4 "3", labsize(2)) ///
+title("Complete Case", size(medsmall)) ///
+name(complete_case, replace)
+
+twoway (connected mean_ut_lc3 survey_response, lcolor(red%80) mcolor(red%40)) ///
+(connected mean_ut3 survey_response, lcolor(blue%80) mcolor(blue%40)) ///
+(rcap low_lc3 high_lc3 survey_response, lcolor(green%50)) ///
+(rcap low3 high3 survey_response, lcolor(green%50)) ///
+, legend(order(1 "Long COVID" 2 "Recovered from COVID") size(vsmall) margin(vsmall) ///
+region(lstyle(none))) ytitle(EQ-5D utility score, size(small)) ylabel(0(0.2)1, labsize(2) angle(0)) ///
+xtitle(Month, size(small)) xlabel(1 "0" 2 "1" 3 "2" 4 "3", labsize(2)) ///
+title("Three Surveys", size(medsmall)) ///
+name(maxsurvey_three, replace)
+
+twoway (connected mean_ut_lc2 survey_response, lcolor(red%80) mcolor(red%40)) ///
+(connected mean_ut2 survey_response, lcolor(blue%80) mcolor(blue%40)) ///
+(rcap low_lc2 high_lc2 survey_response, lcolor(green%50)) ///
+(rcap low2 high2 survey_response, lcolor(green%50)) ///
+, legend(order(1 "Long COVID" 2 "Recovered from COVID") size(vsmall) margin(vsmall) ///
+region(lstyle(none))) ytitle(EQ-5D utility score, size(small)) ylabel(0(0.2)1, labsize(2) angle(0)) ///
+xtitle(Month, size(small)) xlabel(1 "0" 2 "1" 3 "2" 4 "3", labsize(2)) ///
+title("Two Surveys", size(medsmall)) ///
+name(maxsurvey_two, replace)
+
+twoway (connected mean_ut_lc_base survey_response, lcolor(red%80) mcolor(red%40)) ///
+(connected mean_ut_base survey_response, lcolor(blue%80) mcolor(blue%40)) ///
+(rcap low_lc_base high_lc_base survey_response, lcolor(green%50)) ///
+(rcap low_base high_base survey_response, lcolor(green%50)) ///
+, legend(order(1 "Long COVID" 2 "Recovered from COVID") size(vsmall) margin(vsmall) ///
+region(lstyle(none))) ytitle(EQ-5D utility score, size(small)) ylabel(0(0.2)1, labsize(2) angle(0)) ///
+xtitle(Month, size(small)) xlabel(1 "0" 2 "1" 3 "2" 4 "3", labsize(2)) ///
+title("Baseline Only", size(medsmall)) ///
+name(baseline_surveys, replace)
+
+graph combine complete_case maxsurvey_three maxsurvey_two baseline_surveys, ///
+title("Utility Scores by Max Survey", size(medlarge))
+graph export "$projectdir/output/figures/utility_survey_response.svg", width(12in) replace
+
 xtset patient_id survey_response
 sort survey_response
 twoway (tsline mean_full if long_covid==1, lcolor(red%80)) || ///
