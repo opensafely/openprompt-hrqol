@@ -200,7 +200,7 @@ actions:
         proms_odds: output/figures/proms_odds.svg
         proms_demographic: output/figures/demo_odds.svg
         demographics_adjust_coefs: output/figures/demo_proms_coefs.svg
-        proms_adjust_ceofs: output/figures/prom_coefs.svg
+        proms_adjust_ceofs: output/figures/proms_coefs.svg
         glm_log: output/mixed-glm.log
 
   estimate_qalys:
