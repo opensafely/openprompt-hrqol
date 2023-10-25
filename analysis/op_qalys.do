@@ -256,10 +256,10 @@ replace qalys=. if utility==.
 egen total_qalys=sum(qalys), by(patient_id)
 
 by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
-reg total_qalys i.long_covid baseline_ut
+mixed total_qalys i.long_covid baseline_ut || patient_id:
 estpost margins long_covid, at((mean) baseline_ut)
 eststo adjusted
-reg total_qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut
+mixed total_qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut || patient_id:
 estpost margins long_covid age_bands base_disability comorbid_count, at((mean) baseline_ut)
 eststo base_adjusted
 esttab adjusted base_adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
@@ -323,10 +323,10 @@ replace qalys=. if utility==.
 egen total_qalys=sum(qalys), by(patient_id)
 
 by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
-reg total_qalys i.long_covid baseline_ut
+mixed total_qalys i.long_covid baseline_ut || patient_id:
 estpost margins long_covid, at((mean) baseline_ut)
 eststo adjusted
-reg total_qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut
+mixed total_qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut || patient_id:
 estpost margins long_covid age_bands base_disability comorbid_count, at((mean) baseline_ut)
 eststo base_adjusted
 esttab adjusted base_adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
@@ -395,10 +395,10 @@ egen total_qalys=sum(qalys), by(patient_id)
 
 // Baseline adjustment
 by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
-reg qalys i.long_covid baseline_ut
+mixed qalys i.long_covid baseline_ut || patient_id:
 estpost margins long_covid, at((mean) baseline_ut)
 eststo adjusted
-reg qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut
+mixed qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut || patient_id:
 estpost margins long_covid age_bands base_disability comorbid_count, at((mean) baseline_ut)
 eststo base_adjusted
 esttab adjusted base_adjusted using "$projectdir/output/tables/utility-scores.csv", append ///

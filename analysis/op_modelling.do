@@ -51,10 +51,12 @@ eststo clear
 xtset patient_id survey_response
 replace base_disability=. if base_disability==3
 replace base_highest_edu=. if base_highest_edu==5
-xtlogit disutI long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
+xtlogit disutI long_covid male i.age_bands i.comorbid_count ///
 i.base_disability ib3.base_highest_edu ib5.base_hh_income i.imd_q5, re
 eststo xt_melogit 
+predict prob_disut
 
+set scheme s1color
 coefplot, keep(1.base_highest_edu 2.base_highest_edu 3.base_highest_edu 4.base_highest_edu ///
 5.base_highest_edu 1.base_hh_income 2.base_hh_income 3.base_hh_income 4.base_hh_income ///
 5.base_hh_income 6.base_hh_income 7.base_hh_income 8.base_hh_income 1.imd_q5 2.imd_q5 ///
@@ -75,11 +77,13 @@ xline(1) eform xtitle("Odds ratio") ///
 title("Demographic indicators", size(medlarge))
 graph export "$projectdir/output/figures/mixed_odds_ratio.svg", width(12in) replace
 
-mixed disutility long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
+mixed disutility long_covid male i.age_bands i.comorbid_count ///
 i.base_disability ib3.base_highest_edu ib5.base_hh_income i.imd_q5 ///
 if disutI>0 || patient_id:, cov(exch) 
+predict disut_loss
 eststo xt_mixed
 
+set scheme s1color
 coefplot, keep(long_covid male 1.age_bands 2.age_bands 3.age_bands 4.age_bands 5.age_bands ///
 6.age_bands 2.base_disability 0.comorbid_count 1.comorbid_count 2.comorbid_count ///
 3.comorbid_count) baselevels coeflabels(2.base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
@@ -102,6 +106,21 @@ graph export "$projectdir/output/figures/socio_coefs.svg", width(12in) replace
 
 esttab xt_melogit xt_mixed using "$projectdir/output/tables/longit-model.csv", ///
 replace mtitles("Mixed effect logit" "Mixed effect") b(a2) ci(2) aic label wide compress eform  
+
+mixed disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
+ib3.base_highest_edu ib5.base_hh_income i.imd_q5 || patient_id:
+predict mixed_effect
+gen pred_disut=prob_disut*disut_loss
+sum pred_disut disutility
+estpost tabstat pred_disut mixed_effect disutility, by(long_covid) listwise ///
+statistics(n mean sd) columns(statistics)
+eststo predicted_disut
+
+esttab predicted_disut using "$projectdir/output/tables/longit-model.csv", ///
+append cells(mean(fmt(3)) sd(fmt(3) par)) noobs mtitle("Predicted Disutility" "Disutility") ///
+title("Predicted Disutility") gaps compress par number ///
+varlabels(pred_disut "Predicted Disutility Two-part model" ///
+mixed_effect "Predicted Disutility" disutility "Disutility score")
 
 mixed disutility long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
 i.base_disability ib3.base_highest_edu ib5.base_hh_income i.imd_q5 || patient_id:
