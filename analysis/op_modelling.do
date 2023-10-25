@@ -53,8 +53,8 @@ replace base_disability=. if base_disability==3
 replace base_highest_edu=. if base_highest_edu==5
 xtlogit disutI long_covid male i.age_bands i.comorbid_count ///
 i.base_disability ib3.base_highest_edu ib5.base_hh_income i.imd_q5, re
-eststo xt_melogit 
-predict prob_disut
+eststo xt_melogit
+predict prob_disut, pr
 
 set scheme s1color
 coefplot, keep(1.base_highest_edu 2.base_highest_edu 3.base_highest_edu 4.base_highest_edu ///

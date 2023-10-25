@@ -256,10 +256,10 @@ replace qalys=. if utility==.
 egen total_qalys=sum(qalys), by(patient_id)
 
 by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
-mixed total_qalys i.long_covid baseline_ut || patient_id:
+reg total_qalys i.long_covid baseline_ut
 estpost margins long_covid, at((mean) baseline_ut)
 eststo adjusted
-mixed total_qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut || patient_id:
+reg total_qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut
 estpost margins long_covid age_bands base_disability comorbid_count, at((mean) baseline_ut)
 eststo base_adjusted
 esttab adjusted base_adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
@@ -323,10 +323,10 @@ replace qalys=. if utility==.
 egen total_qalys=sum(qalys), by(patient_id)
 
 by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
-mixed total_qalys i.long_covid baseline_ut || patient_id:
+reg total_qalys i.long_covid baseline_ut
 estpost margins long_covid, at((mean) baseline_ut)
 eststo adjusted
-mixed total_qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut || patient_id:
+reg total_qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut 
 estpost margins long_covid age_bands base_disability comorbid_count, at((mean) baseline_ut)
 eststo base_adjusted
 esttab adjusted base_adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
@@ -395,20 +395,20 @@ egen total_qalys=sum(qalys), by(patient_id)
 
 // Baseline adjustment
 by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
-mixed qalys i.long_covid baseline_ut || patient_id:
+reg qalys i.long_covid baseline_ut
 estpost margins long_covid, at((mean) baseline_ut)
 eststo adjusted
-mixed qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut || patient_id:
+reg qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut
 estpost margins long_covid age_bands base_disability comorbid_count, at((mean) baseline_ut)
 eststo base_adjusted
 esttab adjusted base_adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
 cells(b(fmt(3)) ci(fmt(3) par)) varlabels(0.long_covid "Recovered" ///
 1.long_covid "Long COVID") mtitle("QALM") title("QALM Losses (CCA)")
 
-mixed qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut || patient_id:
+reg qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut
 margins age_bands, at((mean) baseline_ut comorbid_count base_disability long_covid==0) post
 est store recovered
-mixed qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut || patient_id:
+reg qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut 
 margins age_bands, at((mean) baseline_ut comorbid_count base_disability long_covid==1) post
 est store long_covid
 coefplot  (long_covid, color(red%60) mcolor(red%80) ciopts(recast(rcap) ///
