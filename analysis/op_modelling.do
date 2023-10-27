@@ -57,7 +57,7 @@ eststo xt_melogit
 predict prob_disut, pr
 
 set scheme s1color
-coefplot xt_melogit pstyle(p1) if(@ll>-10&@ul<10)) ///
+coefplot xt_melogit (., pstyle(p1) if(@ll>-10&@ul<10)) ///
 (., pstyle(p1) if(@ll>-10&@ul>=10)  ciopts(recast(pcarrow)))  ///
 (., pstyle(p1) if(@ll<=-10&@ul<10)  ciopts(recast(pcrarrow))) ///
 (., pstyle(p1) if(@ll<=-10&@ul>=10) ciopts(recast(pcbarrow))) ///
@@ -74,7 +74,7 @@ xline(1) eform xtitle("Odds ratio") title("Socioeconomic factors", ///
 size(medlarge))
 graph export "$projectdir/output/figures/socio_odds.svg", width(12in) replace
 
-coefplot xt_melogit pstyle(p1) if(@ll>-10&@ul<10)) ///
+coefplot xt_melogit (., pstyle(p1) if(@ll>-10&@ul<10)) ///
 (., pstyle(p1) if(@ll>-10&@ul>=10)  ciopts(recast(pcarrow)))  ///
 (., pstyle(p1) if(@ll<=-10&@ul<10)  ciopts(recast(pcrarrow))) ///
 (., pstyle(p1) if(@ll<=-10&@ul>=10) ciopts(recast(pcbarrow))) ///
@@ -95,7 +95,7 @@ predict disut_loss
 eststo xt_mixed
 
 set scheme s1color
-coefplot xt_mixed pstyle(p1) if(@ll>-10&@ul<10)) ///
+coefplot xt_mixed (., pstyle(p1) if(@ll>-10&@ul<10)) ///
 (., pstyle(p1) if(@ll>-10&@ul>=10)  ciopts(recast(pcarrow)))  ///
 (., pstyle(p1) if(@ll<=-10&@ul<10)  ciopts(recast(pcrarrow))) ///
 (., pstyle(p1) if(@ll<=-10&@ul>=10) ciopts(recast(pcbarrow))) ///
@@ -109,7 +109,7 @@ angle(0)) xline(0) xlabel(, labsize(small)) xline(0) xtitle("Coefficients") ///
 title("Demographic indicators", size(medlarge))
 graph export "$projectdir/output/figures/mixed_coefs.svg", width(12in) replace
 
-coefplot xt_mixed pstyle(p1) if(@ll>-10&@ul<15)) ///
+coefplot xt_mixed (., pstyle(p1) if(@ll>-10&@ul<15)) ///
 (., pstyle(p1) if(@ll>-10&@ul>=15)  ciopts(recast(pcarrow)))  ///
 (., pstyle(p1) if(@ll<=-10&@ul<15)  ciopts(recast(pcrarrow))) ///
 (., pstyle(p1) if(@ll<=-10&@ul>=15) ciopts(recast(pcbarrow))) ///
