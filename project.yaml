@@ -182,8 +182,6 @@ actions:
         demographic_coefficients: output/figures/mixed_coefs.svg
         socioeconomic_indicators: output/figures/socio_odds.svg
         socioeconomic_coefficients: output/figures/socio_coefs.svg
-        mixed_demographics: output/figures/mixed_demos.svg
-        mixed_socioeconomics: output/figures/mixed_socio.svg
         baseline_regression: output/tables/twopart-model.csv
         longitudinal_models: output/tables/longit-model.csv
         attrition_models: output/tables/selective_attrition.csv

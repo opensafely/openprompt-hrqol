@@ -57,23 +57,34 @@ eststo xt_melogit
 predict prob_disut, pr
 
 set scheme s1color
-coefplot, keep(1.base_highest_edu 2.base_highest_edu 3.base_highest_edu 4.base_highest_edu ///
+coefplot xt_melogit, pstyle(p1) if(@ll>-10&@ul<10)) ///
+(., pstyle(p1) if(@ll>-10&@ul>=10)  ciopts(recast(pcarrow)))  ///
+(., pstyle(p1) if(@ll<=-10&@ul<10)  ciopts(recast(pcrarrow))) ///
+(., pstyle(p1) if(@ll<=-10&@ul>=10) ciopts(recast(pcbarrow))) ///
+, transform(* = min(max(@,-10),10)) legend(off) nooffset ///
+keep(1.base_highest_edu 2.base_highest_edu 3.base_highest_edu 4.base_highest_edu ///
 5.base_highest_edu 1.base_hh_income 2.base_hh_income 3.base_hh_income 4.base_hh_income ///
 5.base_hh_income 6.base_hh_income 7.base_hh_income 8.base_hh_income 1.imd_q5 2.imd_q5 ///
-3.imd_q5 4.imd_q5 5.imd_q5) baselevels headings(1.base_highest_edu="Highest education" ///
-1.base_hh_income="Household income" 1.imd_q5="IMD Quintiles") ///
+3.imd_q5 4.imd_q5 5.imd_q5) baselevels groups(?.base_highest_edu = ///
+`""{bf:Highest}" "{bf:Education}""' ?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ///
+?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""', labsize(small) angle(0)) xline(0) xlabel(, labsize(small))
 coeflabels(3.base_highest_edu="College/University (Base)" ///
 5.base_hh_income="£32,000-47,999 (Base)" 1.imd_q5="1st (most deprived) (Base)") /// 
 xline(1) eform xtitle("Odds ratio") title("Socioeconomic factors", ///
 size(medlarge))
 graph export "$projectdir/output/figures/socio_odds.svg", width(12in) replace
 
-coefplot, keep(long_covid male 1.age_bands 2.age_bands 3.age_bands 4.age_bands 5.age_bands ///
+coefplot xt_melogit, pstyle(p1) if(@ll>-10&@ul<10)) ///
+(., pstyle(p1) if(@ll>-10&@ul>=10)  ciopts(recast(pcarrow)))  ///
+(., pstyle(p1) if(@ll<=-10&@ul<10)  ciopts(recast(pcrarrow))) ///
+(., pstyle(p1) if(@ll<=-10&@ul>=10) ciopts(recast(pcbarrow))) ///
+, transform(* = min(max(@,-10),10)) legend(off) nooffset ///
+keep(long_covid male 1.age_bands 2.age_bands 3.age_bands 4.age_bands 5.age_bands ///
 6.age_bands 2.base_disability 0.comorbid_count 1.comorbid_count 2.comorbid_count ///
 3.comorbid_count) baselevels coeflabels(2.base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
 long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Base)") ///
- headings(0.comorbid_count="Comorbidities" 1.age_bands="Age groups") ///
-xline(1) eform xtitle("Odds ratio") ///
+groups(?.age_bands="{bf:Age}" ?.comorbid_count="{bf:Comorbidities}", labsize(small) ///
+angle(0)) xline(0) xlabel(, labsize(small)) xline(1) eform xtitle("Odds ratio") ///
 title("Demographic indicators", size(medlarge))
 graph export "$projectdir/output/figures/mixed_odds_ratio.svg", width(12in) replace
 
@@ -84,24 +95,34 @@ predict disut_loss
 eststo xt_mixed
 
 set scheme s1color
-coefplot, keep(long_covid male 1.age_bands 2.age_bands 3.age_bands 4.age_bands 5.age_bands ///
+coefplot xt_mixed, pstyle(p1) if(@ll>-10&@ul<10)) ///
+(., pstyle(p1) if(@ll>-10&@ul>=10)  ciopts(recast(pcarrow)))  ///
+(., pstyle(p1) if(@ll<=-10&@ul<10)  ciopts(recast(pcrarrow))) ///
+(., pstyle(p1) if(@ll<=-10&@ul>=10) ciopts(recast(pcbarrow))) ///
+, transform(* = min(max(@,-10),10)) legend(off) nooffset ///
+keep(long_covid male 1.age_bands 2.age_bands 3.age_bands 4.age_bands 5.age_bands ///
 6.age_bands 2.base_disability 0.comorbid_count 1.comorbid_count 2.comorbid_count ///
 3.comorbid_count) baselevels coeflabels(2.base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
 long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Base)")  ///
-headings(0.comorbid_count="Comorbidities" 1.age_bands="Age groups") ///
-xline(0) xtitle("Coefficients") ///
+groups(?.age_bands="{bf:Age}" ?.comorbid_count="{bf:Comorbidities}", labsize(small) ///
+angle(0)) xline(0) xlabel(, labsize(small)) xline(0) xtitle("Coefficients") ///
 title("Demographic indicators", size(medlarge))
 graph export "$projectdir/output/figures/mixed_coefs.svg", width(12in) replace
 
-coefplot, keep(1.base_highest_edu 2.base_highest_edu 3.base_highest_edu 4.base_highest_edu ///
-5.base_highest_edu 0.base_hh_income 1.base_hh_income 2.base_hh_income 3.base_hh_income 4.base_hh_income ///
-5.base_hh_income 6.base_hh_income 7.base_hh_income 8.base_hh_income 1.imd_q5 2.imd_q5 ///
-3.imd_q5 4.imd_q5 5.imd_q5) baselevels headings(1.base_highest_edu="Highest education" ///
-1.base_hh_income="Household income" 1.imd_q5="IMD Quintiles") ///
+coefplot xt_mixed, pstyle(p1) if(@ll>-10&@ul<15)) ///
+(., pstyle(p1) if(@ll>-10&@ul>=15)  ciopts(recast(pcarrow)))  ///
+(., pstyle(p1) if(@ll<=-10&@ul<15)  ciopts(recast(pcrarrow))) ///
+(., pstyle(p1) if(@ll<=-10&@ul>=15) ciopts(recast(pcbarrow))) ///
+, transform(* = min(max(@,-10),15)) legend(off) nooffset ///
+keep(1.base_highest_edu 2.base_highest_edu 3.base_highest_edu 4.base_highest_edu ///
+5.base_highest_edu 0.base_hh_income 1.base_hh_income 2.base_hh_income 3.base_hh_income ///
+4.base_hh_income 5.base_hh_income 6.base_hh_income 7.base_hh_income 8.base_hh_income ///
+ 1.imd_q5 2.imd_q5 3.imd_q5 4.imd_q5 5.imd_q5) baselevels groups(?.base_highest_edu = ///
+`""{bf:Highest}" "{bf:Education}""' ?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ///
+?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""', labsize(small) angle(0)) ///
 coeflabels(3.base_highest_edu="College/University (Base)" ///
 5.base_hh_income="£32,000-47,999 (Base)" 1.imd_q5="1st (most deprived) (Base)") ///
-xline(0) xtitle("Coefficients") title("Socioeconomic factors", ///
-size(medlarge))
+xline(0) xtitle("Coefficients") title("Socioeconomic factors", size(medlarge))
 graph export "$projectdir/output/figures/socio_coefs.svg", width(12in) replace
 
 esttab xt_melogit xt_mixed using "$projectdir/output/tables/longit-model.csv", ///
@@ -125,26 +146,6 @@ mixed_effect "Predicted Disutility" disutility "Disutility score")
 mixed disutility long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
 i.base_disability ib3.base_highest_edu ib5.base_hh_income i.imd_q5 || patient_id:
 eststo base_model
-
-coefplot, keep(long_covid male 1.age_bands 2.age_bands 3.age_bands 4.age_bands 5.age_bands ///
-6.age_bands 2.base_disability 0.comorbid_count 1.comorbid_count 2.comorbid_count ///
-3.comorbid_count) baselevels coeflabels(2.base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
-long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Base)")  ///
-headings(0.comorbid_count="Comorbidities" 1.age_bands="Age groups") ///
-xline(0) xtitle("Coefficients") ///
-title("Demographic indicators", size(medlarge))
-graph export "$projectdir/output/figures/mixed_demos.svg", width(12in) replace
-
-coefplot, keep(1.base_highest_edu 2.base_highest_edu 3.base_highest_edu 4.base_highest_edu ///
-5.base_highest_edu 0.base_hh_income 1.base_hh_income 2.base_hh_income 3.base_hh_income 4.base_hh_income ///
-5.base_hh_income 6.base_hh_income 7.base_hh_income 8.base_hh_income 1.imd_q5 2.imd_q5 ///
-3.imd_q5 4.imd_q5 5.imd_q5) baselevels headings(1.base_highest_edu="Highest education" ///
-1.base_hh_income="Household income" 1.imd_q5="IMD Quintiles") ///
-coeflabels(3.base_highest_edu="College/University (Base)" ///
-5.base_hh_income="£32,000-47,999 (Base)" 1.imd_q5="1st (most deprived) (Base)") ///
-xline(0) xtitle("Coefficients") title("Socioeconomic factors", ///
-size(medlarge))
-graph export "$projectdir/output/figures/mixed_socio.svg", width(12in) replace
 
 esttab base_model using "$projectdir/output/tables/longit-model.csv", ///
 append mtitles("Mixed linear") b(a2) ci(2) aic label wide compress eform
