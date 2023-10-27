@@ -67,7 +67,7 @@ keep(1.base_highest_edu 2.base_highest_edu 3.base_highest_edu 4.base_highest_edu
 5.base_hh_income 6.base_hh_income 7.base_hh_income 8.base_hh_income 1.imd_q5 2.imd_q5 ///
 3.imd_q5 4.imd_q5 5.imd_q5) baselevels groups(?.base_highest_edu = ///
 `""{bf:Highest}" "{bf:Education}""' ?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ///
-?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""', labsize(small) angle(0)) xline(0) xlabel(, labsize(small))
+?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""', labsize(small) angle(0)) xline(0) xlabel(, labsize(small)) ///
 coeflabels(3.base_highest_edu="College/University (Base)" ///
 5.base_hh_income="£32,000-47,999 (Base)" 1.imd_q5="1st (most deprived) (Base)") /// 
 xline(1) eform xtitle("Odds ratio") title("Socioeconomic factors", ///
