@@ -232,6 +232,12 @@ egen q3=total(disutility) if survey_response>2 & survey_response<=4, by(patient_
 gen qaly3 = (q3/2)
 replace qaly3=. if survey_response==3
 
+gen qalys = qaly1 if survey_response==2
+replace qalys=qaly2 if survey_response==3
+replace qalys=qaly3 if survey_response==4
+replace qalys=. if utility==.
+egen total_qalys=sum(qalys), by(patient_id)
+
 estpost tabstat qaly1 if long_covid==1, statistics(n mean sd)
 eststo qaly_lc
 estpost tabstat qaly2 if long_covid==1, statistics(n mean sd)
@@ -244,16 +250,15 @@ estpost tabstat qaly2 if long_covid==0, statistics(n mean sd)
 eststo qaly2_rec
 estpost tabstat qaly3 if long_covid==0, statistics(n mean sd)
 eststo qaly3_rec
-esttab qaly_lc qaly2_lc qaly3_lc qaly_rec qaly2_rec qaly3_rec using ///
-"$projectdir/output/tables/utility-scores.csv", append cells(mean(fmt(3)) ///
-sd(fmt(3) par) n) noobs nomtitles varlabels(qaly1 "1 Month" qaly2 "2 Months" ///
-qaly3 "3 Months") title("QALM losses (ACA)")
-
-gen qalys = qaly1 if survey_response==2
-replace qalys=qaly2 if survey_response==3
-replace qalys=qaly3 if survey_response==4
-replace qalys=. if utility==.
-egen total_qalys=sum(qalys), by(patient_id)
+estpost tabstat total_qalys if long_covid==1, statistics(n mean sd)
+eststo tot_qaly_lc
+estpost tabstat total_qalys if long_covid==0, statistics(n mean sd)
+eststo tot_qaly_rec
+esttab qaly_lc qaly2_lc qaly3_lc qaly_rec qaly2_rec qaly3_rec tot_qaly_lc ///
+tot_qaly_rec using "$projectdir/output/tables/utility-scores.csv", ///
+append cells(mean(fmt(3)) sd(fmt(3) par) n) noobs nomtitles ///
+varlabels(qaly1 "1 Month" qaly2 "2 Months" ///
+qaly3 "3 Months") title("QALM losses (CCA)")
 
 by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
 reg total_qalys i.long_covid baseline_ut
@@ -299,6 +304,12 @@ egen q3=total(disutility) if survey_response>2 & survey_response<=4, by(patient_
 gen qaly3 = (q3/2)
 replace qaly3=. if survey_response==3
 
+gen qalys = qaly1 if survey_response==2
+replace qalys=qaly2 if survey_response==3
+replace qalys=qaly3 if survey_response==4
+replace qalys=. if utility==.
+
+egen total_qalys=sum(qalys), by(patient_id)
 estpost tabstat qaly1 if covid_dx==1, statistics(n mean sd)
 eststo qaly_lc
 estpost tabstat qaly2 if covid_dx==1, statistics(n mean sd)
@@ -311,16 +322,15 @@ estpost tabstat qaly2 if covid_dx==0, statistics(n mean sd)
 eststo qaly2_rec
 estpost tabstat qaly3 if covid_dx==0, statistics(n mean sd)
 eststo qaly3_rec
-esttab qaly_lc qaly2_lc qaly3_lc qaly_rec qaly2_rec qaly3_rec using ///
-"$projectdir/output/tables/utility-scores.csv", append cells(mean(fmt(3)) ///
-sd(fmt(3) par) n) noobs nomtitles varlabels(qaly1 "1 Month" qaly2 "2 Months" ///
-qaly3 "3 Months") title("QALM losses (Dx)")
-
-gen qalys = qaly1 if survey_response==2
-replace qalys=qaly2 if survey_response==3
-replace qalys=qaly3 if survey_response==4
-replace qalys=. if utility==.
-egen total_qalys=sum(qalys), by(patient_id)
+estpost tabstat total_qalys if long_covid==1, statistics(n mean sd)
+eststo tot_qaly_lc
+estpost tabstat total_qalys if long_covid==0, statistics(n mean sd)
+eststo tot_qaly_rec
+esttab qaly_lc qaly2_lc qaly3_lc qaly_rec qaly2_rec qaly3_rec tot_qaly_lc ///
+tot_qaly_rec using "$projectdir/output/tables/utility-scores.csv", ///
+append cells(mean(fmt(3)) sd(fmt(3) par) n) noobs nomtitles ///
+varlabels(qaly1 "1 Month" qaly2 "2 Months" ///
+qaly3 "3 Months") title("QALM losses (CCA)")
 
 by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
 reg total_qalys i.long_covid baseline_ut
@@ -370,6 +380,12 @@ egen q3=total(disutility) if survey_response>2 & survey_response<=4, by(patient_
 gen qaly3 = (q3/2)
 replace qaly3=. if survey_response==3
 
+gen qalys = qaly1 if survey_response==2
+replace qalys=qaly2 if survey_response==3
+replace qalys=qaly3 if survey_response==4
+replace qalys=. if utility==.
+egen total_qalys=sum(qalys), by(patient_id)
+
 estpost tabstat qaly1 if long_covid==1, statistics(n mean sd)
 eststo qaly_lc
 estpost tabstat qaly2 if long_covid==1, statistics(n mean sd)
@@ -382,16 +398,15 @@ estpost tabstat qaly2 if long_covid==0, statistics(n mean sd)
 eststo qaly2_rec
 estpost tabstat qaly3 if long_covid==0, statistics(n mean sd)
 eststo qaly3_rec
-esttab qaly_lc qaly2_lc qaly3_lc qaly_rec qaly2_rec qaly3_rec using ///
-"$projectdir/output/tables/utility-scores.csv", append cells(mean(fmt(3)) ///
-sd(fmt(3) par) n) noobs nomtitles varlabels(qaly1 "1 Month" qaly2 "2 Months" ///
+estpost tabstat total_qalys if long_covid==1, statistics(n mean sd)
+eststo tot_qaly_lc
+estpost tabstat total_qalys if long_covid==0, statistics(n mean sd)
+eststo tot_qaly_rec
+esttab qaly_lc qaly2_lc qaly3_lc qaly_rec qaly2_rec qaly3_rec tot_qaly_lc ///
+tot_qaly_rec using "$projectdir/output/tables/utility-scores.csv", ///
+append cells(mean(fmt(3)) sd(fmt(3) par) n) noobs nomtitles ///
+varlabels(qaly1 "1 Month" qaly2 "2 Months" ///
 qaly3 "3 Months") title("QALM losses (CCA)")
-
-gen qalys = qaly1 if survey_response==2
-replace qalys=qaly2 if survey_response==3
-replace qalys=qaly3 if survey_response==4
-replace qalys=. if utility==.
-egen total_qalys=sum(qalys), by(patient_id)
 
 // Baseline adjustment
 by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
