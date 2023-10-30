@@ -67,7 +67,7 @@ keep(1.base_highest_edu 2.base_highest_edu 3.base_highest_edu 4.base_highest_edu
 5.base_hh_income 6.base_hh_income 7.base_hh_income 8.base_hh_income 1.imd_q5 2.imd_q5 ///
 3.imd_q5 4.imd_q5 5.imd_q5) baselevels groups(?.base_highest_edu = ///
 `""{bf:Highest}" "{bf:Education}""' ?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ///
-?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""', labsize(small) angle(0)) xline(0) xlabel(, labsize(small)) ///
+?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""', labsize(small) angle(0)) xlabel(, labsize(small)) ///
 coeflabels(3.base_highest_edu="College/University (Base)" ///
 5.base_hh_income="£32,000-47,999 (Base)" 1.imd_q5="1st (most deprived) (Base)") /// 
 xline(1) eform xtitle("Odds ratio") title("Socioeconomic factors", ///
@@ -84,7 +84,7 @@ keep(long_covid male 1.age_bands 2.age_bands 3.age_bands 4.age_bands 5.age_bands
 3.comorbid_count) baselevels coeflabels(2.base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
 long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Base)") ///
 groups(?.age_bands="{bf:Age}" ?.comorbid_count="{bf:Comorbidities}", labsize(small) ///
-angle(0)) xline(0) xlabel(, labsize(small)) xline(1) eform xtitle("Odds ratio") ///
+angle(0)) xline(1) xlabel(, labsize(small)) eform xtitle("Odds ratio") ///
 title("Demographic indicators", size(medlarge))
 graph export "$projectdir/output/figures/mixed_odds_ratio.svg", width(12in) replace
 
