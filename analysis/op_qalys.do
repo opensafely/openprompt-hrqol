@@ -203,7 +203,7 @@ title("Mean utility score by Long COVID", size(medlarge))
 graph export "$projectdir/output/figures/EQ5D_surveys.svg", width(12in) replace
 restore
 
-// Utility scores by exposure 
+// Utility scores by exposure
 // Available case analysis
 sort survey_response
 xtset patient_id survey_response
@@ -222,9 +222,16 @@ replace cells(mean(fmt(3)) sd(fmt(3) par)) noobs mtitle("Long COVID" "Recovered"
 title("Disutility Scores by Long COVID (ACA)") gaps compress par number ///
 varlabels(1 "Baseline" 2 "1 Month" 3 "2 Months" 4 "3 Months")
 
+egen total_survey=sum(survey_response), by(patient_id)
+tab survey_response if total_survey==5
+tab survey_response if total_survey==3
+tab survey_response if total_survey==7
+tab survey_response if total_survey==8
+tab survey_response if total_survey==9
 egen q1= total(disutility) if survey_response<=2, by(patient_id)
 gen qaly1=(q1/2)
-replace qaly1=. if survey_response==1 & maxsurvey!=1
+replace qaly1=. if survey_response==1
+replace q1=total(disutility) if survey_response<=3
 egen q2=total(disutility) if survey_response>1 & survey_response<=3, by(patient_id)
 gen qaly2= (q2/2)
 replace qaly2=. if survey_response==2
@@ -236,7 +243,7 @@ gen qalys = qaly1 if survey_response==2
 replace qalys=qaly2 if survey_response==3
 replace qalys=qaly3 if survey_response==4
 replace qalys=. if utility==.
-egen total_qalys=sum(qalys), by(patient_id)
+egen total_qalys=total(qalys), by(patient_id)
 
 estpost tabstat qaly1 if long_covid==1, statistics(n mean sd)
 eststo qaly_lc
@@ -428,7 +435,7 @@ margins age_bands, at((mean) baseline_ut comorbid_count base_disability long_cov
 est store long_covid
 coefplot  (long_covid, color(red%60) mcolor(red%80) ciopts(recast(rcap) ///
 lcolor(red%80))) (recovered, color(blue%60) msymbol(D) mcolor(blue%80) ciopts(recast(rcap) ///
-lcolor(blue%80))), lwidth(*1) connect(1) vertical ylabel(, angle(0)) ytitle("QALMs") ///
+lcolor(blue%80))), lwidth(*1) connect(1) vertical ylabel(0(0.4)1.6, angle(0)) ytitle("QALMs") ///
 xtitle("Age group") title("QALMs (CCA)", size(medlarge)) legend(order(2 "Long COVID" ///
 4 "Recovered from COVID") margin(vsmall) region(lstyle(none))) 
 graph export "$projectdir/output/figures/QALM_losses_age.svg", width(12in) replace
