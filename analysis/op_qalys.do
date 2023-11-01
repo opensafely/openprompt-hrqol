@@ -231,7 +231,6 @@ tab survey_response if total_survey==9
 egen q1= total(disutility) if survey_response<=2, by(patient_id)
 gen qaly1=(q1/2)
 replace qaly1=. if survey_response==1
-replace q1=total(disutility) if survey_response<=3
 egen q2=total(disutility) if survey_response>1 & survey_response<=3, by(patient_id)
 gen qaly2= (q2/2)
 replace qaly2=. if survey_response==2
