@@ -229,13 +229,13 @@ tab survey_response if total_survey==7
 tab survey_response if total_survey==8
 tab survey_response if total_survey==9
 egen q1= total(disutility) if survey_response<=2, by(patient_id)
-gen qaly1=(q1/2)
+gen qaly1=(q1/2)/2
 replace qaly1=. if survey_response==1
 egen q2=total(disutility) if survey_response>1 & survey_response<=3, by(patient_id)
-gen qaly2= (q2/2)
+gen qaly2= (q2/2)/2
 replace qaly2=. if survey_response==2
 egen q3=total(disutility) if survey_response>2 & survey_response<=4, by(patient_id)
-gen qaly3 = (q3/2)
+gen qaly3 = (q3/2)/2
 replace qaly3=. if survey_response==3
 
 gen qalys = qaly1 if survey_response==2
@@ -301,13 +301,13 @@ title("Disutility Scores by Long COVID Dx") gaps compress par number ///
 varlabels(1 "Baseline" 2 "1 Month" 3 "2 Months" 4 "3 Months")
 
 egen q1= total(disutility) if survey_response<=2, by(patient_id)
-gen qaly1=(q1/2)
+gen qaly1=(q1/2)/2
 replace qaly1=. if survey_response==1
 egen q2=total(disutility) if survey_response>1 & survey_response<=3, by(patient_id)
-gen qaly2= (q2/2)
+gen qaly2= (q2/2)/2
 replace qaly2=. if survey_response==2
 egen q3=total(disutility) if survey_response>2 & survey_response<=4, by(patient_id)
-gen qaly3 = (q3/2)
+gen qaly3 = (q3/2)/2
 replace qaly3=. if survey_response==3
 
 gen qalys = qaly1 if survey_response==2
@@ -377,13 +377,13 @@ title("Disutility Scores by Long COVID (CCA)") gaps compress par number ///
 varlabels(1 "Baseline" 2 "1 Month" 3 "2 Months" 4 "3 Months")
 
 egen q1= total(disutility) if survey_response<=2, by(patient_id)
-gen qaly1=(q1/2)
+gen qaly1=(q1/2)/2
 replace qaly1=. if survey_response==1
 egen q2=total(disutility) if survey_response>1 & survey_response<=3, by(patient_id)
-gen qaly2= (q2/2)
+gen qaly2= (q2/2)/2
 replace qaly2=. if survey_response==2
 egen q3=total(disutility) if survey_response>2 & survey_response<=4, by(patient_id)
-gen qaly3 = (q3/2)
+gen qaly3 = (q3/2)/2
 replace qaly3=. if survey_response==3
 
 gen qalys = qaly1 if survey_response==2
