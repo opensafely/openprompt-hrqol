@@ -57,11 +57,11 @@ eststo xt_melogit
 predict prob_disut, pr
 
 set scheme s1color
-coefplot xt_melogit  (., pstyle(p1) if(@ll>-10&@ul<15)) ///
-(., pstyle(p1) if(@ll>-10&@ul>=15)  ciopts(recast(pcarrow)))  ///
-(., pstyle(p1) if(@ll<=-10&@ul<15)  ciopts(recast(pcrarrow))) ///
-(., pstyle(p1) if(@ll<=-10&@ul>=15) ciopts(recast(pcbarrow))) ///
-, transform(* = min(max(@,-10),15)) legend(off) nooffset ///
+coefplot xt_melogit  (., pstyle(p1) if(@ll>-10&@ul<10)) ///
+(., pstyle(p1) if(@ll>-10&@ul>=10)  ciopts(recast(pcarrow)))  ///
+(., pstyle(p1) if(@ll<=-10&@ul<10)  ciopts(recast(pcrarrow))) ///
+(., pstyle(p1) if(@ll<=-10&@ul>=10) ciopts(recast(pcbarrow))) ///
+, transform(* = min(max(@,-10),10)) legend(off) nooffset ///
 baselevels coeflabels(1.age_bands="18-29 (Base)" male="Males" 0.comorbid_count="0 (Base)" ///
 3.base_highest_edu="College/University (Base)" 5.base_hh_income="£32,000-47,999 (Base)" ///
 1.imd_q5="1st (most deprived) (Base)", labsize(vsmall)) groups(?.base_highest_edu = ///

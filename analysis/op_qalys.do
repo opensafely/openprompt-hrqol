@@ -275,7 +275,7 @@ estpost margins long_covid age_bands base_disability comorbid_count, at((mean) b
 eststo base_adjusted
 esttab adjusted base_adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
 cells(b(fmt(3)) ci(fmt(3) par)) varlabels(0.long_covid "Recovered" ///
-1.long_covid "Long COVID") mtitle("QALM") title("QALMs (ACA)")
+1.long_covid "Long COVID") drop(?.base_disability ?.comorbid_count) mtitle("QALM") title("QALMs (ACA)")
 eststo clear
 restore
 
@@ -347,7 +347,7 @@ estpost margins long_covid age_bands base_disability comorbid_count, at((mean) b
 eststo base_adjusted
 esttab adjusted base_adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
 cells(b(fmt(3)) ci(fmt(3) par)) varlabels(0.long_covid "Recovered" ///
-1.long_covid "Long COVID") mtitle("QALM") title("QALMs (Dx)")
+1.long_covid "Long COVID") drop(?.base_disability ?.comorbid_count) mtitle("QALM") title("QALMs (Dx)")
 eststo clear
 
 // Complete case analysis
@@ -424,7 +424,7 @@ estpost margins long_covid age_bands base_disability comorbid_count, at((mean) b
 eststo base_adjusted
 esttab adjusted base_adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
 cells(b(fmt(3)) ci(fmt(3) par)) varlabels(0.long_covid "Recovered" ///
-1.long_covid "Long COVID") mtitle("QALM") title("QALMs (CCA)")
+1.long_covid "Long COVID") drop(?.base_disability ?.comorbid_count) mtitle("QALM") title("QALMs (CCA)")
 
 reg total_qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut
 margins age_bands, at((mean) baseline_ut comorbid_count base_disability long_covid==0) post
@@ -434,7 +434,7 @@ margins age_bands, at((mean) baseline_ut comorbid_count base_disability long_cov
 est store long_covid
 coefplot  (long_covid, color(red%60) mcolor(red%80) ciopts(recast(rcap) ///
 lcolor(red%80))) (recovered, color(blue%60) msymbol(D) mcolor(blue%80) ciopts(recast(rcap) ///
-lcolor(blue%80))), lwidth(*1) connect(1) vertical ylabel(0(0.4)1.6, angle(0)) ytitle("QALMs") ///
+lcolor(blue%80))), lwidth(*1) connect(1) vertical ylabel(0(0.2)0.8, angle(0)) ytitle("QALMs") ///
 xtitle("Age group") title("QALMs (CCA)", size(medlarge)) legend(order(2 "Long COVID" ///
 4 "Recovered from COVID") margin(vsmall) region(lstyle(none))) 
 graph export "$projectdir/output/figures/QALM_losses_age.svg", width(12in) replace
