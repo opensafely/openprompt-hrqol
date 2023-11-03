@@ -13,7 +13,7 @@ adopath + "analysis/Extra_ados"
 
 //*** Import data ***
 use "output/op_tpp_linked.dta", clear
-keep if merge_link>=2
+drop if merge_link==1
 
 //*** Table1_mc baseline demographic ***
 label variable base_ethnicity "Ethnicity"
