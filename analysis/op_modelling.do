@@ -62,30 +62,25 @@ coefplot xt_melogit  (., pstyle(p1) if(@ll>-10&@ul<15)) ///
 (., pstyle(p1) if(@ll<=-10&@ul<15)  ciopts(recast(pcrarrow))) ///
 (., pstyle(p1) if(@ll<=-10&@ul>=15) ciopts(recast(pcbarrow))) ///
 , transform(* = min(max(@,-10),15)) legend(off) nooffset ///
-baselevels coeflabels(2.base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
-long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Base)" ///
+baselevels coeflabels(1.age_bands="18-29 (Base)" male="Males" 0.comorbid_count="0 (Base)" ///
 3.base_highest_edu="College/University (Base)" 5.base_hh_income="£32,000-47,999 (Base)" ///
 1.imd_q5="1st (most deprived) (Base)", labsize(vsmall)) groups(?.base_highest_edu = ///
 `""{bf:Highest}" "{bf:Education}""' ?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ///
 ?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""' ?.age_bands="{bf:Age}" ///
 ?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(1) eform xlabel(, labsize(small)) ///
-title("First Part", size(medsmall)) drop(_cons 1.base_disability) msize(small)
+title("First Part", size(medsmall)) ///
+drop(_cons 1.base_disability 2.base_disability long_covid) msize(small)
 graph export "$projectdir/output/figures/socio_odds.svg", width(12in) replace
 
-set scheme s1color
-coefplot xt_melogit (., pstyle(p1) if(@ll>-5&@ul<15)) ///
-(., pstyle(p1) if(@ll>-5&@ul>=15)  ciopts(recast(pcarrow)))  ///
-(., pstyle(p1) if(@ll<=-5&@ul<15)  ciopts(recast(pcrarrow))) ///
-(., pstyle(p1) if(@ll<=-5&@ul>=15) ciopts(recast(pcbarrow))) ///
-, transform(* = min(max(@,-5),15)) legend(off) nooffset ///
-keep(long_covid male 1.age_bands 2.age_bands 3.age_bands 4.age_bands 5.age_bands ///
-6.age_bands 2.base_disability 0.comorbid_count 1.comorbid_count 2.comorbid_count ///
-3.comorbid_count) baselevels groups(?.age_bands="{bf:Age}" ///
-?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xlabel(, labsize(small)) ///
-coeflabels(2.base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
-long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Base)") ///
-xline(1) eform xtitle("Odds ratio") title("Demographic indicators", ///
-size(medlarge))
+coefplot xt_melogit  (., pstyle(p1) if(@ll>-1&@ul<65)) ///
+(., pstyle(p1) if(@ll>-1&@ul>=65)  ciopts(recast(pcarrow)))  ///
+(., pstyle(p1) if(@ll<=-1&@ul<65)  ciopts(recast(pcrarrow))) ///
+(., pstyle(p1) if(@ll<=-1&@ul>=65) ciopts(recast(pcbarrow))) ///
+, transform(* = min(max(@,-1),65)) legend(off) nooffset ///
+keep(long_covid 2.base_disability) baselevels xlabel(, labsize(small)) ///
+coeflabels(2.base_disability="Disabled" long_covid=`""Self-reported" "Long COVID""') ///
+xline(1) eform xtitle("Odds ratio") title("First Part", ///
+size(medlarge)) drop(_cons 1.base_disability) msize(small)
 graph export "$projectdir/output/figures/mixed_odds_ratio.svg", width(12in) replace
 
 mixed disutility long_covid male i.age_bands i.comorbid_count ///
