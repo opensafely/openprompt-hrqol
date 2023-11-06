@@ -117,7 +117,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Mobility", size(medsmall)) ///
 ytitle("") ///
-ylabel(0(500)2500, labsize(2) angle(0)) ///
+ylabel(0(500)2100, labsize(2) angle(0)) ///
 name(mobility_freq, replace)
 
 graph bar (count) if survey_response==1, over(long_covid) over(selfcare, label(labsize(vsmall)) /// 
@@ -127,7 +127,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Self Care", size(medsmall)) ///
 ytitle("") ///
-ylabel(0(500)2500, labsize(2) angle(0)) ///
+ylabel(0(500)2100, labsize(2) angle(0)) ///
 name(selfcare_freq, replace)
 
 graph bar (count) if survey_response==1, over(long_covid) over(activity, label(labsize(vsmall)) ///
@@ -137,7 +137,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Usual Activities", size(medsmall)) ///
 ytitle("") ///
-ylabel(0(500)2500, labsize(2) angle(0)) ///
+ylabel(0(500)2100, labsize(2) angle(0)) ///
 name(activity_freq, replace)
 
 graph bar (count) if survey_response==1, over(long_covid) over(pain, label(labsize(vsmall)) ///
@@ -147,7 +147,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Pain/Discomfort", size(medsmall)) ///
 ytitle("") ///
-ylabel(0(500)2500, labsize(2) angle(0)) ///
+ylabel(0(500)2100, labsize(2) angle(0)) ///
 name(pain_freq, replace)
 
 graph bar (count) if survey_response==1, over(long_covid) over(anxiety, label(labsize(vsmall)) ///
@@ -157,7 +157,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Anxiety/Depression", size(medsmall)) ///
 ytitle("") ///
-ylabel(0(500)2500, labsize(2) angle(0)) ///
+ylabel(0(500)2100, labsize(2) angle(0)) ///
 name(anxiety_freq, replace)
 
 graph combine mobility_freq selfcare_freq activity_freq pain_freq anxiety_freq, ///
@@ -173,7 +173,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Mobility", size(medsmall)) ///
 ytitle("") ///
-ylabel(0(20)100, labsize(2) angle(0)) ///
+ylabel(0(20)60, labsize(2) angle(0)) ///
 name(mobility_perc, replace)
 
 graph bar if survey_response==1, over(long_covid) over(selfcare, label(labsize(vsmall)) /// 
@@ -183,7 +183,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Self Care", size(medsmall)) ///
 ytitle("") ///
-ylabel(0(20)100, labsize(2) angle(0)) ///
+ylabel(0(20)60, labsize(2) angle(0)) ///
 name(selfcare_perc, replace)
 
 graph bar if survey_response==1, over(long_covid) over(activity, label(labsize(vsmall)) ///
@@ -193,7 +193,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Usual Activities", size(medsmall)) ///
 ytitle("") ///
-ylabel(0(20)100, labsize(2) angle(0)) ///
+ylabel(0(20)60, labsize(2) angle(0)) ///
 name(activity_perc, replace)
 
 graph bar if survey_response==1, over(long_covid) over(pain, label(labsize(vsmall)) ///
@@ -203,7 +203,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Pain/Discomfort", size(medsmall)) ///
 ytitle("") ///
-ylabel(0(20)100, labsize(2) angle(0)) ///
+ylabel(0(20)60, labsize(2) angle(0)) ///
 name(pain_perc, replace)
 
 graph bar if survey_response==1, over(long_covid) over(anxiety, label(labsize(vsmall)) ///
@@ -213,7 +213,7 @@ bar(1, color(blue%40)) bar(2, color(red%40)) ///
 legend(size(vsmall) margin(vsmall) region(lstyle(none))) ///
 title("Anxiety/Depression", size(medsmall)) ///
 ytitle("") ///
-ylabel(0(20)100, labsize(2) angle(0)) ///
+ylabel(0(20)60, labsize(2) angle(0)) ///
 name(anxiety_perc, replace)
 
 graph combine mobility_perc selfcare_perc activity_perc pain_perc anxiety_perc, ///
@@ -259,11 +259,11 @@ restore
 
 //*** FACIT-F Scores ***
 hist fscore if long_covid==1 & survey_response==1, freq color(red%40) ///
-xtitle(FACIT-F Scores at baseline) ylabel(0(50)300, angle(0)) xlabel(0(10)52) ///
+xtitle(FACIT-F Scores at baseline) ylabel(0(50)250, angle(0)) xlabel(0(10)52) ///
 title(Long COVID) name(fatigue_long_covid, replace)
 
 hist fscore if long_covid==0 & survey_response==1, freq color(blue%40) ///
-xtitle(FACIT-F Scores at baseline) ylabel(0(50)300, angle(0)) xlabel(0(10)52) ///
+xtitle(FACIT-F Scores at baseline) ylabel(0(50)250, angle(0)) xlabel(0(10)52) ///
 title(No Long COVID) name(fatigue_nolong_covid, replace)
 
 graph combine fatigue_long_covid fatigue_nolong_covid, ///
