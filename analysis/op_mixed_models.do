@@ -83,7 +83,7 @@ esttab base_or base eth_or base_eth inc_or base_inc disabled_or base_disabled //
 educ_or base_educ region_or base_region imd_or base_imd hosps_or base_hosps ///
 using "$projectdir/output/tables/mixed-models.csv", ///
 replace mtitles("Base" "Ethnicity" "Income" "Disability" "Education" "Region" "IMD" "Hospitalised") ///
-b(a2) se(2) aic label wide compress ///
+b(a2) se(2) aic eform(1 3 5 7 9 11 13 15) label wide compress ///
 	varlabels(`e(labels)') 
 
 mixed disutility long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///

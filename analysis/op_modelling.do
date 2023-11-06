@@ -122,7 +122,7 @@ xline(0) xtitle("Coefficients") title("Socioeconomic factors", size(medlarge))
 graph export "$projectdir/output/figures/socio_coefs.svg", width(12in) replace
 
 esttab xt_melogit xt_mixed using "$projectdir/output/tables/longit-model.csv", ///
-replace mtitles("Mixed effect logit" "Mixed effect") b(a2) ci(2) aic label wide compress   
+replace mtitles("Mixed effect logit" "Mixed effect") eform(1) b(a2) ci(2) aic label wide compress   
 
 mixed disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
 ib3.base_highest_edu ib5.base_hh_income i.imd_q5 || patient_id:
@@ -158,7 +158,7 @@ if disutI>0 & survey_response>1 || patient_id:, cov(exch)
 eststo mixed_ut
 
 esttab melogit_ut mixed_ut using "$projectdir/output/tables/longit-model.csv", ///
-mtitles("ME Logit w/baseline utility" "Mixed model w/baseline utility") b(a2) ci(2) ///
+mtitles("ME Logit w/baseline utility" "Mixed model w/baseline utility") eform(1) b(a2) ci(2) ///
 aic label wide compress append
 
 eststo clear
