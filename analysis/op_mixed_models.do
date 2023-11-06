@@ -31,49 +31,49 @@ replace comorbid_count=3 if comorbid_count>3 & !missing(comorbid_count)
 xtset patient_id survey_response
 
 // Demographic comparison
-xtlogit disutI long_covid male i.age_bands i.comorbid_count, re
+xtlogit disutI long_covid male i.age_bands i.comorbid_count, re or
 eststo base_or
 mixed disutility long_covid male i.age_bands i.comorbid_count ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base
 
-xtlogit disutI long_covid male i.age_bands i.comorbid_count i.base_ethnicity, re
+xtlogit disutI long_covid male i.age_bands i.comorbid_count i.base_ethnicity, re or
 eststo eth_or
 mixed disutility long_covid male i.age_bands i.comorbid_count i.base_ethnicity ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base_eth
 
-xtlogit disutI long_covid male i.age_bands i.comorbid_count i.base_hh_income, re
+xtlogit disutI long_covid male i.age_bands i.comorbid_count i.base_hh_income, re or
 eststo inc_or
 mixed disutility long_covid male i.age_bands i.comorbid_count i.base_hh_income ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base_inc
 
-xtlogit disutI long_covid male i.age_bands i.comorbid_count i.base_disability, re
+xtlogit disutI long_covid male i.age_bands i.comorbid_count i.base_disability, re or
 eststo disabled_or
 mixed disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base_disabled
 
-xtlogit disutI long_covid male i.age_bands i.comorbid_count i.base_highest_edu, re
+xtlogit disutI long_covid male i.age_bands i.comorbid_count i.base_highest_edu, re or
 eststo educ_or
 mixed disutility long_covid male i.age_bands i.comorbid_count i.base_highest_edu ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base_educ
 
-xtlogit disutI long_covid male i.age_bands i.comorbid_count i.region, re
+xtlogit disutI long_covid male i.age_bands i.comorbid_count i.region, re or
 eststo region_or
 mixed disutility long_covid male i.age_bands i.comorbid_count i.region ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base_region
 
-xtlogit disutI long_covid male i.age_bands i.comorbid_count i.imd_q5, re
+xtlogit disutI long_covid male i.age_bands i.comorbid_count i.imd_q5, re or 
 eststo imd_or
 mixed disutility long_covid male i.age_bands i.comorbid_count i.imd_q5 ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base_imd
 
-xtlogit disutI long_covid male i.age_bands i.comorbid_count i.all_covid_hosp, re
+xtlogit disutI long_covid male i.age_bands i.comorbid_count i.all_covid_hosp, re or 
 eststo hosps_or
 mixed disutility long_covid male i.age_bands i.comorbid_count i.all_covid_hosp ///
 if disutI>0 || patient_id:, cov(exch) 

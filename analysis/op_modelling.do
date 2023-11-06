@@ -52,7 +52,7 @@ xtset patient_id survey_response
 replace base_disability=. if base_disability==3
 replace base_highest_edu=. if base_highest_edu==5
 xtlogit disutI long_covid male i.age_bands i.comorbid_count ///
-i.base_disability ib3.base_highest_edu ib5.base_hh_income i.imd_q5, re
+i.base_disability ib3.base_highest_edu ib5.base_hh_income i.imd_q5, re or
 eststo xt_melogit
 predict prob_disut, pr
 
@@ -149,7 +149,7 @@ append mtitles("Mixed linear") b(a2) ci(2) aic label wide compress
 // Baseline utility
 by patient_id (survey_response), sort: gen baseline_ut = utility[1]
 xtlogit disutI long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
-i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5 baseline_ut if survey_response>1, re
+i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5 baseline_ut if survey_response>1, re or
 eststo melogit_ut
 
 mixed disutility long_covid male i.age_bands i.comorbid_count ///
