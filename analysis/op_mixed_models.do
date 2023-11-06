@@ -158,8 +158,8 @@ long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Ba
 2.mrc_breathlessness="Grade 2" 3.mrc_breathlessness="Grade 3" ///
 4.mrc_breathlessness="Grade 4" 5.mrc_breathlessness="Grade 5" fscore="FACIT-F" ///
 5.base_hh_income="£32,000-47,999 (Base)" 1.imd_q5="1st (most deprived) (Base)", ///
-labsize(vsmall)) groups(?.base_highest_edu = `""{bf:Highest}" "{bf:Education}""' ///
-?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ?.fscore="{bf:FACIT-F Reversed}"///
+labsize(vsmall)) groups(?.base_highest_edu=`""{bf:Highest}" "{bf:Education}""' ///
+?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ?.fscore="{bf:FACIT-F Reversed}" ///
 ?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""' ?.age_bands="{bf:Age}" ?.mrc_breathlessness="{bf:MRC Dyspnoea}" ///
 ?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(1) eform xlabel(, labsize(small)) ///
 title("PROMs OR", size(medsmall)) drop(_cons 1.base_disability) msize(small)
@@ -177,7 +177,7 @@ long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Ba
 4.mrc_breathlessness="Grade 4" 5.mrc_breathlessness="Grade 5" fscore="FACIT-F" ///
 5.base_hh_income="£32,000-47,999 (Base)" 1.imd_q5="1st (most deprived) (Base)", labsize(vsmall)) ///
 groups(?.base_highest_edu = `""{bf:Highest}" "{bf:Education}""' ///
-?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ?.fscore="{bf:FACIT-F Reversed}"///
+?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ?.fscore="{bf:FACIT-F Reversed}" ///
 ?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""' ?.age_bands="{bf:Age}" ?.mrc_breathlessness="{bf:MRC Dyspnoea}" ///
 ?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(0) xlabel(, labsize(small)) ///
 title("PROMs Coefficients", size(medsmall)) drop(_cons 1.base_disability) msize(small)
