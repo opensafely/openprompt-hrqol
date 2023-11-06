@@ -28,44 +28,62 @@ replace base_disability=. if base_disability==3
 replace base_highest_edu=. if base_highest_edu==5
 replace base_hh_income=. if base_hh_income==9 | base_hh_income==10
 replace comorbid_count=3 if comorbid_count>3 & !missing(comorbid_count)
+xtset patient_id survey_response
 
 // Demographic comparison
+xtlogit disutI long_covid male i.age_bands i.comorbid_count, re
+eststo base_or
 mixed disutility long_covid male i.age_bands i.comorbid_count ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base
 
+xtlogit disutI long_covid male i.age_bands i.comorbid_count i.base_ethnicity, re
+eststo eth_or
 mixed disutility long_covid male i.age_bands i.comorbid_count i.base_ethnicity ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base_eth
 
+xtlogit disutI long_covid male i.age_bands i.comorbid_count i.base_hh_income, re
+eststo inc_or
 mixed disutility long_covid male i.age_bands i.comorbid_count i.base_hh_income ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base_inc
 
+xtlogit disutI long_covid male i.age_bands i.comorbid_count i.base_disability, re
+eststo disabled_or
 mixed disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base_disabled
 
+xtlogit disutI long_covid male i.age_bands i.comorbid_count i.base_highest_edu, re
+eststo educ_or
 mixed disutility long_covid male i.age_bands i.comorbid_count i.base_highest_edu ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base_educ
 
+xtlogit disutI long_covid male i.age_bands i.comorbid_count i.region, re
+eststo region_or
 mixed disutility long_covid male i.age_bands i.comorbid_count i.region ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base_region
 
+xtlogit disutI long_covid male i.age_bands i.comorbid_count i.imd_q5, re
+eststo imd_or
 mixed disutility long_covid male i.age_bands i.comorbid_count i.imd_q5 ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base_imd
 
+xtlogit disutI long_covid male i.age_bands i.comorbid_count i.all_covid_hosp, re
+eststo hosps_or
 mixed disutility long_covid male i.age_bands i.comorbid_count i.all_covid_hosp ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base_hosps
 
-esttab base base_eth base_inc base_disabled base_educ base_region base_imd base_hosps ///
+esttab base_or base eth_or base_eth inc_or base_inc disabled_or base_disabled ///
+educ_or base_educ region_or base_region imd_or base_imd hosps_or base_hosps ///
 using "$projectdir/output/tables/mixed-models.csv", ///
 replace mtitles("Base" "Ethnicity" "Income" "Disability" "Education" "Region" "IMD" "Hospitalised") ///
-b(a2) se(2) aic label wide compress eform ///
+b(a2) se(2) aic label wide compress ///
 	varlabels(`e(labels)') 
 
 mixed disutility long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///

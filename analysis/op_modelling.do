@@ -122,7 +122,7 @@ xline(0) xtitle("Coefficients") title("Socioeconomic factors", size(medlarge))
 graph export "$projectdir/output/figures/socio_coefs.svg", width(12in) replace
 
 esttab xt_melogit xt_mixed using "$projectdir/output/tables/longit-model.csv", ///
-replace mtitles("Mixed effect logit" "Mixed effect") b(a2) ci(2) aic label wide compress eform  
+replace mtitles("Mixed effect logit" "Mixed effect") b(a2) ci(2) aic label wide compress   
 
 mixed disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
 ib3.base_highest_edu ib5.base_hh_income i.imd_q5 || patient_id:
@@ -144,7 +144,7 @@ i.base_disability ib3.base_highest_edu ib5.base_hh_income i.imd_q5 || patient_id
 eststo base_model
 
 esttab base_model using "$projectdir/output/tables/longit-model.csv", ///
-append mtitles("Mixed linear") b(a2) ci(2) aic label wide compress eform
+append mtitles("Mixed linear") b(a2) ci(2) aic label wide compress 
 
 // Baseline utility
 by patient_id (survey_response), sort: gen baseline_ut = utility[1]
@@ -159,7 +159,7 @@ eststo mixed_ut
 
 esttab melogit_ut mixed_ut using "$projectdir/output/tables/longit-model.csv", ///
 mtitles("ME Logit w/baseline utility" "Mixed model w/baseline utility") b(a2) ci(2) ///
-aic label wide compress eform append
+aic label wide compress append
 
 eststo clear
 mixed disutility long_covid male i.age_bands i.comorbid_count ///
@@ -168,7 +168,7 @@ i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5 i.all_covid_hosp 
 eststo hosps
 
 esttab hosps using "$projectdir/output/tables/longit-model.csv", ///
-mtitles("Hospitalisations") b(a2) ci(2) aic label wide compress eform append
+mtitles("Hospitalisations") b(a2) ci(2) aic label wide compress append
 
 // Selective attrition
 bysort patient_id: egen maxsurvey = max(survey_response)
