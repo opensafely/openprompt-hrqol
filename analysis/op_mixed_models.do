@@ -116,6 +116,7 @@ mixed disutility long_covid i.base_disability male i.age_bands i.comorbid_count 
 i.mrc_breathlessness fscore if disutI>0 || patient_id:, cov(exch) 
 eststo all_proms
 
+set scheme s1color
 coefplot all_proms, baselevels coeflabels(2.base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
 long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Base)" ///
 3.base_highest_edu="College/University (Base)" 1.mrc_breathlessness="Grade 1 (Base)" ///
