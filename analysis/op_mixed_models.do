@@ -116,13 +116,17 @@ mixed disutility long_covid i.base_disability male i.age_bands i.comorbid_count 
 i.mrc_breathlessness fscore if disutI>0 || patient_id:, cov(exch) 
 eststo all_proms
 
-coefplot, keep(long_covid male 1.age_bands 2.age_bands 3.age_bands 4.age_bands 5.age_bands ///
-6.age_bands 2.base_disability 0.comorbid_count 1.comorbid_count 2.comorbid_count ///
-3.comorbid_count) baselevels coeflabels(2.base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
-long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Base)") ///
- headings(0.comorbid_count="Comorbidities" 1.age_bands="Age groups") ///
-xline(0) xtitle("Coefficients") ///
-title("Demographic indicators", size(medlarge))
+coefplot all_proms, baselevels coeflabels(2.base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
+long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Base)" ///
+3.base_highest_edu="College/University (Base)" 1.mrc_breathlessness="Grade 1 (Base)" ///
+2.mrc_breathlessness="Grade 2" 3.mrc_breathlessness="Grade 3" ///
+4.mrc_breathlessness="Grade 4" 5.mrc_breathlessness="Grade 5" fscore="FACIT-F" ///
+5.base_hh_income="£32,000-47,999 (Base)" 1.imd_q5="1st (most deprived) (Base)", labsize(vsmall)) ///
+groups(?.base_highest_edu = `""{bf:Highest}" "{bf:Education}""' ///
+?.base_hh_income=`""{bf:Household}" "{bf:Income}""' fscore="{bf:FACIT-F Reversed}" ///
+?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""' ?.age_bands="{bf:Age}" ?.mrc_breathlessness="{bf:MRC Dyspnoea}" ///
+?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(0) xlabel(, labsize(small)) ///
+title("PROMs Coefficients", size(medsmall)) drop(_cons 1.base_disability) msize(small)
 graph export "$projectdir/output/figures/demo_proms_coefs.svg", width(12in) replace
 
 coefplot, keep(long_covid 1.mrc_breathlessness 2.mrc_breathlessness 3.mrc_breathlessness ///
@@ -142,7 +146,7 @@ replace mtitles("Base" "MRC" "Facit" "All") b(a2) se(2) aic label wide compress 
 xtset patient_id survey_response
 replace base_disability=. if base_disability==3
 replace base_highest_edu=. if base_highest_edu==5
-xtlogit disutI long_covid male i.age_bands i.comorbid_count i.base_disability ///
+xtlogit disutI long_covid i.base_disability male i.age_bands i.comorbid_count ///
 i.mrc_breathlessness fscore, re or
 eststo part_one
 
