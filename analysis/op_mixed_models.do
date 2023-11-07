@@ -49,9 +49,9 @@ mixed disutility long_covid male i.age_bands i.comorbid_count i.base_hh_income /
 if disutI>0 || patient_id:, cov(exch) 
 eststo base_inc
 
-xtlogit disutI long_covid male i.age_bands i.comorbid_count i.base_disability, re or
+xtlogit disutI long_covid i.base_disability male i.age_bands i.comorbid_count, re or
 eststo disabled_or
-mixed disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
+mixed disutility long_covid i.base_disability male i.age_bands i.comorbid_count ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base_disabled
 
@@ -86,8 +86,8 @@ replace mtitles("Base" "Ethnicity" "Income" "Disability" "Education" "Region" "I
 b(a2) se(2) aic eform label wide compress ///
 	varlabels(`e(labels)') 
 
-mixed disutility long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
-i.base_disability i.base_highest_edu i.base_hh_income i.region i.imd_q5 ///
+mixed disutility long_covid i.base_disability male i.age_bands i.base_ethnicity ///
+i.comorbid_count i.base_highest_edu i.base_hh_income i.region i.imd_q5 ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo full
 
@@ -100,19 +100,19 @@ eststo clear
 
 
 // Mixed effects
-mixed disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
+mixed disutility long_covid i.base_disability male i.age_bands i.comorbid_count ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base
 
-mixed disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
+mixed disutility long_covid i.base_disability male i.age_bands i.comorbid_count ///
 i.mrc_breathlessness if disutI>0 || patient_id:, cov(exch) 
 eststo base_mrc
 
-mixed disutility long_covid male i.age_bands i.comorbid_count i.base_disability fscore ///
+mixed disutility long_covid i.base_disability male i.age_bands i.comorbid_count fscore ///
 if disutI>0 || patient_id:, cov(exch) 
 eststo base_fscore
 
-mixed disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
+mixed disutility long_covid i.base_disability male i.age_bands i.comorbid_count ///
 i.mrc_breathlessness fscore if disutI>0 || patient_id:, cov(exch) 
 eststo all_proms
 
@@ -170,14 +170,14 @@ coefplot all_proms (., pstyle(p1) if(@ll>-10&@ul<15)) ///
 (., pstyle(p1) if(@ll<=-10&@ul<15)  ciopts(recast(pcrarrow))) ///
 (., pstyle(p1) if(@ll<=-10&@ul>=15) ciopts(recast(pcbarrow))) ///
 , transform(* = min(max(@,-10),15)) legend(off) nooffset ///
-baselevels coeflabels(2.base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
+coeflabels(2.base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
 long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Base)" ///
 3.base_highest_edu="College/University (Base)" 1.mrc_breathlessness="Grade 1 (Base)" ///
 2.mrc_breathlessness="Grade 2" 3.mrc_breathlessness="Grade 3" ///
 4.mrc_breathlessness="Grade 4" 5.mrc_breathlessness="Grade 5" fscore="FACIT-F" ///
 5.base_hh_income="£32,000-47,999 (Base)" 1.imd_q5="1st (most deprived) (Base)", labsize(vsmall)) ///
 groups(?.base_highest_edu = `""{bf:Highest}" "{bf:Education}""' ///
-?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ?.fscore="{bf:FACIT-F Reversed}" ///
+?.base_hh_income=`""{bf:Household}" "{bf:Income}""' fscore="{bf:FACIT-F Reversed}" ///
 ?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""' ?.age_bands="{bf:Age}" ?.mrc_breathlessness="{bf:MRC Dyspnoea}" ///
 ?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(0) xlabel(, labsize(small)) ///
 title("PROMs Coefficients", size(medsmall)) drop(_cons 1.base_disability) msize(small)

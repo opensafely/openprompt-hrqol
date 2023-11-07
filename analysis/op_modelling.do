@@ -51,8 +51,8 @@ eststo clear
 xtset patient_id survey_response
 replace base_disability=. if base_disability==3
 replace base_highest_edu=. if base_highest_edu==5
-xtlogit disutI long_covid male i.age_bands i.comorbid_count ///
-i.base_disability ib3.base_highest_edu ib5.base_hh_income i.imd_q5, re or
+xtlogit disutI long_covid i.base_disability male i.age_bands i.comorbid_count ///
+ib3.base_highest_edu ib5.base_hh_income i.imd_q5, re or
 eststo xt_melogit
 predict prob_disut, pr
 
@@ -83,8 +83,8 @@ xline(1) eform xtitle("Odds ratio") title("First Part", ///
 size(medlarge)) drop(_cons 1.base_disability) msize(small)
 graph export "$projectdir/output/figures/mixed_odds_ratio.svg", width(12in) replace
 
-mixed disutility long_covid male i.age_bands i.comorbid_count ///
-i.base_disability ib3.base_highest_edu ib5.base_hh_income i.imd_q5 ///
+mixed disutility long_covid i.base_disability male i.age_bands i.comorbid_count ///
+ib3.base_highest_edu ib5.base_hh_income i.imd_q5 ///
 if disutI>0 || patient_id:, cov(exch) 
 predict disut_loss
 eststo xt_mixed
@@ -124,7 +124,7 @@ graph export "$projectdir/output/figures/socio_coefs.svg", width(12in) replace
 esttab xt_melogit xt_mixed using "$projectdir/output/tables/longit-model.csv", ///
 replace mtitles("Mixed effect logit" "Mixed effect") eform(1) b(a2) ci(2) aic label wide compress   
 
-mixed disutility long_covid male i.age_bands i.comorbid_count i.base_disability ///
+mixed disutility long_covid i.base_disability male i.age_bands i.comorbid_count ///
 ib3.base_highest_edu ib5.base_hh_income i.imd_q5 || patient_id:
 predict mixed_effect
 gen pred_disut=prob_disut*disut_loss
@@ -139,8 +139,8 @@ title("Predicted Disutility") gaps compress par number ///
 varlabels(pred_disut "Predicted Disutility Two-part model" ///
 mixed_effect "Predicted Disutility" disutility "Disutility score")
 
-mixed disutility long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
-i.base_disability ib3.base_highest_edu ib5.base_hh_income i.imd_q5 || patient_id:
+mixed disutility long_covid i.base_disability male i.age_bands i.base_ethnicity i.comorbid_count ///
+ib3.base_highest_edu ib5.base_hh_income i.imd_q5 || patient_id:
 eststo base_model
 
 esttab base_model using "$projectdir/output/tables/longit-model.csv", ///
@@ -148,12 +148,12 @@ append mtitles("Mixed linear") b(a2) ci(2) aic label wide compress
 
 // Baseline utility
 by patient_id (survey_response), sort: gen baseline_ut = utility[1]
-xtlogit disutI long_covid male i.age_bands i.base_ethnicity i.comorbid_count ///
-i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5 baseline_ut if survey_response>1, re or
+xtlogit disutI long_covid i.base_disability male i.age_bands i.base_ethnicity i.comorbid_count ///
+i.base_highest_edu i.base_hh_income i.imd_q5 baseline_ut if survey_response>1, re or
 eststo melogit_ut
 
-mixed disutility long_covid male i.age_bands i.comorbid_count ///
-i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5 baseline_ut ///
+mixed disutility long_covid i.base_disability male i.age_bands i.comorbid_count ///
+i.base_highest_edu i.base_hh_income i.imd_q5 baseline_ut ///
 if disutI>0 & survey_response>1 || patient_id:, cov(exch) 
 eststo mixed_ut
 
@@ -162,8 +162,8 @@ mtitles("ME Logit w/baseline utility" "Mixed model w/baseline utility") eform(1)
 aic label wide compress append
 
 eststo clear
-mixed disutility long_covid male i.age_bands i.comorbid_count ///
-i.base_disability i.base_highest_edu i.base_hh_income i.imd_q5 i.all_covid_hosp ///
+mixed disutility long_covid i.base_disability male i.age_bands i.comorbid_count ///
+i.base_highest_edu i.base_hh_income i.imd_q5 i.all_covid_hosp ///
 || patient_id:
 eststo hosps
 
