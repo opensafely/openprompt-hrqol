@@ -270,7 +270,7 @@ by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
 reg total_qalys i.long_covid baseline_ut
 estpost margins long_covid, at((mean) baseline_ut)
 eststo adjusted
-reg total_qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut
+reg total_qalys i.long_covid i.age_bands i.male i.base_disability i.comorbid_count baseline_ut
 estpost margins long_covid age_bands base_disability comorbid_count, at((mean) baseline_ut)
 eststo base_adjusted
 esttab adjusted base_adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
@@ -342,7 +342,7 @@ by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
 reg total_qalys i.long_covid baseline_ut
 estpost margins long_covid, at((mean) baseline_ut)
 eststo adjusted
-reg total_qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut 
+reg total_qalys i.long_covid i.age_bands i.male i.base_disability i.comorbid_count baseline_ut 
 estpost margins long_covid age_bands base_disability comorbid_count, at((mean) baseline_ut)
 eststo base_adjusted
 esttab adjusted base_adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
@@ -419,17 +419,17 @@ by patient_id (survey_response), sort: gen baseline_ut = disutility[1]
 reg total_qalys i.long_covid baseline_ut
 estpost margins long_covid, at((mean) baseline_ut)
 eststo adjusted
-reg total_qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut
+reg total_qalys i.long_covid i.age_bands i.male i.base_disability i.comorbid_count baseline_ut
 estpost margins long_covid age_bands base_disability comorbid_count, at((mean) baseline_ut)
 eststo base_adjusted
 esttab adjusted base_adjusted using "$projectdir/output/tables/utility-scores.csv", append ///
 cells(b(fmt(3)) ci(fmt(3) par)) varlabels(0.long_covid "Recovered" ///
 1.long_covid "Long COVID") drop(?.base_disability ?.comorbid_count) mtitle("QALM") title("QALMs (CCA)")
 
-reg total_qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut
+reg total_qalys i.long_covid i.age_bands i.male i.base_disability i.comorbid_count baseline_ut
 margins age_bands, at((mean) baseline_ut comorbid_count base_disability long_covid==0) post
 est store recovered
-reg total_qalys i.long_covid i.age_bands i.base_disability i.comorbid_count baseline_ut 
+reg total_qalys i.long_covid i.age_bands i.male i.base_disability i.comorbid_count baseline_ut 
 margins age_bands, at((mean) baseline_ut comorbid_count base_disability long_covid==1) post
 est store long_covid
 coefplot  (long_covid, color(red%60) mcolor(red%80) ciopts(recast(rcap) ///
@@ -438,6 +438,56 @@ lcolor(blue%80))), lwidth(*1) connect(1) vertical ylabel(0(0.2)0.8, angle(0)) yt
 xtitle("Age group") title("QALMs (CCA)", size(medlarge)) legend(order(2 "Long COVID" ///
 4 "Recovered from COVID") margin(vsmall) region(lstyle(none))) 
 graph export "$projectdir/output/figures/QALM_losses_age.svg", width(12in) replace
+
+// QALYs
+restore
+preserve
+egen total_survey=sum(survey_response), by(patient_id)
+gen cca=1 if total_survey==10
+replace cca=0 if total_survey<10
+replace cca=. if survey_response==.
+tab cca
+tab maxsurvey
+keep if cca==1
+
+egen q1= total(disutility) if survey_response<=2, by(patient_id)
+gen qaly1=(q1/2)/12
+replace qaly1=. if survey_response==1
+egen q2=total(disutility) if survey_response>1 & survey_response<=3, by(patient_id)
+gen qaly2= (q2/2)/12
+replace qaly2=. if survey_response==2
+egen q3=total(disutility) if survey_response>2 & survey_response<=4, by(patient_id)
+gen qaly3 = (q3/2)/12
+replace qaly3=. if survey_response==3
+
+gen qalys = qaly1 if survey_response==2
+replace qalys=qaly2 if survey_response==3
+replace qalys=qaly3 if survey_response==4
+replace qalys=. if utility==.
+egen total_qalys=sum(qalys), by(patient_id)
+
+estpost tabstat qaly1 if long_covid==1, statistics(n mean sd)
+eststo qaly_lc
+estpost tabstat qaly2 if long_covid==1, statistics(n mean sd)
+eststo qaly2_lc
+estpost tabstat qaly3 if long_covid==1, statistics(n mean sd)
+eststo qaly3_lc 
+estpost tabstat qaly1 if long_covid==0, statistics(n mean sd)
+eststo qaly_rec
+estpost tabstat qaly2 if long_covid==0, statistics(n mean sd)
+eststo qaly2_rec
+estpost tabstat qaly3 if long_covid==0, statistics(n mean sd)
+eststo qaly3_rec
+estpost tabstat total_qalys if long_covid==1, statistics(n mean sd)
+eststo tot_qaly_lc
+estpost tabstat total_qalys if long_covid==0, statistics(n mean sd)
+eststo tot_qaly_rec
+esttab qaly_lc qaly2_lc qaly3_lc qaly_rec qaly2_rec qaly3_rec tot_qaly_lc ///
+tot_qaly_rec using "$projectdir/output/tables/utility-scores.csv", ///
+append cells(mean(fmt(3)) sd(fmt(3) par) n) noobs nomtitles ///
+varlabels(qaly1 "1 Month" qaly2 "2 Months" ///
+qaly3 "3 Months") title("QALYs (CCA)")
+
 
 restore
 log close
