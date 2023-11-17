@@ -23,6 +23,8 @@ replace base_highest_edu=. if base_highest_edu==5
 replace base_hh_income=. if base_hh_income==9
 replace all_covid_hosp=2 if all_covid_hosp>2 & !missing(all_covid_hosp)
 
+tab survey_date
+
 // Baseline models 
 logit disutI male i.base_ethnicity long_covid i.age_bands i.vaccinated i.comorbid_count if survey_response==1
 eststo part_one
