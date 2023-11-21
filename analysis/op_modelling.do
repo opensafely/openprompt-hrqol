@@ -24,6 +24,7 @@ replace base_hh_income=. if base_hh_income==9
 replace all_covid_hosp=2 if all_covid_hosp>2 & !missing(all_covid_hosp)
 
 tab survey_date
+sum age, d
 
 // Baseline models 
 logit disutI male i.base_ethnicity long_covid i.age_bands i.vaccinated i.comorbid_count if survey_response==1
