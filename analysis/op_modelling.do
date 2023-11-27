@@ -25,6 +25,10 @@ replace all_covid_hosp=2 if all_covid_hosp>2 & !missing(all_covid_hosp)
 
 tab survey_date
 sum age, d
+count if survey_response==1 & disutility>1
+count if survey_response==1 & disutI==0
+sum utility if survey_response==1 & long_covid==1
+sum utility if survey_response==1 & long_covid==0
 
 // Baseline models 
 logit disutI male i.base_ethnicity long_covid i.age_bands i.vaccinated i.comorbid_count if survey_response==1
