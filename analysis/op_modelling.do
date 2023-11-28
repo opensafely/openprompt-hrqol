@@ -23,12 +23,14 @@ replace base_highest_edu=. if base_highest_edu==5
 replace base_hh_income=. if base_hh_income==9
 replace all_covid_hosp=2 if all_covid_hosp>2 & !missing(all_covid_hosp)
 
-tab survey_date
 sum age, d
-count if survey_response==1 & disutility>1
+count if survey_response==1 & disutility>1 & !missing(disutility)
 count if survey_response==1 & disutI==0
 sum utility if survey_response==1 & long_covid==1
 sum utility if survey_response==1 & long_covid==0
+
+tabstat utility if long_covid==1, by(survey_response)
+tabstat utility if long_covid==0, by(survey_response)
 
 // Baseline models 
 logit disutI male i.base_ethnicity long_covid i.age_bands i.vaccinated i.comorbid_count if survey_response==1
