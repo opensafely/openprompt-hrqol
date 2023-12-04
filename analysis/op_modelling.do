@@ -29,7 +29,7 @@ count if survey_response==1 & disutI==0
 sum utility if survey_response==1 & long_covid==1
 sum utility if survey_response==1 & long_covid==0
 sum fscore if survey_response==1 & long_covid==1
-sum fscore if survey_response==0 & long_covid==0
+sum fscore if survey_response==1 & long_covid==0
 
 tabstat utility if long_covid==1, by(survey_response)
 tabstat utility if long_covid==0, by(survey_response)
