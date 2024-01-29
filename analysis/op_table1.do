@@ -36,29 +36,33 @@ label variable imd_q5 "IMD (quintiles)"
 recode all_covid_hosp (2=1)
 label define hosps 0 "No" 1 "Yes"
 label values all_covid_hosp hosps
+label variable long_covid "Self-reported long COVID"
+label variable n_distinct_lc_records "Number of distinct Long COVID records"
+label variable n_lc_records "Number of long COVID records"
 
 preserve
-table1_mc if survey_response==1, vars(age_bands cat %5.1f \ base_ethnicity cat %5.1f \ ///
-base_gender cat %5.1f \ region cat %5.1f \ base_highest_edu cat %5.1f\ base_relationship cat %5.1f\ ///
+table1_mc if survey_response==1, by(long_covid) vars(age_bands cat %5.1f \ base_ethnicity cat %5.1f \ ///
+base_gender cat %5.1f \ region cat %5.1f \ base_highest_edu cat %5.1f \  ///
 base_hh_income cat %5.1f \ imd_q5 cat %5.1f \ base_disability cat %5.1f \ comorbid_count cat %5.1f \ ///
 all_covid_hosp cat %5.1f \ covid_n cat %5.1f \ vaccines_n cat %5.1f \ vaccinated cat %5.1f \ ///
 covid_history cat %5.1f \ recovered_from_covid cat %5.1f \ covid_duration cat %5.1f \) ///
 nospacelowpercent total(before) onecol missing iqrmiddle(",")  clear
 export delimited using "$projectdir/output/tables/table1_demographic.csv", replace
 // Rounding numbers
-destring _columna_1, gen(n) ignore(",") force
-destring _columnb_1, gen(percent) ignore("-" "%" "(" ")")  force
+destring _columna_T, gen(n) ignore(",") force
+destring _columnb_T, gen(percent) ignore("-" "%" "(" ")")  force
+destring _columna_0, gen(n1) ignore(",") force
+destring _columnb_0, gen(percent1) ignore("-" "%" "(" ")")  force
+destring _columna_1, gen(n2) ignore(",") force
+destring _columnb_1, gen(percent2) ignore("-" "%" "(" ")")  force
 gen rounded_n = round(n, 5)
-keep factor Total rounded_n percent
+gen rounded_n1 = round(n1, 5)
+gen rounded_n2 = round(n2, 5)
+keep factor long_covid_T rounded_n percent rounded_n1 percent1 rounded_n2 percent2
 export delimited using "$projectdir/output/tables/table1_demographic_rounded.csv", replace
-
 
 //*** Self reported vs diagnosis of LC ***
 restore
-label variable long_covid "Self-reported long COVID"
-label variable n_distinct_lc_records "Number of distinct Long COVID records"
-label variable n_lc_records "Number of long COVID records"
-
 preserve
 table1_mc if survey_response==1, vars(long_covid cat %5.1f \ n_lc_records cat %5.1f \ ///
 n_distinct_lc_records cat %5.1f \) nospacelowpercent total(before) onecol missing iqrmiddle(",") clear 
