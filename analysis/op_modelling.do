@@ -34,31 +34,40 @@ sum fscore if survey_response==1 & long_covid==0
 tabstat utility if long_covid==1, by(survey_response)
 tabstat utility if long_covid==0, by(survey_response)
 
+preserve
+
 // Baseline models 
-logit disutI male i.base_ethnicity long_covid i.age_bands i.vaccinated i.comorbid_count if survey_response==1
-eststo part_one
-mixed disutility male i.base_ethnicity long_covid i.age_bands i.vaccinated i.comorbid_count ///
-if survey_response==1 & disutI>0, vce(robust)
-eststo part_two
-esttab part_one part_two using "$projectdir/output/tables/twopart-model.csv", ///
-replace b(a2) se(2) label wide compress eform ///
-	title ("`i'") ///
-	varlabels(`e(labels)') 
+table1_mc if survey_response==1 & long_covid==1, vars(age_bands cat %5.1f \ base_ethnicity cat %5.1f \ ///
+base_gender cat %5.1f \ region cat %5.1f \ base_highest_edu cat %5.1f \  ///
+base_hh_income cat %5.1f \ imd_q5 cat %5.1f \ base_disability cat %5.1f \ comorbid_count cat %5.1f \ ///
+all_covid_hosp cat %5.1f \ covid_n cat %5.1f \ vaccines_n cat %5.1f \ vaccinated cat %5.1f \ ///
+covid_history cat %5.1f \ recovered_from_covid cat %5.1f \ covid_duration cat %5.1f \) ///
+nospacelowpercent total(before) onecol missing iqrmiddle(",")  clear
+export delimited using "$projectdir/output/tables/twopart-model.csv", replace
+destring _columna_1, gen(n) ignore(",") force
+destring _columnb_1, gen(percent) ignore("-" "%" "(" ")")  force
+gen rounded_n = round(n, 5)
+keep factor Total rounded_n percent
+export delimited using "$projectdir/output/tables/twopart-model.csv", append
 
-logit disutI male long_covid i.age_bands i.vaccinated i.comorbid_count i.imd_q5 if survey_response==1
-eststo follow_up
-mixed disutility male long_covid i.age_bands i.vaccinated i.comorbid_count i.imd_q5 ///
-if survey_response==1 & disutI>0, vce(robust)
-eststo mixed_followup 
-esttab follow_up mixed_followup using "$projectdir/output/tables/twopart-model.csv", ///
-b(a2) se(2) label wide compress eform ///
-	title ("`i'") ///
-	varlabels(`e(labels)') ///
-	append
-eststo clear
-
+restore
+preserve
+drop if utility==.
+table1_mc if survey_response==1, vars(age_bands cat %5.1f \ base_ethnicity cat %5.1f \ ///
+base_gender cat %5.1f \ region cat %5.1f \ base_highest_edu cat %5.1f \  ///
+base_hh_income cat %5.1f \ imd_q5 cat %5.1f \ base_disability cat %5.1f \ comorbid_count cat %5.1f \ ///
+all_covid_hosp cat %5.1f \ covid_n cat %5.1f \ vaccines_n cat %5.1f \ vaccinated cat %5.1f \ ///
+covid_history cat %5.1f \ recovered_from_covid cat %5.1f \ covid_duration cat %5.1f \) ///
+nospacelowpercent total(before) onecol missing iqrmiddle(",")  clear
+export delimited using "$projectdir/output/tables/twopart-model.csv", append
+destring _columna_1, gen(n) ignore(",") force
+destring _columnb_1, gen(percent) ignore("-" "%" "(" ")")  force
+gen rounded_n = round(n, 5)
+keep factor Total rounded_n percent
+export delimited using "$projectdir/output/tables/twopart-model.csv", append
 
 // Mixed effect logistic & linear models
+restore
 xtset patient_id survey_response
 replace base_disability=. if base_disability==3
 replace base_highest_edu=. if base_highest_edu==5
