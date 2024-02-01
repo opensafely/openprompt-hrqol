@@ -41,7 +41,8 @@ table1_mc if survey_response==1 & long_covid==1, vars(age_bands cat %5.1f \ base
 base_gender cat %5.1f \ region cat %5.1f \ base_highest_edu cat %5.1f \  ///
 base_hh_income cat %5.1f \ imd_q5 cat %5.1f \ base_disability cat %5.1f \ comorbid_count cat %5.1f \ ///
 all_covid_hosp cat %5.1f \ covid_n cat %5.1f \ vaccines_n cat %5.1f \ vaccinated cat %5.1f \ ///
-covid_history cat %5.1f \ recovered_from_covid cat %5.1f \ covid_duration cat %5.1f \) ///
+covid_history cat %5.1f \ recovered_from_covid cat %5.1f \ covid_duration cat %5.1f \ ///
+n_lc_records cat %5.1f \ n_distinct_lc_records cat %5.1f\) ///
 nospacelowpercent total(before) onecol missing iqrmiddle(",")  clear
 export delimited using "$projectdir/output/tables/twopart-model.csv", replace
 destring _columna_1, gen(n) ignore(",") force
@@ -57,7 +58,8 @@ table1_mc if survey_response==1, vars(age_bands cat %5.1f \ base_ethnicity cat %
 base_gender cat %5.1f \ region cat %5.1f \ base_highest_edu cat %5.1f \  ///
 base_hh_income cat %5.1f \ imd_q5 cat %5.1f \ base_disability cat %5.1f \ comorbid_count cat %5.1f \ ///
 all_covid_hosp cat %5.1f \ covid_n cat %5.1f \ vaccines_n cat %5.1f \ vaccinated cat %5.1f \ ///
-covid_history cat %5.1f \ recovered_from_covid cat %5.1f \ covid_duration cat %5.1f \) ///
+covid_history cat %5.1f \ recovered_from_covid cat %5.1f \ covid_duration cat %5.1f \ ///
+n_lc_records cat %5.1f \ n_distinct_lc_records cat %5.1f \) ///
 nospacelowpercent total(before) onecol missing iqrmiddle(",")  clear
 export delimited using "$projectdir/output/tables/twopart-model-missing.csv", replace
 destring _columna_1, gen(n) ignore(",") force
