@@ -48,7 +48,7 @@ destring _columna_1, gen(n) ignore(",") force
 destring _columnb_1, gen(percent) ignore("-" "%" "(" ")")  force
 gen rounded_n = round(n, 5)
 keep factor Total rounded_n percent
-export delimited using "$projectdir/output/tables/twopart-model.csv", append
+export delimited using "$projectdir/output/tables/twopart-model.csv", replace
 
 restore
 preserve
@@ -59,12 +59,12 @@ base_hh_income cat %5.1f \ imd_q5 cat %5.1f \ base_disability cat %5.1f \ comorb
 all_covid_hosp cat %5.1f \ covid_n cat %5.1f \ vaccines_n cat %5.1f \ vaccinated cat %5.1f \ ///
 covid_history cat %5.1f \ recovered_from_covid cat %5.1f \ covid_duration cat %5.1f \) ///
 nospacelowpercent total(before) onecol missing iqrmiddle(",")  clear
-export delimited using "$projectdir/output/tables/twopart-model.csv", append
+export delimited using "$projectdir/output/tables/twopart-model-missing.csv", replace
 destring _columna_1, gen(n) ignore(",") force
 destring _columnb_1, gen(percent) ignore("-" "%" "(" ")")  force
 gen rounded_n = round(n, 5)
 keep factor Total rounded_n percent
-export delimited using "$projectdir/output/tables/twopart-model.csv", append
+export delimited using "$projectdir/output/tables/twopart-model-missing.csv", replace
 
 // Mixed effect logistic & linear models
 restore
