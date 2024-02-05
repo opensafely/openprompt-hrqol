@@ -213,6 +213,7 @@ replace base_highest_edu=. if base_highest_edu==5
 replace base_hh_income=. if base_hh_income==9
 preserve
 
+drop if disutility==.
 estpost tabstat disutility if long_covid==1, by(survey_response) listwise statistics(n mean sd)
 eststo long_covid
 estpost tabstat disutility if long_covid==0, by(survey_response) listwise statistics(n mean sd)
@@ -288,6 +289,7 @@ gen lc_dx=1 if covid_dx>0 & long_covid==1
 replace lc_dx=0 if covid_dx==0 & long_covid==0
 tab lc_dx long_covid
 keep if covid_dx!=.
+drop if disutility==.
 
 estpost tabstat disutility if covid_dx==1, by(survey_response) ///
 listwise statistics(n mean sd)
