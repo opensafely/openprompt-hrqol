@@ -33,7 +33,7 @@ mi register imputed disutility* fscore* mrc_breathlessness* base_ethnicity ///
 base_highest_edu base_disability base_hh_income comorbid_count male age_bands imd_q5
 
 mi impute chained (regress) disutility* fscore* (ologit, aug) mrc_breathlessness* ///
-(mlogit, aug) base_ethnicity base_highest_edu base_disability base_hh_income ///
+base_ethnicity base_highest_edu base_disability base_hh_income ///
 comorbid_count age_bands imd_q5 (logit, aug) male, add(10) rseed(1550703) noisily 
 
 log close
