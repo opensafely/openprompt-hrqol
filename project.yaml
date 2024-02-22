@@ -215,3 +215,11 @@ actions:
         selective_attrition: output/figures/EQ5D_surveys_att.svg
         QALY_by_age: output/figures/QALM_losses_age.svg
         qaly_log: output/qaly-estimates.log
+
+  imputed_models:
+    run: >
+      stata-mp:latest analysis/op_imputed.do
+    needs: [combine_linked_tpp]
+    outputs:
+      moderately_sensitive:
+        mi_log: output/mi_models.log
