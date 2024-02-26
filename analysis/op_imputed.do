@@ -8,6 +8,10 @@ cap log close
 log using "output/mi_models.log", replace
 clear
 
+//*** Set ado file path ***
+adopath + "analysis/Extra_ados"
+sysdir set PLUS "analysis/Extra_ados"
+
 //*** Import data ***
 use "./output/op_tpp_linked.dta", clear
 drop if merge_link!=3
