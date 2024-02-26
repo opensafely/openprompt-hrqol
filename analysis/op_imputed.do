@@ -30,7 +30,7 @@ mi reshape wide mobility selfcare activity pain anxiety fscore ///
 mrc_breathlessness long_covid, i(patient_id) j(survey_response)
 
 mi register imputed mobility* selfcare* activity* pain* anxiety* ///
-fscore* mrc_breathlessness* base_ethnicity base_highest_edu ///
+fscore* long_covid* mrc_breathlessness* base_ethnicity base_highest_edu ///
 base_disability base_hh_income comorbid_count male age_bands imd_q5
 
 mi impute chained (pmm, knn(5)) fscore* (ologit, aug) mobility* selfcare* ///
