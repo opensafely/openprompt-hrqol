@@ -23,23 +23,25 @@ replace comorbid_count=3 if comorbid_count>3 & !missing(comorbid_count)
 // Imputation
 // drop unused
 keep patient_id survey_response base_ethnicity base_highest_edu base_disability ///
-male base_hh_income imd_q5 comorbid_count age_bands long_covid ///
+male base_hh_income imd_q5 comorbid_count age long_covid ///
 mrc_breathlessness fscore mobility selfcare activity pain anxiety
-mi set mlong
-mi reshape wide mobility selfcare activity pain anxiety fscore ///
-mrc_breathlessness long_covid, i(patient_id) j(survey_response)
 
-mi register imputed mobility* selfcare* activity* pain* anxiety* ///
-fscore* long_covid* mrc_breathlessness* base_ethnicity base_highest_edu ///
-base_disability base_hh_income comorbid_count male age_bands imd_q5
+reshape wide mobility selfcare activity pain anxiety mrc_breathlessness long_covid ///
+fscore, i(patient_id) j(survey_response)
 
-mi impute chained (pmm, knn(5)) fscore* (mlogit, aug) mobility* selfcare* ///
-activity* pain* anxiety* mrc_breathlessness* base_highest_edu ///
-base_hh_income comorbid_count age_bands base_ethnicity imd_q5 ///
-(logit, aug) male base_disability long_covid*, add(10) rseed(1550703) noisily 
+ice mobility* selfcare* activity* pain* anxiety* mrc_breathlessness* fscore* ///
+comorbid_count imd_q5 age base_ethnicity base_highest_edu long_covid* base_disability ///
+male base_hh_income, m(5) saving(imputed, replace) cmd(mobility* selfcare* ///
+activity* pain* anxiety* mrc_breathlessness* imd_q5 base_ethnicity ///
+base_highest_edu comorbid_count base_hh_income:mlogit, ///
+fscore* age:regress, long_covid* base_disability male:logit) seed(1550703)
 
+clear
+use imputed
+mi import ice, automatic
 mi reshape long mobility selfcare activity pain anxiety fscore mrc_breathlessness ///
 long_covid, i(patient_id) j(survey_response)
+mi describe
 
 eq5dmap utility, covariates(age male) items(mobility selfcare activity pain anxiety) direction(5->3)
 gen disutility=1-utility
