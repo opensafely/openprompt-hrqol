@@ -33,9 +33,9 @@ mi register imputed mobility* selfcare* activity* pain* anxiety* ///
 fscore* long_covid* mrc_breathlessness* base_ethnicity base_highest_edu ///
 base_disability base_hh_income comorbid_count male age_bands imd_q5
 
-mi impute chained (pmm, knn(5)) fscore* (ologit, aug) mobility* selfcare* ///
+mi impute chained (pmm, knn(5)) fscore* (mlogit, aug) mobility* selfcare* ///
 activity* pain* anxiety* mrc_breathlessness* base_highest_edu ///
-base_hh_income comorbid_count age_bands (mlogit, aug) base_ethnicity imd_q5 ///
+base_hh_income comorbid_count age_bands base_ethnicity imd_q5 ///
 (logit, aug) male base_disability long_covid*, add(10) rseed(1550703) noisily 
 
 mi reshape long mobility selfcare activity pain anxiety fscore mrc_breathlessness ///
