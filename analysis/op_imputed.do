@@ -36,7 +36,7 @@ fscore, i(patient_id) j(survey_response)
 ice mobility* selfcare* activity* pain* anxiety* mrc_breathlessness* fscore* ///
 comorbid_count imd_q5 age base_ethnicity base_highest_edu long_covid* base_disability ///
 male base_hh_income, m(5) saving(imputed, replace) cmd(mobility* selfcare* ///
-activity* pain* anxiety* mrc_breathlessness* imd_q5 base_ethnicity ///
+activity* pain* anxiety* mrc_breathlessness*:ologit, imd_q5 base_ethnicity ///
 base_highest_edu comorbid_count base_hh_income:mlogit, ///
 fscore* age:regress, long_covid* base_disability male:logit) seed(1550703)
 
