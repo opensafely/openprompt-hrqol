@@ -223,3 +223,8 @@ actions:
     outputs:
       moderately_sensitive:
         mi_log: output/mi_models.log
+        mi_socio_odds: output/figures/socio_miodds.svg
+        mi_melogit: output/figures/mi_melogit.svg
+        mixed_mi_demographic: output/figures/mixed_micoefs.svg
+        mixed_mi_socio: output/figures/socio_micoefs.svg
+        mi_models: output/tables/mi-model.csv
