@@ -80,7 +80,7 @@ coefplot xt_melogit  (., pstyle(p1) if(@ll>-1&@ul<10)) ///
 (., pstyle(p1) if(@ll>-1&@ul>=10)  ciopts(recast(pcarrow)))  ///
 (., pstyle(p1) if(@ll<=-1&@ul<10)  ciopts(recast(pcrarrow))) ///
 (., pstyle(p1) if(@ll<=-1&@ul>=10) ciopts(recast(pcbarrow))) ///
-, transform(* = min(max(@,-1),10)) legend(off) nooffset ///
+, transform(* = min(max(@,-1),10)) legend(off) nooffset baselevels ///
 coeflabels(1.age_bands="18-29 (Base)" male="Males" 0.comorbid_count="0 (Base)" ///
 3.base_highest_edu="College/University (Base)" 5.base_hh_income="£32,000-47,999 (Base)" ///
 1.imd_q5="1st (most deprived) (Base)", labsize(vsmall)) groups(?.base_highest_edu = ///
@@ -119,7 +119,7 @@ long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Ba
 title("Second Part", size(medsmall)) grid(none) drop(_cons 1.base_disability) msize(small)
 graph export "$projectdir/output/figures/mixed_micoefs.svg", width(12in) replace
 
-coefplot xt_mixed, legend(off) nooffset ///
+coefplot xt_mixed, legend(off) nooffset baselevels ///
 keep(1.base_highest_edu 2.base_highest_edu 3.base_highest_edu 4.base_highest_edu ///
 5.base_highest_edu 0.base_hh_income 1.base_hh_income 2.base_hh_income 3.base_hh_income ///
 4.base_hh_income 5.base_hh_income 6.base_hh_income 7.base_hh_income 8.base_hh_income ///
