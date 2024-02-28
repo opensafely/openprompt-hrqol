@@ -119,7 +119,7 @@ long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Ba
 title("Second Part", size(medsmall)) grid(none) drop(_cons 1.base_disability) msize(small)
 graph export "$projectdir/output/figures/mixed_micoefs.svg", width(12in) replace
 
-coefplot xt_mixed, legend(off) nooffset baselevels ///
+coefplot xt_mixed, legend(off) nooffset ///
 keep(1.base_highest_edu 2.base_highest_edu 3.base_highest_edu 4.base_highest_edu ///
 5.base_highest_edu 0.base_hh_income 1.base_hh_income 2.base_hh_income 3.base_hh_income ///
 4.base_hh_income 5.base_hh_income 6.base_hh_income 7.base_hh_income 8.base_hh_income ///
@@ -132,6 +132,60 @@ xline(0) grid(none) xtitle("Coefficients") title("Socioeconomic factors", size(m
 graph export "$projectdir/output/figures/socio_micoefs.svg", width(12in) replace
 
 esttab xt_melogit xt_mixed using "$projectdir/output/tables/mi-model.csv", ///
-replace mtitles("Mixed effect logit" "Mixed effect") eform(1) b(a2) ci(2) aic label wide compress
+replace mtitles("Mixed effect logit" "Mixed effect") eform(1) b(a2) ci(2) aic ///
+label wide compress
+
+// PROMS
+mi estimate, esampvaryok nowarning post: xtlogit disutI long_covid base_disability ///
+male i.age_bands i.comorbid_count i.mrc_breathlessness fscore, re or
+eststo part_one
+
+mi estimate, esampvaryok nowarning post: mixed disutility long_covid base_disability ///
+male i.age_bands i.comorbid_count i.mrc_breathlessness fscore if disutI>0 || ///
+patient_id:, cov(exch) 
+eststo all_proms
+
+set scheme s1color
+coefplot part_one  (., pstyle(p1) if(@ll>-10&@ul<8)) ///
+(., pstyle(p1) if(@ll>-10&@ul>=8)  ciopts(recast(pcarrow)))  ///
+(., pstyle(p1) if(@ll<=-10&@ul<8)  ciopts(recast(pcrarrow))) ///
+(., pstyle(p1) if(@ll<=-10&@ul>=8) ciopts(recast(pcbarrow))) ///
+, transform(* = min(max(@,-10),8)) legend(off) nooffset ///
+baselevels coeflabels(base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
+long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Base)" ///
+3.base_highest_edu="College/University (Base)" 1.mrc_breathlessness="Grade 1 (Base)" ///
+2.mrc_breathlessness="Grade 2" 3.mrc_breathlessness="Grade 3" ///
+4.mrc_breathlessness="Grade 4" 5.mrc_breathlessness="Grade 5" fscore="FACIT-F" ///
+5.base_hh_income="£32,000-47,999 (Base)" 1.imd_q5="1st (most deprived) (Base)", ///
+labsize(vsmall)) groups(?.base_highest_edu=`""{bf:Highest}" "{bf:Education}""' ///
+?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ?.fscore="{bf:FACIT-F Reversed}" ///
+?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""' ?.age_bands="{bf:Age}" ?.mrc_breathlessness="{bf:MRC Dyspnoea}" ///
+?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(1) //
+grid(none) eform xlabel(, labsize(small)) ///
+title("PROMs OR", size(medsmall)) drop(_cons 1.base_disability) msize(small)
+graph export "$projectdir/output/figures/demo_miodds.svg", width(12in) replace
+
+coefplot all_proms (., pstyle(p1) if(@ll>-10&@ul<15)) ///
+(., pstyle(p1) if(@ll>-10&@ul>=15)  ciopts(recast(pcarrow)))  ///
+(., pstyle(p1) if(@ll<=-10&@ul<15)  ciopts(recast(pcrarrow))) ///
+(., pstyle(p1) if(@ll<=-10&@ul>=15) ciopts(recast(pcbarrow))) ///
+, transform(* = min(max(@,-10),15)) legend(off) nooffset ///
+coeflabels(base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
+long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Base)" ///
+3.base_highest_edu="College/University (Base)" 1.mrc_breathlessness="Grade 1 (Base)" ///
+2.mrc_breathlessness="Grade 2" 3.mrc_breathlessness="Grade 3" ///
+4.mrc_breathlessness="Grade 4" 5.mrc_breathlessness="Grade 5" fscore="FACIT-F" ///
+5.base_hh_income="£32,000-47,999 (Base)" 1.imd_q5="1st (most deprived) (Base)", labsize(vsmall)) ///
+groups(?.base_highest_edu = `""{bf:Highest}" "{bf:Education}""' ///
+?.base_hh_income=`""{bf:Household}" "{bf:Income}""' fscore="{bf:FACIT-F Reversed}" ///
+?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""' ?.age_bands="{bf:Age}" ?.mrc_breathlessness="{bf:MRC Dyspnoea}" ///
+?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(0) ///
+grid(none) xlabel(, labsize(small)) ///
+title("PROMs Coefficients", size(medsmall)) drop(_cons 1.base_disability) msize(small)
+graph export "$projectdir/output/figures/proms_micoefs.svg", width(12in) replace
+
+esttab part_one all_proms using "$projectdir/output/tables/mi-proms.csv", ///
+append mtitles("ME Logit" "Mixed Linear") b(a2) ci(2) aic label wide compress eform(1)
+
 
 log close
