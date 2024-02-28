@@ -228,3 +228,6 @@ actions:
         mixed_mi_demographic: output/figures/mixed_micoefs.svg
         mixed_mi_socio: output/figures/socio_micoefs.svg
         mi_models: output/tables/mi-model.csv
+        mi_prom_odds: output/figures/demo_miodds.svg
+        mi_prom_coefs: output/figures/proms_micoefs.svg
+        mi_prom_models: output/tables/mi-proms.csv
