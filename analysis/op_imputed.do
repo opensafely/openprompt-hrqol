@@ -160,7 +160,7 @@ long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Ba
 labsize(vsmall)) groups(?.base_highest_edu=`""{bf:Highest}" "{bf:Education}""' ///
 ?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ?.fscore="{bf:FACIT-F Reversed}" ///
 ?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""' ?.age_bands="{bf:Age}" ?.mrc_breathlessness="{bf:MRC Dyspnoea}" ///
-?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(1) //
+?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(1) ///
 grid(none) eform xlabel(, labsize(small)) ///
 title("PROMs OR", size(medsmall)) drop(_cons 1.base_disability) msize(small)
 graph export "$projectdir/output/figures/demo_miodds.svg", width(12in) replace
