@@ -65,8 +65,8 @@ replace age_bands=. if age==.
 label define ages 1 "18-29" 2 "30-39" 3 "40-49" 4 "50-59" 5 "60-69" 6 "70+"
 label values age_bands ages
 
-label define income 1 "6000-12999" 2 "13000-18999" 3 "19000-25999" ///
-4 "26000-31999" 5 "32000-47999" 6 "48000-63999" 7 "64000-95999" 8 "96000"
+label define income 1 "£6000-12999" 2 "£13000-18999" 3 "£19000-25999" ///
+4 "£26000-31999" 5 "£32000-47999" 6 "£48000-63999" 7 "£64000-95999" 8 "£96000"
 label values base_hh_income income
 
 // Imputed models
@@ -80,15 +80,16 @@ coefplot xt_melogit  (., pstyle(p1) if(@ll>-1&@ul<10)) ///
 (., pstyle(p1) if(@ll>-1&@ul>=10)  ciopts(recast(pcarrow)))  ///
 (., pstyle(p1) if(@ll<=-1&@ul<10)  ciopts(recast(pcrarrow))) ///
 (., pstyle(p1) if(@ll<=-1&@ul>=10) ciopts(recast(pcbarrow))) ///
-, transform(* = min(max(@,-1),10)) legend(off) nooffset baselevels ///
-coeflabels(1.age_bands="18-29 (Base)" male="Males" 0.comorbid_count="0 (Base)" ///
-3.base_highest_edu="College/University (Base)" 5.base_hh_income="£32,000-47,999 (Base)" ///
+, transform(* = min(max(@,-1),10)) legend(off) nooffset baselevels msymbol(D) ///
+mstyle(p1) mcolor(%60) coeflabels(1.age_bands="18-29 (Base)" ///
+male="Males" 0.comorbid_count="0 (Base)" 3.base_highest_edu="College/University (Base)" ///
+5.base_hh_income="£32,000-47,999 (Base)" ///
 1.imd_q5="1st (most deprived) (Base)", labsize(vsmall)) groups(?.base_highest_edu = ///
 `""{bf:Highest}" "{bf:Education}""' ?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ///
 ?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""' ?.age_bands="{bf:Age}" ///
 ?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(1) eform ///
 xlabel(-1(2)10, labsize(small)) title("First Part", size(medsmall)) ///
-grid(none) drop(_cons base_disability long_covid) msize(small)
+grid(none) cismooth drop(_cons base_disability long_covid) msize(small)
 graph export "$projectdir/output/figures/socio_miodds.svg", width(12in) replace
 
 coefplot xt_melogit  (., pstyle(p1) if(@ll>-1&@ul<35)) ///
@@ -96,10 +97,11 @@ coefplot xt_melogit  (., pstyle(p1) if(@ll>-1&@ul<35)) ///
 (., pstyle(p1) if(@ll<=-1&@ul<35)  ciopts(recast(pcrarrow))) ///
 (., pstyle(p1) if(@ll<=-1&@ul>=35) ciopts(recast(pcbarrow))) ///
 , transform(* = min(max(@,-1),35)) legend(off) nooffset ///
-keep(long_covid base_disability) baselevels xlabel(0(5)30, labsize(small)) ///
-coeflabels(base_disability="Disabled" long_covid=`""Self-reported" "Long COVID""') ///
-xline(1) eform xtitle("Odds ratio") title("First Part", ///
-size(medlarge)) grid(none) drop(_cons 1.base_disability) msize(small)
+keep(long_covid base_disability) baselevels msymbol(D) mstyle(p1) mcolor(%60) ///
+xlabel(0(5)30, labsize(small)) coeflabels(base_disability="Disabled" ///
+long_covid=`""Self-reported" "Long COVID""') xline(1) eform ///
+xtitle("Odds ratio") title("First Part", size(medlarge)) grid(none) ///
+drop(_cons 1.base_disability) msize(small) cismooth
 graph export "$projectdir/output/figures/mi_melogit.svg", width(12in) replace
 
 mi estimate, esampvaryok nowarning post: mixed disutility long_covid base_disability ///
@@ -108,27 +110,28 @@ if disutI>0 || patient_id:, cov(exch)
 eststo xt_mixed
 
 set scheme s1color
-coefplot xt_mixed, legend(off) nooffset ///
-baselevels coeflabels(base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
+coefplot xt_mixed, legend(off) nooffset baselevels msymbol(D) mstyle(p1) mcolor(%60) ///
+coeflabels(base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
 long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Base)" ///
 3.base_highest_edu="College/University (Base)" 5.base_hh_income="£32,000-47,999 (Base)" ///
 1.imd_q5="1st (most deprived) (Base)", labsize(vsmall)) groups(?.base_highest_edu = ///
 `""{bf:Highest}" "{bf:Education}""' ?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ///
 ?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""' ?.age_bands="{bf:Age}" ///
-?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(0) xlabel(, labsize(small)) ///
-title("Second Part", size(medsmall)) grid(none) drop(_cons 1.base_disability) msize(small)
+?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(0) ///
+xlabel(, labsize(small)) title("Second Part", size(medsmall)) ///
+grid(none) cismooth drop(_cons 1.base_disability) msize(small)
 graph export "$projectdir/output/figures/mixed_micoefs.svg", width(12in) replace
 
-coefplot xt_mixed, legend(off) nooffset ///
+coefplot xt_mixed, legend(off) nooffset baselevels msymbol(D) mstyle(p1) mcolor(%60) ///
 keep(1.base_highest_edu 2.base_highest_edu 3.base_highest_edu 4.base_highest_edu ///
 5.base_highest_edu 0.base_hh_income 1.base_hh_income 2.base_hh_income 3.base_hh_income ///
 4.base_hh_income 5.base_hh_income 6.base_hh_income 7.base_hh_income 8.base_hh_income ///
- 1.imd_q5 2.imd_q5 3.imd_q5 4.imd_q5 5.imd_q5) baselevels groups(?.base_highest_edu = ///
+ 1.imd_q5 2.imd_q5 3.imd_q5 4.imd_q5 5.imd_q5) groups(?.base_highest_edu = ///
 `""{bf:Highest}" "{bf:Education}""' ?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ///
 ?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""', labsize(small) angle(0)) ///
 coeflabels(3.base_highest_edu="College/University (Base)" ///
 5.base_hh_income="£32,000-47,999 (Base)" 1.imd_q5="1st (most deprived) (Base)") ///
-xline(0) grid(none) xtitle("Coefficients") title("Socioeconomic factors", size(medlarge))
+xline(0) cismooth grid(none) xtitle("Coefficients") title("Socioeconomic factors", size(medlarge))
 graph export "$projectdir/output/figures/socio_micoefs.svg", width(12in) replace
 
 esttab xt_melogit xt_mixed using "$projectdir/output/tables/mi-model.csv", ///
@@ -146,12 +149,8 @@ patient_id:, cov(exch)
 eststo all_proms
 
 set scheme s1color
-coefplot part_one  (., pstyle(p1) if(@ll>-10&@ul<8)) ///
-(., pstyle(p1) if(@ll>-10&@ul>=8)  ciopts(recast(pcarrow)))  ///
-(., pstyle(p1) if(@ll<=-10&@ul<8)  ciopts(recast(pcrarrow))) ///
-(., pstyle(p1) if(@ll<=-10&@ul>=8) ciopts(recast(pcbarrow))) ///
-, transform(* = min(max(@,-10),8)) legend(off) nooffset ///
-baselevels coeflabels(base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
+coefplot part_one, legend(off) nooffset baselevels msymbol(D) mstyle(p1) mcolor(%60) ///
+coeflabels(base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
 long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Base)" ///
 3.base_highest_edu="College/University (Base)" 1.mrc_breathlessness="Grade 1 (Base)" ///
 2.mrc_breathlessness="Grade 2" 3.mrc_breathlessness="Grade 3" ///
@@ -159,28 +158,24 @@ long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Ba
 5.base_hh_income="£32,000-47,999 (Base)" 1.imd_q5="1st (most deprived) (Base)", ///
 labsize(vsmall)) groups(?.base_highest_edu=`""{bf:Highest}" "{bf:Education}""' ///
 ?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ?.fscore="{bf:FACIT-F Reversed}" ///
-?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""' ?.age_bands="{bf:Age}" ?.mrc_breathlessness="{bf:MRC Dyspnoea}" ///
-?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(1) ///
-grid(none) eform xlabel(, labsize(small)) ///
+?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""' ?.age_bands="{bf:Age}" ///
+?.mrc_breathlessness="{bf:MRC Dyspnoea}" ?.comorbid_count="{bf:Comorbidities}", ///
+labsize(small) angle(0)) xline(1) cismooth grid(none) eform xlabel(, labsize(small)) ///
 title("PROMs OR", size(medsmall)) drop(_cons 1.base_disability) msize(small)
 graph export "$projectdir/output/figures/demo_miodds.svg", width(12in) replace
 
-coefplot all_proms (., pstyle(p1) if(@ll>-10&@ul<15)) ///
-(., pstyle(p1) if(@ll>-10&@ul>=15)  ciopts(recast(pcarrow)))  ///
-(., pstyle(p1) if(@ll<=-10&@ul<15)  ciopts(recast(pcrarrow))) ///
-(., pstyle(p1) if(@ll<=-10&@ul>=15) ciopts(recast(pcbarrow))) ///
-, transform(* = min(max(@,-10),15)) legend(off) nooffset ///
+coefplot all_proms, legend(off) nooffset baselevels msymbol(D) mstyle(p1) mcolor(%60) ///
 coeflabels(base_disability="Disabled" 1.age_bands="18-29 (Base)" ///
 long_covid=`""Self-reported" "Long COVID""' male="Males" 0.comorbid_count="0 (Base)" ///
 3.base_highest_edu="College/University (Base)" 1.mrc_breathlessness="Grade 1 (Base)" ///
 2.mrc_breathlessness="Grade 2" 3.mrc_breathlessness="Grade 3" ///
 4.mrc_breathlessness="Grade 4" 5.mrc_breathlessness="Grade 5" fscore="FACIT-F" ///
-5.base_hh_income="£32,000-47,999 (Base)" 1.imd_q5="1st (most deprived) (Base)", labsize(vsmall)) ///
-groups(?.base_highest_edu = `""{bf:Highest}" "{bf:Education}""' ///
+5.base_hh_income="£32,000-47,999 (Base)" 1.imd_q5="1st (most deprived) (Base)", ///
+labsize(vsmall)) groups(?.base_highest_edu = `""{bf:Highest}" "{bf:Education}""' ///
 ?.base_hh_income=`""{bf:Household}" "{bf:Income}""' fscore="{bf:FACIT-F Reversed}" ///
-?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""' ?.age_bands="{bf:Age}" ?.mrc_breathlessness="{bf:MRC Dyspnoea}" ///
-?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(0) ///
-grid(none) xlabel(, labsize(small)) ///
+?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""' ?.age_bands="{bf:Age}" ///
+?.mrc_breathlessness="{bf:MRC Dyspnoea}" ?.comorbid_count="{bf:Comorbidities}", ///
+labsize(small) angle(0)) xline(0) cismooth grid(none) xlabel(, labsize(small)) ///
 title("PROMs Coefficients", size(medsmall)) drop(_cons 1.base_disability) msize(small)
 graph export "$projectdir/output/figures/proms_micoefs.svg", width(12in) replace
 
