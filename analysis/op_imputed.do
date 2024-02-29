@@ -23,6 +23,7 @@ recode base_disability (1=0) (2=1)
 replace base_highest_edu=. if base_highest_edu==5
 replace base_hh_income=. if base_hh_income==9 | base_hh_income==10
 replace comorbid_count=3 if comorbid_count>3 & !missing(comorbid_count)
+sum fscore 
 
 // Imputation
 // drop unused
@@ -35,10 +36,10 @@ fscore, i(patient_id) j(survey_response)
 
 ice mobility* selfcare* activity* pain* anxiety* mrc_breathlessness* fscore* ///
 comorbid_count imd_q5 age base_ethnicity base_highest_edu long_covid* base_disability ///
-male base_hh_income, m(5) saving(imputed, replace) cmd(mobility* selfcare* ///
+male base_hh_income, m(5) saving(imputed, replace) match(fscore*) cmd(mobility* selfcare* ///
 activity* pain* anxiety* mrc_breathlessness*:ologit, imd_q5 base_ethnicity ///
 base_highest_edu comorbid_count base_hh_income:mlogit, ///
-fscore* age:regress, long_covid* base_disability male:logit) persist seed(1550703)
+age:regress, long_covid* base_disability male:logit) persist seed(1550703)
 
 clear
 use imputed
@@ -68,6 +69,7 @@ label values age_bands ages
 label define income 1 "£6000-12999" 2 "£13000-18999" 3 "£19000-25999" ///
 4 "£26000-31999" 5 "£32000-47999" 6 "£48000-63999" 7 "£64000-95999" 8 "£96000"
 label values base_hh_income income
+sum fscore
 
 // Imputed models
 mi xtset patient_id survey_response
