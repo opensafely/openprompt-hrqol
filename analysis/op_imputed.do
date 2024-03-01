@@ -94,11 +94,11 @@ xlabel(-1(2)10, labsize(small)) title("First Part", size(medsmall)) ///
 grid(none) drop(_cons base_disability long_covid) msize(small)
 graph export "$projectdir/output/figures/socio_miodds.svg", width(12in) replace
 
-coefplot xt_melogit  (., pstyle(p1) if(@ll>-1&@ul<35)) ///
-(., pstyle(p1) if(@ll>-1&@ul>=35)  ciopts(recast(pcarrow)))  ///
-(., pstyle(p1) if(@ll<=-1&@ul<35)  ciopts(recast(pcrarrow))) ///
-(., pstyle(p1) if(@ll<=-1&@ul>=35) ciopts(recast(pcbarrow))) ///
-, transform(* = min(max(@,-1),35)) legend(off) nooffset ///
+coefplot xt_melogit  (., pstyle(p1) if(@ll>-1&@ul<25)) ///
+(., pstyle(p1) if(@ll>-1&@ul>=25)  ciopts(recast(pcarrow)))  ///
+(., pstyle(p1) if(@ll<=-1&@ul<25)  ciopts(recast(pcrarrow))) ///
+(., pstyle(p1) if(@ll<=-1&@ul>=25) ciopts(recast(pcbarrow))) ///
+, transform(* = min(max(@,-1),25)) legend(off) nooffset ///
 keep(long_covid base_disability) baselevels msymbol(D) mstyle(p1) mcolor(%60) ///
 xlabel(0(5)30, labsize(small)) coeflabels(base_disability="Disabled" ///
 long_covid=`""Self-reported" "Long COVID""') xline(1) eform ///
@@ -139,6 +139,7 @@ graph export "$projectdir/output/figures/socio_micoefs.svg", width(12in) replace
 esttab xt_melogit xt_mixed using "$projectdir/output/tables/mi-model.csv", ///
 replace mtitles("Mixed effect logit" "Mixed effect") eform(1) b(a2) ci(2) aic ///
 label wide compress
+eststo clear
 
 // PROMS
 mi estimate, esampvaryok nowarning post: xtlogit disutI long_covid base_disability ///
@@ -151,11 +152,11 @@ patient_id:, cov(exch)
 eststo all_proms
 
 set scheme s1color
-coefplot part_one (., pstyle(p1) if(@ll>-1&@ul<30)) ///
-(., pstyle(p1) if(@ll>-1&@ul>=30)  ciopts(recast(pcarrow)))  ///
-(., pstyle(p1) if(@ll<=-1&@ul<30)  ciopts(recast(pcrarrow))) ///
-(., pstyle(p1) if(@ll<=-1&@ul>=30) ciopts(recast(pcbarrow))) ///
-, transform(* = min(max(@,-1),30)) legend(off) nooffset baselevels ///
+coefplot part_one (., pstyle(p1) if(@ll>-1&@ul<15)) ///
+(., pstyle(p1) if(@ll>-1&@ul>=15)  ciopts(recast(pcarrow)))  ///
+(., pstyle(p1) if(@ll<=-1&@ul<15)  ciopts(recast(pcrarrow))) ///
+(., pstyle(p1) if(@ll<=-1&@ul>=15) ciopts(recast(pcbarrow))) ///
+, transform(* = min(max(@,-1),15)) legend(off) nooffset baselevels ///
 msymbol(D) mstyle(p1) mcolor(%60) coeflabels(base_disability="Disabled" ///
 1.age_bands="18-29 (Base)" long_covid=`""Self-reported" "Long COVID""' ///
 male="Males" 0.comorbid_count="0 (Base)" 3.base_highest_edu="College/University (Base)" ///
