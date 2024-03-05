@@ -48,7 +48,7 @@ mi reshape long mobility selfcare activity pain anxiety fscore mrc_breathlessnes
 long_covid, i(patient_id) j(survey_response)
 mi describe
 
-eq5dmap utility, covariates(age male) items(mobility selfcare activity pain anxiety) direction(5->3)
+eq5dmap utility, covariates(age_r male) items(mobility selfcare activity pain anxiety) direction(5->3)
 gen disutility=1-utility
 
 gen disutI=0 if mobility==1 & selfcare==1 & activity==1 & pain==1 & anxiety==1
@@ -78,15 +78,15 @@ male i.age_bands i.comorbid_count ib3.base_highest_edu ib5.base_hh_income i.imd_
 eststo xt_melogit
 
 set scheme s1color
-coefplot xt_melogit  (., pstyle(p1) if(@ll>-1&@ul<10)) ///
-(., pstyle(p1) if(@ll>-1&@ul>=10)  ciopts(recast(pcarrow)))  ///
-(., pstyle(p1) if(@ll<=-1&@ul<10)  ciopts(recast(pcrarrow))) ///
-(., pstyle(p1) if(@ll<=-1&@ul>=10) ciopts(recast(pcbarrow))) ///
-, transform(* = min(max(@,-1),10)) legend(off) nooffset baselevels msymbol(D) ///
+coefplot xt_melogit  (., pstyle(p1) if(@ll>-1&@ul<7)) ///
+(., pstyle(p1) if(@ll>-1&@ul>=7)  ciopts(recast(pcarrow)))  ///
+(., pstyle(p1) if(@ll<=-1&@ul<7)  ciopts(recast(pcrarrow))) ///
+(., pstyle(p1) if(@ll<=-1&@ul>=7) ciopts(recast(pcbarrow))) ///
+, transform(* = min(max(@,-1),7)) legend(off) nooffset baselevels msymbol(D) ///
 mstyle(p1) mcolor(%60) coeflabels(1.age_bands="18-29 (Base)" ///
 male="Males" 0.comorbid_count="0 (Base)" 3.base_highest_edu="College/University (Base)" ///
-5.base_hh_income="£32,000-47,999 (Base)" ///
-1.imd_q5="1st (most deprived) (Base)", labsize(vsmall)) groups(?.base_highest_edu = ///
+5.base_hh_income="£32,000-47,999 (Base)" 1.imd_q5="1st (most deprived) (Base)" ///
+, labsize(vsmall)) groups(?.base_highest_edu = ///
 `""{bf:Highest}" "{bf:Education}""' ?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ///
 ?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""' ?.age_bands="{bf:Age}" ///
 ?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(1) eform ///
@@ -100,7 +100,7 @@ coefplot xt_melogit  (., pstyle(p1) if(@ll>-1&@ul<25)) ///
 (., pstyle(p1) if(@ll<=-1&@ul>=25) ciopts(recast(pcbarrow))) ///
 , transform(* = min(max(@,-1),25)) legend(off) nooffset ///
 keep(long_covid base_disability) baselevels msymbol(D) mstyle(p1) mcolor(%60) ///
-xlabel(0(5)30, labsize(small)) coeflabels(base_disability="Disabled" ///
+xlabel(0(5)25, labsize(small)) coeflabels(base_disability="Disabled" ///
 long_covid=`""Self-reported" "Long COVID""') xline(1) eform ///
 xtitle("Odds ratio") title("First Part", size(medlarge)) grid(none) ///
 drop(_cons 1.base_disability) msize(small) 
@@ -144,7 +144,7 @@ eststo clear
 // PROMS
 mi estimate, esampvaryok nowarning post: xtlogit disutI long_covid base_disability ///
 male i.age_bands i.comorbid_count i.mrc_breathlessness fscore, re or
-eststo part_one
+eststo mi_proms
 
 mi estimate, esampvaryok nowarning post: mixed disutility long_covid base_disability ///
 male i.age_bands i.comorbid_count i.mrc_breathlessness fscore if disutI>0 || ///
@@ -152,23 +152,16 @@ patient_id:, cov(exch)
 eststo all_proms
 
 set scheme s1color
-coefplot part_one (., pstyle(p1) if(@ll>-1&@ul<15)) ///
-(., pstyle(p1) if(@ll>-1&@ul>=15)  ciopts(recast(pcarrow)))  ///
-(., pstyle(p1) if(@ll<=-1&@ul<15)  ciopts(recast(pcrarrow))) ///
-(., pstyle(p1) if(@ll<=-1&@ul>=15) ciopts(recast(pcbarrow))) ///
-, transform(* = min(max(@,-1),15)) legend(off) nooffset baselevels ///
+coefplot mi_proms , nooffset legend(off) baselevels ///
 msymbol(D) mstyle(p1) mcolor(%60) coeflabels(base_disability="Disabled" ///
 1.age_bands="18-29 (Base)" long_covid=`""Self-reported" "Long COVID""' ///
-male="Males" 0.comorbid_count="0 (Base)" 3.base_highest_edu="College/University (Base)" ///
-1.mrc_breathlessness="Grade 1 (Base)" 2.mrc_breathlessness="Grade 2" ///
-3.mrc_breathlessness="Grade 3" 4.mrc_breathlessness="Grade 4" ///
-5.mrc_breathlessness="Grade 5" fscore="FACIT-F" 5.base_hh_income="£32,000-47,999 (Base)" ///
-1.imd_q5="1st (most deprived) (Base)", labsize(vsmall)) ///
-groups(?.base_highest_edu=`""{bf:Highest}" "{bf:Education}""' ///
-?.base_hh_income=`""{bf:Household}" "{bf:Income}""' ?.fscore="{bf:FACIT-F Reversed}" ///
-?.imd_q5=`""{bf:IMD}" "{bf:Quintiles}""' ?.age_bands="{bf:Age}" ///
-?.mrc_breathlessness="{bf:MRC Dyspnoea}" ?.comorbid_count="{bf:Comorbidities}", ///
-labsize(small) angle(0)) xline(1) grid(none) eform xlabel(, labsize(small)) ///
+male="Males" 0.comorbid_count="0 (Base)" 1.mrc_breathlessness="Grade 1 (Base)" ///
+2.mrc_breathlessness="Grade 2" 3.mrc_breathlessness="Grade 3" ///
+4.mrc_breathlessness="Grade 4" 5.mrc_breathlessness="Grade 5" ///
+fscore="FACIT-F", labsize(vsmall)) groups(?.fscore="{bf:FACIT-F Reversed}" ///
+?.age_bands="{bf:Age}" ?.mrc_breathlessness="{bf:MRC Dyspnoea}" ///
+?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(1) ///
+grid(none) eform xlabel(, labsize(small)) ///
 title("PROMs OR", size(medsmall)) drop(_cons 1.base_disability) msize(small)
 graph export "$projectdir/output/figures/demo_miodds.svg", width(12in) replace
 
