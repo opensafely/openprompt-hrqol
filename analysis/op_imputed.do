@@ -48,7 +48,7 @@ mi reshape long mobility selfcare activity pain anxiety fscore mrc_breathlessnes
 long_covid, i(patient_id) j(survey_response)
 mi describe
 
-eq5dmap utility, covariates(age_r male) items(mobility selfcare activity pain anxiety) direction(5->3)
+eq5dmap utility, covariates(age male) items(mobility selfcare activity pain anxiety) direction(5->3)
 gen disutility=1-utility
 
 gen disutI=0 if mobility==1 & selfcare==1 & activity==1 & pain==1 & anxiety==1
@@ -180,7 +180,7 @@ labsize(small) angle(0)) xline(0) grid(none) xlabel(, labsize(small)) ///
 title("PROMs Coefficients", size(medsmall)) drop(_cons 1.base_disability) msize(small)
 graph export "$projectdir/output/figures/proms_micoefs.svg", width(12in) replace
 
-esttab part_one all_proms using "$projectdir/output/tables/mi-proms.csv", ///
+esttab mi_proms all_proms using "$projectdir/output/tables/mi-proms.csv", ///
 replace mtitles("ME Logit" "Mixed Linear") b(a2) ci(2) aic label wide compress eform(1)
 
 
