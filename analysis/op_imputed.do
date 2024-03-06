@@ -161,7 +161,7 @@ male="Males" 0.comorbid_count="0 (Base)" 1.mrc_breathlessness="Grade 1 (Base)" /
 fscore="FACIT-F", labsize(vsmall)) groups(?.fscore="{bf:FACIT-F Reversed}" ///
 ?.age_bands="{bf:Age}" ?.mrc_breathlessness="{bf:MRC Dyspnoea}" ///
 ?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(1) ///
-grid(none) eform xlabel(, labsize(small)) ///
+grid(none) eform xlabel(0(2)10, labsize(small)) ///
 title("PROMs OR", size(medsmall)) drop(_cons 1.base_disability) msize(small)
 graph export "$projectdir/output/figures/demo_miodds.svg", width(12in) replace
 
