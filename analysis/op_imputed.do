@@ -152,7 +152,8 @@ patient_id:, cov(exch)
 eststo all_proms
 
 set scheme s1color
-coefplot mi_proms , nooffset legend(off) baselevels ///
+coefplot mi_proms, transform(* = min(max(@,-1),10)) ///
+xscale(range(-1 10)) plotregion(margin(medsmall)) baselevels ///
 msymbol(D) mstyle(p1) mcolor(%60) coeflabels(base_disability="Disabled" ///
 1.age_bands="18-29 (Base)" long_covid=`""Self-reported" "Long COVID""' ///
 male="Males" 0.comorbid_count="0 (Base)" 1.mrc_breathlessness="Grade 1 (Base)" ///
@@ -161,7 +162,7 @@ male="Males" 0.comorbid_count="0 (Base)" 1.mrc_breathlessness="Grade 1 (Base)" /
 fscore="FACIT-F", labsize(vsmall)) groups(?.fscore="{bf:FACIT-F Reversed}" ///
 ?.age_bands="{bf:Age}" ?.mrc_breathlessness="{bf:MRC Dyspnoea}" ///
 ?.comorbid_count="{bf:Comorbidities}", labsize(small) angle(0)) xline(1) ///
-grid(none) eform xlabel(0(2)10, labsize(small)) ///
+grid(none) eform xlabel(, labsize(small)) ///
 title("PROMs OR", size(medsmall)) drop(_cons 1.base_disability) msize(small)
 graph export "$projectdir/output/figures/demo_miodds.svg", width(12in) replace
 
